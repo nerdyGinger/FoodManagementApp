@@ -1,14 +1,27 @@
 package apps.nerdyginger.cleanplateclub;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import apps.nerdyginger.cleanplateclub.dao.ItemDao;
+import apps.nerdyginger.cleanplateclub.dao.UserInventoryDao;
+import apps.nerdyginger.cleanplateclub.dao.UserItemDao;
+import apps.nerdyginger.cleanplateclub.models.UserInventory;
 
 
 /**
@@ -24,6 +37,8 @@ public class InventoryFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private UserCustomDatabase userDatabase;
+    private SQLiteDatabase readonlyDatabase;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -35,15 +50,6 @@ public class InventoryFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment InventoryFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static InventoryFragment newInstance(String param1, String param2) {
         InventoryFragment fragment = new InventoryFragment();
         Bundle args = new Bundle();
@@ -65,15 +71,43 @@ public class InventoryFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_inventory, container, false);
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+        // Get inventory data
+        if (userDatabase == null) {
+            userDatabase = Room.databaseBuilder(getContext(), UserCustomDatabase.class, "userDatabase").build();
         }
+        final UserInventoryDao inventoryDao = userDatabase.getUserInventoryDao();
+        final List<UserInventory>[] dataList = new List[]{new ArrayList<>()};
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                dataList[0] = inventoryDao.getAllInventoryItems();
+            }
+        }).start();
+
+        // Inflate the layout for this fragment
+        View view =  inflater.inflate(R.layout.fragment_inventory, container, false);
+        RecyclerView rv = view.findViewById(R.id.inventoryRecycler);
+        rv.addItemDecoration(new DividerItemDecoration(this.getContext(), LinearLayoutManager.VERTICAL));
+        rv.setHasFixedSize(true);
+        LinearLayoutManager llm = new LinearLayoutManager(getContext());
+        rv.setLayoutManager(llm);
+        RecyclerViewClickListener listener = new RecyclerViewClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                //add onClick implementation
+            }
+
+            @Override
+            public boolean onLongClick(View view, int position) {
+                //add onLongClickImplementation
+                return true;
+            }
+        };
+        InventoryListAdapter adapter = new InventoryListAdapter(listener);
+        adapter.updateData(dataList[0]);
+        rv.setAdapter(adapter);
+
+        return view;
     }
 
     @Override
@@ -93,18 +127,8 @@ public class InventoryFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 }

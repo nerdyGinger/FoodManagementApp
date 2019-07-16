@@ -37,6 +37,7 @@ public class NutritionDao {
         String protein = cursor.getString(cursor.getColumnIndex("proteinContent"));
         String cholesterol = cursor.getString(cursor.getColumnIndex("cholesterolContent"));
         cursor.close();
+        db.close();
         return new Nutrition(Integer.parseInt(id), name, servingSize, calories, sugarContent, sodiumContent,
                 fatContent, saturatedFat, transFat, carbs, fiber, protein, cholesterol);
     }
@@ -53,6 +54,7 @@ public class NutritionDao {
         }
         String output = cursor.getString(cursor.getColumnIndex(column));
         cursor.close();
+        db.close();
         return output;
     }
 
@@ -81,6 +83,7 @@ public class NutritionDao {
                     transFat, carbs, fiber, protein, cholesterol));
         }
         cursor.close();
+        db.close();
         return nutritions;
     }
 
