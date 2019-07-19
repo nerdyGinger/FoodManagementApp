@@ -47,6 +47,7 @@ public class FlavorDao {
         }
         String output = cursor.getString(cursor.getColumnIndex(column));
         cursor.close();
+        db.close();
         return output;
     }
 
@@ -61,6 +62,7 @@ public class FlavorDao {
             flavors.put(id.toString(), name);
         }
         cursor.close();
+        db.close();
         return flavors;
     }
 

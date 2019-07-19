@@ -37,6 +37,7 @@ public class RecipeDao {
         String recipeIngredient = cursor.getString(cursor.getColumnIndex("recipeIngredient"));
         String recipeInstructions = cursor.getString(cursor.getColumnIndex("recipeInstructions"));
         cursor.close();
+        db.close();
         return new Recipe(Integer.parseInt(id), name, author, datePublished, description, totalTime,
                 keywords, recipeYield, recipeCategory, recipeCuisine, nutritionId, recipeIngredient, recipeInstructions);
     }
@@ -68,6 +69,7 @@ public class RecipeDao {
                     recipeCuisine, nutritionId, recipeIngredient, recipeInstructions));
         }
         cursor.close();
+        db.close();
         return recipes;
     }
 
@@ -79,6 +81,7 @@ public class RecipeDao {
         }
         String output = cursor.getString(cursor.getColumnIndex(column));
         cursor.close();
+        db.close();
         return output;
     }
 

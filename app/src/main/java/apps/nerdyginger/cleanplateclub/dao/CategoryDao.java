@@ -50,6 +50,7 @@ public class CategoryDao {
             categories.put(id.toString(), name);
         }
         cursor.close();
+        db.close();
         return categories;
     }
 
@@ -61,6 +62,7 @@ public class CategoryDao {
         }
         String output = cursor.getString(cursor.getColumnIndex(column));
         cursor.close();
+        db.close();
         return output;
     }
 

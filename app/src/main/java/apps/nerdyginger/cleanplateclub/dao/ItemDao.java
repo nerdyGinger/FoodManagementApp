@@ -29,6 +29,7 @@ public class ItemDao {
         int categoryId = cursor.getInt(cursor.getColumnIndex("category"));
         int allergyId = cursor.getInt(cursor.getColumnIndex("allergy"));
         cursor.close();
+        db.close();
         return new Item(Integer.parseInt(id), name, flavorId, categoryId, allergyId);
     }
 
@@ -51,6 +52,7 @@ public class ItemDao {
             items.add(new Item(id, name, flavorId, categoryId, allergyId));
         }
         cursor.close();
+        db.close();
         return items;
     }
 
@@ -62,6 +64,7 @@ public class ItemDao {
         }
         String output = cursor.getString(cursor.getColumnIndex(column));
         cursor.close();
+        db.close();
         return output;
     }
 
