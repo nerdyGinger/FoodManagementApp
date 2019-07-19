@@ -13,23 +13,23 @@ import apps.nerdyginger.cleanplateclub.models.UserNutrition;
 @Dao
 public interface UserNutritionDao {
     @Insert
-    public void insert(UserNutrition... nutritions);
+    void insert(UserNutrition... nutritions);
 
     @Update
-    public void update(UserNutrition... nutritions);
+    void update(UserNutrition... nutritions);
 
     @Delete
-    public void delete(UserNutrition nutrition);
+    void delete(UserNutrition nutrition);
 
     @Query("SELECT * FROM userNutrition")
-    public List<UserNutrition> getAllUserNutrition();
+    List<UserNutrition> getAllUserNutrition();
 
     @Query("SELECT * FROM userNutrition WHERE _ID = :id")
-    public UserNutrition getUserNutritionById(int id);
+    UserNutrition getUserNutritionById(int id);
 
-    @Query("SELECT _ID FROM userNutrition WHERE recipeName = :name")
-    public int getNutritionIdByName(String name);
+    @Query("SELECT _ID FROM userNutrition WHERE recipeName LIKE :name")
+    int getNutritionIdByName(String name);
 
     @Query("SELECT recipeName FROM userNutrition WHERE _ID = :id")
-    public String getNutritionRecipeNameById(int id);
+    String getNutritionRecipeNameById(int id);
 }

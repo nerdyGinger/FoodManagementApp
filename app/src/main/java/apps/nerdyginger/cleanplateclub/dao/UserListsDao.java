@@ -13,24 +13,24 @@ import apps.nerdyginger.cleanplateclub.models.UserLists;
 @Dao
 public interface UserListsDao {
     @Insert
-    public void insert(UserLists... userLists);
+    void insert(UserLists... userLists);
 
     @Update
-    public void update(UserLists... userLists);
+    void update(UserLists... userLists);
 
     @Delete
-    public void delete(UserLists... userList);
+    void delete(UserLists... userList);
 
     @Query("SELECT * FROM userLists WHERE _ID = :id")
-    public UserLists getListById(int id);
+    UserLists getListById(int id);
 
-    @Query("SELECT * FROM userLists WHERE listName = :name")
-    public UserLists getListByName(String name);
+    @Query("SELECT * FROM userLists WHERE listName LIKE :name")
+    UserLists getListByName(String name);
 
     @Query("SELECT listName FROM userLists")
-    public List<String> getAllListNames();
+    List<String> getAllListNames();
 
     @Query("SELECT * FROM userLists")
-    public List<UserLists> getAllLists();
+    List<UserLists> getAllLists();
 
 }

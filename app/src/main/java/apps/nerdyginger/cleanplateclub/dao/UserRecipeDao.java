@@ -13,17 +13,17 @@ import apps.nerdyginger.cleanplateclub.models.UserRecipe;
 @Dao
 public interface UserRecipeDao {
     @Insert
-    public void insert(UserRecipe... recipes);
+    void insert(UserRecipe... recipes);
 
     @Update
-    public void update(UserRecipe... reicpes);
+    void update(UserRecipe... reicpes);
 
     @Delete
-    public void delete(UserRecipe recipe);
+    void delete(UserRecipe recipe);
 
     @Query("SELECT * FROM userRecipes")
-    public List<UserRecipe> getAllUserRecipes();
+    List<UserRecipe> getAllUserRecipes();
 
     @Query("SELECT * FROM userRecipes WHERE _ID = :id")
-    public UserRecipe getUserRecipeById(int id);
+    UserRecipe getUserRecipeById(int id);
 }

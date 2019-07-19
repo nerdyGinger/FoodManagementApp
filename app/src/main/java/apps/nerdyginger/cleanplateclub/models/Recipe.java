@@ -146,32 +146,4 @@ public class Recipe {
         String stripped = keywords.substring(1, keywords.length() - 1);
         return stripped.split(",");
     }
-
-    public List<String> getIngredientsList(Context context) {
-        String stripped = recipeIngredient.substring(1, recipeIngredient.length() - 1);
-        String[] split = stripped.split(";;;");
-        List<String> parsed = new ArrayList<>();
-        for (int i=0; i<split.length-1; i++) {
-            String[] possiblePair = split[i].split("\\^-\\^");
-            if (possiblePair.length == 1) { //this ingredient is a singlet
-                parsed.add(possiblePair[0]);
-            } else { //this ingredient is a quantity/item pair
-                String actualPair = possiblePair[0];
-                ItemDao iDao = new ItemDao(context);
-                String fixedId = possiblePair[1].replace("[(", "").replace(",)]", "");
-                actualPair += " " + iDao.getItemName(fixedId);
-                parsed.add(actualPair);
-            }
-        }
-        return parsed;
-    }
-
-    public String[] getInstructionsList() {
-        String stripped = recipeInstructions.substring(1, recipeInstructions.length() - 1);
-        String[] split = stripped.split("', '");
-        int len = split.length;
-        split[0] = split[0].substring(1);              //trim off trailing quotes
-        split[len-1] = split[len-1].substring(0, split[len-1].length() - 1);
-        return split;
-    }
 }

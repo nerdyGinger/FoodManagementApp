@@ -13,17 +13,17 @@ import apps.nerdyginger.cleanplateclub.models.UserItem;
 @Dao
 public interface UserItemDao {
     @Insert
-    public void insert(UserItem... items);
+    void insert(UserItem... items);
 
     @Update
-    public void update(UserItem... items);
+    void update(UserItem... items);
 
     @Delete
-    public void delete(UserItem item);
+    void delete(UserItem item);
 
     @Query("SELECT * FROM userItems")
-    public List<UserItem> getAllUserItems();
+    List<UserItem> getAllUserItems();
 
     @Query("SELECT * FROM userItems WHERE _ID = :id")
-    public UserItem getItemById(int id);
+    UserItem getItemById(int id);
 }

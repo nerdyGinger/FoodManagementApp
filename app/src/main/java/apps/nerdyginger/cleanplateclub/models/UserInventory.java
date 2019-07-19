@@ -9,6 +9,8 @@ public class UserInventory {
     @PrimaryKey(autoGenerate = true)
     private int _ID;
 
+    private boolean userAdded;
+
     @NonNull
     private int itemId;
 
@@ -33,6 +35,14 @@ public class UserInventory {
 
     public void set_ID(int _ID) {
         this._ID = _ID;
+    }
+
+    public boolean isUserAdded() {
+        return userAdded;
+    }
+
+    public void setUserAdded(boolean userAdded) {
+        this.userAdded = userAdded;
     }
 
     public int getItemId() {

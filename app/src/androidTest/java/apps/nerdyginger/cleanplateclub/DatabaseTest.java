@@ -112,22 +112,6 @@ public class DatabaseTest {
     }
 
     @Test
-    public void ingredientSplitTest() throws Exception {
-        Recipe r1 = recipeDao.buildRecipeFromId("1");
-        String ingredients = r1.getRecipeIngredient();
-        List<String> split = r1.getIngredientsList(context);
-        Log.e("HERE IS FIRST --->", split.get(0));
-    }
-
-    @Test
-    public void instructionsSplitTest() throws Exception {
-        Recipe r1 = recipeDao.buildRecipeFromId("1");
-        String instructs = r1.getRecipeInstructions();
-        String[] split = r1.getInstructionsList();
-        Log.e("HERE IS SPLIT --->", split[split.length-1]);
-    }
-
-    @Test
     public void customItemTest() throws Exception {
         UserItem newItem = new UserItem();
         newItem.setName("Pokeweed");
