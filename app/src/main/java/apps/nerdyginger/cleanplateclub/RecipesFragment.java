@@ -5,6 +5,9 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,7 +31,29 @@ public class RecipesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_recipes, container, false);
+        View view =  inflater.inflate(R.layout.fragment_recipes, container, false);
+        RecyclerView rv = view.findViewById(R.id.recipesRecycler);
+        rv.addItemDecoration(new DividerItemDecoration(this.getContext(), LinearLayoutManager.VERTICAL));
+        rv.setHasFixedSize(true);
+        LinearLayoutManager llm = new LinearLayoutManager(getContext());
+        rv.setLayoutManager(llm);
+        RecyclerViewClickListener listener = new RecyclerViewClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                //add onClick implementation
+            }
+
+            @Override
+            public boolean onLongClick(View view, int position) {
+                //add onLongClickImplementation
+                return true;
+            }
+        };
+        RecipesListAdapter adapter = new RecipesListAdapter(listener, false);
+        //adapter.updateData(dataList[0]);
+        rv.setAdapter(adapter);
+
+        return view;
     }
 
     @Override
