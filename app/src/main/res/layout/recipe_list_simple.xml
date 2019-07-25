@@ -24,7 +24,7 @@
     <ImageView
         android:id="@+id/recipeIndicatorBarSimple"
         android:contentDescription="Status indicator"
-        android:src="@drawable/greenBar"
+        android:src="@drawable/green_bar"
         android:layout_width="10dp"
         android:layout_height="match_parent"
         android:layout_alignParentEnd="true"

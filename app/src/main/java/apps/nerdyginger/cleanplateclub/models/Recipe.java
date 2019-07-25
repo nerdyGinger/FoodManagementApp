@@ -19,7 +19,6 @@ public class Recipe {
     private String recipeCategory;
     private String recipeCuisine;
     private int nutritionId;
-    private String recipeIngredient;
     private String recipeInstructions;
 
     public int get_ID() {
@@ -66,10 +65,6 @@ public class Recipe {
         return nutritionId;
     }
 
-    public String getRecipeIngredient() {
-        return recipeIngredient;
-    }
-
     public String getRecipeInstructions() {
         return recipeInstructions;
     }
@@ -110,10 +105,6 @@ public class Recipe {
         this.nutritionId = nutritionId;
     }
 
-    public void setRecipeIngredients(String recipeIngredient) {
-        this.recipeIngredient = recipeIngredient;
-    }
-
     public void setRecipeInstructions(String recipeInstructions) {
         this.recipeInstructions = recipeInstructions;
     }
@@ -124,8 +115,7 @@ public class Recipe {
 
     public Recipe(int _ID, String name, String author, String datePublished, String description,
                   String totalTime, String keywords, String recipeYield, String recipeCategory,
-                  String recipeCuisine, int nutritionId, String recipeIngredient,
-                  String recipeInstructions) {
+                  String recipeCuisine, int nutritionId, String recipeInstructions) {
         this._ID = _ID;
         this.name = name;
         this.author = author;
@@ -137,9 +127,7 @@ public class Recipe {
         this.recipeCategory = recipeCategory;
         this.recipeCuisine = recipeCuisine;
         this.nutritionId = nutritionId;
-        this.recipeIngredient = recipeIngredient;
         this.recipeInstructions = recipeInstructions;
-
     }
 
     public String[] getKeywordsList() {

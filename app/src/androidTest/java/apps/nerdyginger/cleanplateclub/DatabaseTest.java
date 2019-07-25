@@ -21,13 +21,17 @@ import java.util.List;
 import apps.nerdyginger.cleanplateclub.dao.AllergyDao;
 import apps.nerdyginger.cleanplateclub.dao.CategoryDao;
 import apps.nerdyginger.cleanplateclub.dao.FlavorDao;
+import apps.nerdyginger.cleanplateclub.dao.InventoryHelperDao;
 import apps.nerdyginger.cleanplateclub.dao.ItemDao;
 import apps.nerdyginger.cleanplateclub.dao.NutritionDao;
 import apps.nerdyginger.cleanplateclub.dao.RecipeDao;
+import apps.nerdyginger.cleanplateclub.dao.UserInventoryDao;
 import apps.nerdyginger.cleanplateclub.dao.UserItemDao;
 import apps.nerdyginger.cleanplateclub.dao.UserNutritionDao;
 import apps.nerdyginger.cleanplateclub.dao.UserRecipeDao;
+import apps.nerdyginger.cleanplateclub.models.Item;
 import apps.nerdyginger.cleanplateclub.models.Recipe;
+import apps.nerdyginger.cleanplateclub.models.UserInventory;
 import apps.nerdyginger.cleanplateclub.models.UserItem;
 import apps.nerdyginger.cleanplateclub.models.UserNutrition;
 import apps.nerdyginger.cleanplateclub.models.UserRecipe;
@@ -44,6 +48,7 @@ public class DatabaseTest {
     private UserItemDao userItemDao;
     private UserRecipeDao userRecipeDao;
     private UserNutritionDao userNutritionDao;
+    private UserInventoryDao userInventoryDao;
 
     private Context context;
 
@@ -63,6 +68,7 @@ public class DatabaseTest {
         userItemDao = customDb.getUserItemDao();
         userRecipeDao = customDb.getUserRecipeDao();
         userNutritionDao = customDb.getUserNutritionDao();
+        userInventoryDao = customDb.getUserInventoryDao();
     }
 
     @After
@@ -124,12 +130,9 @@ public class DatabaseTest {
     public void customRecipeTest() throws Exception {
         UserRecipe newRecipe = new UserRecipe();
         newRecipe.setName("Poke Sallet");
-        newRecipe.setRecipeIngredient("[1 cup^-^1;;;another ingredient]");
         userRecipeDao.insert(newRecipe);
         UserRecipe r1 = userRecipeDao.getUserRecipeById(1);
         Assert.assertEquals("Poke Sallet", r1.getName());
-        List<String> ingredients = r1.getIngredientsList(context);
-        Assert.assertEquals(1, ingredients.size());
     }
 
     @Test
@@ -138,5 +141,30 @@ public class DatabaseTest {
         newNut.setRecipeName("Poke Sallet");
         userNutritionDao.insert(newNut);
         Assert.assertEquals("Poke Sallet", userNutritionDao.getNutritionRecipeNameById(1));
+    }
+
+    @Test
+    public void inventoryTest() throws Exception {
+        UserItem i1 = new UserItem();
+        i1.setName("flour");
+        userItemDao.insert(i1);
+        UserInventory invItem1 = new UserInventory();
+        invItem1.setItemId(i1.get_ID());
+        invItem1.setItemName(i1.getName());
+        userInventoryDao.insert(invItem1);
+        List<Item> readonlyDbItems = itemDao.getAllItems();
+        for (int i=0; i<readonlyDbItems.size(); i++) {
+            UserInventory temp = new UserInventory();
+            temp.setItemId(readonlyDbItems.get(i).get_ID());
+            temp.setItemName(readonlyDbItems.get(i).getName());
+            userInventoryDao.insert(temp);
+        }
+        List<UserInventory> inventoryList = userInventoryDao.getAllInventoryItems();
+        InventoryHelperDao helperDao = new InventoryHelperDao(context);
+        List<String> names = helperDao.getAllItemNames();
+        for (int i=0; i<names.size(); i++) {
+            Log.e("Item", names.get(i));
+        }
+        Assert.assertEquals(readonlyDbItems.size() + 1, inventoryList.size());
     }
 }

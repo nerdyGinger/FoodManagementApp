@@ -28,6 +28,33 @@ public class InventoryHelperDao {
         return combineIds;
     }
 
+    public List<String> getAllItemNames() {
+        List<String> combineNames = new ArrayList<>();
+        combineNames.addAll(getUserItemNames());
+        combineNames.addAll(getReadOnlyItemNames());
+        return combineNames;
+    }
+
+    public List<String> getUserItemNames() {
+        List<String> justNames = new ArrayList<>();
+        List<UserItem> itemObjects = userItemDao.getAllUserItems();
+        for (int i=0; i<itemObjects.size(); i++) {
+            justNames.add(itemObjects.get(i).getName());
+        }
+        return justNames;
+    }
+
+    public List<String> getReadOnlyItemNames() {
+        List<String> justNames = new ArrayList<>();
+        List<UserInventory> inventoryItems = inventoryDao.getAllInventoryItems();
+        for (int i=0; i<inventoryItems.size(); i++) {
+            if ( ! inventoryItems.get(i).isUserAdded()) {
+                justNames.add(inventoryItems.get(i).getItemName());
+            }
+        }
+        return justNames;
+    }
+
     public List<Integer> getUserItemIds() {
         List<Integer> justIds =  new ArrayList<>();
         List<UserItem> itemObjects = userItemDao.getAllUserItems();

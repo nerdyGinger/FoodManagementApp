@@ -29,7 +29,6 @@ public class UserRecipe {
     private String recipeCategory;
     private String recipeCuisine;
     private int nutritionId;
-    private String recipeIngredient;
     private String recipeInstructions;
 
     @Ignore
@@ -121,14 +120,6 @@ public class UserRecipe {
 
     public void setNutritionId(int nutritionId) {
         this.nutritionId = nutritionId;
-    }
-
-    public String getRecipeIngredient() {
-        return recipeIngredient;
-    }
-
-    public void setRecipeIngredient(String recipeIngredient) {
-        this.recipeIngredient = recipeIngredient;
     }
 
     public String getRecipeInstructions() {

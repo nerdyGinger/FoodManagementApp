@@ -3,6 +3,7 @@ package apps.nerdyginger.cleanplateclub.dao;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import androidx.collection.ArrayMap;
 
@@ -42,27 +43,39 @@ public class CategoryDao {
     public ArrayMap<String, String> getAllCategories() {
         SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM Category", new String[] {});
-        cursor.moveToFirst();
         ArrayMap<String, String> categories = new ArrayMap<>();
-        while ( !cursor.isAfterLast()) {
-            Integer id = cursor.getInt(cursor.getColumnIndex("_ID"));
-            String name = cursor.getString(cursor.getColumnIndex("name"));
-            categories.put(id.toString(), name);
+        try {
+            cursor.moveToFirst();
+            while ( !cursor.isAfterLast()) {
+                Integer id = cursor.getInt(cursor.getColumnIndex("_ID"));
+                String name = cursor.getString(cursor.getColumnIndex("name"));
+                categories.put(id.toString(), name);
+                cursor.moveToNext();
+            }
+        } catch (Exception e) {
+            Log.e("Database Error", e.toString());
+        } finally {
+            cursor.close();
+            db.close();
         }
-        cursor.close();
-        db.close();
         return categories;
     }
 
     private String runQuerySingle(String sql, String[] params, String column) {
         SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
         Cursor cursor = db.rawQuery(sql, params);
-        if (cursor.getCount() > 0) {
-            cursor.moveToFirst();
+        String output = "";
+        try {
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+            }
+            output = cursor.getString(cursor.getColumnIndex(column));
+        } catch (Exception e) {
+            Log.e("Database Error", e.toString());
+        } finally {
+            cursor.close();
+            db.close();
         }
-        String output = cursor.getString(cursor.getColumnIndex(column));
-        cursor.close();
-        db.close();
         return output;
     }
 
