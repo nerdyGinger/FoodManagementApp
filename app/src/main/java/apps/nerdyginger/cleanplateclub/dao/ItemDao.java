@@ -18,7 +18,7 @@ public class ItemDao {
         this.context = context;
     }
 
-    public Item buildItemFromId(String id) {
+    public Item getItemFromId(String id) {
         SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
         String sql = "Select * from Item where _ID = ?";
         String name = "";
