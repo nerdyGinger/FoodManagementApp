@@ -16,4 +16,7 @@ import androidx.room.ForeignKey;
 public class UserRecipeItemJoin {
     public int recipeId;
     public int itemId;
+    public String quantity;
+    public String unit;
+    public String detail;
 }

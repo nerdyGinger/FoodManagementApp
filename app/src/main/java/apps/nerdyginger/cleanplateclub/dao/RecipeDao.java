@@ -3,6 +3,7 @@ package apps.nerdyginger.cleanplateclub.dao;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,25 +22,31 @@ public class RecipeDao {
         SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
         String sql = "Select * from Recipes where _ID = ?";
         Cursor cursor = db.rawQuery(sql, new String[] {id});
-        if (cursor.getCount() > 0) {
-            cursor.moveToFirst();
+        String name = "", author = "", datePublished = "", description = "", totalTime = "", keywords = "";
+        String recipeYield = "", recipeCategory = "", recipeCuisine = "", recipeInstructions = "";
+        int nutritionId = 0;
+        try {
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+            }
+            name = cursor.getString(cursor.getColumnIndex("name"));
+            author = cursor.getString(cursor.getColumnIndex("author"));
+            description = cursor.getString(cursor.getColumnIndex("description"));
+            totalTime = cursor.getString(cursor.getColumnIndex("totalTime"));
+            keywords = cursor.getString(cursor.getColumnIndex("keywords"));
+            recipeYield = cursor.getString(cursor.getColumnIndex("recipeYield"));
+            recipeCategory = cursor.getString(cursor.getColumnIndex("recipeCategory"));
+            recipeCuisine = cursor.getString(cursor.getColumnIndex("recipeCuisine"));
+            nutritionId = cursor.getInt(cursor.getColumnIndex("nutrition"));
+            recipeInstructions = cursor.getString(cursor.getColumnIndex("recipeInstructions"));
+        } catch (Exception e) {
+            Log.e("Database Error", e.toString());
+        } finally {
+            cursor.close();
+            db.close();
         }
-        String name = cursor.getString(cursor.getColumnIndex("name"));
-        String author = cursor.getString(cursor.getColumnIndex("author"));
-        String datePublished = cursor.getString(cursor.getColumnIndex("datePublished"));
-        String description = cursor.getString(cursor.getColumnIndex("description"));
-        String totalTime = cursor.getString(cursor.getColumnIndex("totalTime"));
-        String keywords = cursor.getString(cursor.getColumnIndex("keywords"));
-        String recipeYield = cursor.getString(cursor.getColumnIndex("recipeYield"));
-        String recipeCategory = cursor.getString(cursor.getColumnIndex("recipeCategory"));
-        String recipeCuisine = cursor.getString(cursor.getColumnIndex("recipeCuisine"));
-        int nutritionId = cursor.getInt(cursor.getColumnIndex("nutrition"));
-        String recipeIngredient = cursor.getString(cursor.getColumnIndex("recipeIngredient"));
-        String recipeInstructions = cursor.getString(cursor.getColumnIndex("recipeInstructions"));
-        cursor.close();
-        db.close();
         return new Recipe(Integer.parseInt(id), name, author, datePublished, description, totalTime,
-                keywords, recipeYield, recipeCategory, recipeCuisine, nutritionId, recipeIngredient, recipeInstructions);
+                keywords, recipeYield, recipeCategory, recipeCuisine, nutritionId, recipeInstructions);
     }
 
     public List<Recipe> buildRecipeListFromDb() {
@@ -49,39 +56,52 @@ public class RecipeDao {
     public List<Recipe> getAllRecipes() {
         SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM Recipes", new String[] {});
-        cursor.moveToFirst();
         List<Recipe> recipes = new ArrayList<>();
-        while ( !cursor.isAfterLast()) {
-            int id = cursor.getInt(cursor.getColumnIndex("_ID"));
-            String name = cursor.getString(cursor.getColumnIndex("name"));
-            String author = cursor.getString(cursor.getColumnIndex("author"));
-            String datePublished = cursor.getString(cursor.getColumnIndex("datePublished"));
-            String description = cursor.getString(cursor.getColumnIndex("description"));
-            String totalTime = cursor.getString(cursor.getColumnIndex("totalTime"));
-            String keywords = cursor.getString(cursor.getColumnIndex("keywords"));
-            String recipeYield = cursor.getString(cursor.getColumnIndex("recipeYield"));
-            String recipeCategory = cursor.getString(cursor.getColumnIndex("recipeCategory"));
-            String recipeCuisine = cursor.getString(cursor.getColumnIndex("recipeCuisine"));
-            int nutritionId = cursor.getInt(cursor.getColumnIndex("nutrition"));
-            String recipeIngredient = cursor.getString(cursor.getColumnIndex("recipeIngredient"));
-            String recipeInstructions = cursor.getString(cursor.getColumnIndex("recipeInstructions"));
-            recipes.add(new Recipe(id, name, author, datePublished, description, totalTime, keywords, recipeYield, recipeCategory,
-                    recipeCuisine, nutritionId, recipeIngredient, recipeInstructions));
+        String name = "", author = "", datePublished = "", description = "", totalTime = "", keywords = "";
+        String recipeYield = "", recipeCategory = "", recipeCuisine = "", recipeInstructions = "";
+        int nutritionId = 0;
+        try {
+            cursor.moveToFirst();
+            while ( !cursor.isAfterLast()) {
+                int id = cursor.getInt(cursor.getColumnIndex("_ID"));
+                name = cursor.getString(cursor.getColumnIndex("name"));
+                author = cursor.getString(cursor.getColumnIndex("author"));
+                datePublished = cursor.getString(cursor.getColumnIndex("datePublished"));
+                description = cursor.getString(cursor.getColumnIndex("description"));
+                totalTime = cursor.getString(cursor.getColumnIndex("totalTime"));
+                keywords = cursor.getString(cursor.getColumnIndex("keywords"));
+                recipeYield = cursor.getString(cursor.getColumnIndex("recipeYield"));
+                recipeCategory = cursor.getString(cursor.getColumnIndex("recipeCategory"));
+                recipeCuisine = cursor.getString(cursor.getColumnIndex("recipeCuisine"));
+                nutritionId = cursor.getInt(cursor.getColumnIndex("nutrition"));
+                recipeInstructions = cursor.getString(cursor.getColumnIndex("recipeInstructions"));
+                recipes.add(new Recipe(id, name, author, datePublished, description, totalTime, keywords, recipeYield, recipeCategory,
+                        recipeCuisine, nutritionId, recipeInstructions));
+            }
+        } catch (Exception e) {
+            Log.e("Database Error", e.toString());
+        } finally {
+            cursor.close();
+            db.close();
         }
-        cursor.close();
-        db.close();
         return recipes;
     }
 
     private String runQuerySingle(String sql, String[] params, String column) {
         SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
         Cursor cursor = db.rawQuery(sql, params);
-        if (cursor.getCount() > 0) {
-            cursor.moveToFirst();
+        String output = "";
+        try {
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+            }
+            output = cursor.getString(cursor.getColumnIndex(column));
+        } catch (Exception e) {
+            Log.e("Database Error", e.toString());
+        } finally {
+            cursor.close();
+            db.close();
         }
-        String output = cursor.getString(cursor.getColumnIndex(column));
-        cursor.close();
-        db.close();
         return output;
     }
 
