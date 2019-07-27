@@ -5,7 +5,6 @@ public class Item {
     private String name;
     private int flavor;
     private int category;
-    private int allergy;
 
     public int get_ID() {
         return _ID;
@@ -23,10 +22,6 @@ public class Item {
         return category;
     }
 
-    public int getAllergy() {
-        return allergy;
-    }
-
     public void setName(String name) {
         this.name = name;
     }
@@ -39,19 +34,14 @@ public class Item {
         this.category = category;
     }
 
-    public void setAllergy(int allergy) {
-        this.allergy = allergy;
-    }
-
     public void set_ID(int _ID) {
         this._ID = _ID;
     }
 
-    public Item(int _ID, String name, int flavor, int category, int allergy) {
+    public Item(int _ID, String name, int flavor, int category) {
         this._ID = _ID;
         this.name = name;
         this.flavor = flavor;
         this.category = category;
-        this.allergy = allergy;
     }
 }

@@ -39,7 +39,7 @@ public class CategoryDao {
         return categoryList;
     }
 
-    public ArrayMap<String, String> getAllCategories() {
+    private ArrayMap<String, String> getAllCategories() {
         SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM Category", new String[] {});
         cursor.moveToFirst();

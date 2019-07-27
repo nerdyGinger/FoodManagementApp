@@ -27,10 +27,9 @@ public class ItemDao {
         String name = cursor.getString(cursor.getColumnIndex("name"));
         int flavorId = cursor.getInt(cursor.getColumnIndex("flavor"));
         int categoryId = cursor.getInt(cursor.getColumnIndex("category"));
-        int allergyId = cursor.getInt(cursor.getColumnIndex("allergy"));
         cursor.close();
         db.close();
-        return new Item(Integer.parseInt(id), name, flavorId, categoryId, allergyId);
+        return new Item(Integer.parseInt(id), name, flavorId, categoryId);
     }
 
     public List<Item> buildItemListFromDb() {
@@ -48,8 +47,7 @@ public class ItemDao {
             String name = cursor.getString(cursor.getColumnIndex("name"));
             int flavorId = cursor.getInt(cursor.getColumnIndex("flavor"));
             int categoryId = cursor.getInt(cursor.getColumnIndex("category"));
-            int allergyId = cursor.getInt(cursor.getColumnIndex("allergy"));
-            items.add(new Item(id, name, flavorId, categoryId, allergyId));
+            items.add(new Item(id, name, flavorId, categoryId));
         }
         cursor.close();
         db.close();
