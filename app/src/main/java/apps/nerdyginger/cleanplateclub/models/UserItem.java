@@ -3,6 +3,8 @@ package apps.nerdyginger.cleanplateclub.models;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.util.ArrayList;
+
 @Entity(tableName = "userItems")
 public class UserItem {
     @PrimaryKey(autoGenerate = true)
@@ -11,7 +13,7 @@ public class UserItem {
     private String name;
     private int flavor;
     private int category;
-    private int allergy;
+    private ArrayList<String> allergy;
 
     public int get_ID() {
         return _ID;
@@ -45,11 +47,11 @@ public class UserItem {
         this.category = category;
     }
 
-    public int getAllergy() {
+    public ArrayList<String> getAllergy() {
         return allergy;
     }
 
-    public void setAllergy(int allergy) {
+    public void setAllergy(ArrayList<String> allergy) {
         this.allergy = allergy;
     }
 }

@@ -1,11 +1,13 @@
 package apps.nerdyginger.cleanplateclub.models;
 
+import java.util.ArrayList;
+
 public class Item {
     private int _ID;
     private String name;
     private int flavor;
     private int category;
-    private int allergy;
+    private ArrayList<String> allergy;
 
     public int get_ID() {
         return _ID;
@@ -23,7 +25,7 @@ public class Item {
         return category;
     }
 
-    public int getAllergy() {
+    public ArrayList<String> getAllergy() {
         return allergy;
     }
 
@@ -39,7 +41,7 @@ public class Item {
         this.category = category;
     }
 
-    public void setAllergy(int allergy) {
+    public void setAllergy(ArrayList<String> allergy) {
         this.allergy = allergy;
     }
 
@@ -47,7 +49,7 @@ public class Item {
         this._ID = _ID;
     }
 
-    public Item(int _ID, String name, int flavor, int category, int allergy) {
+    public Item(int _ID, String name, int flavor, int category, ArrayList<String> allergy) {
         this._ID = _ID;
         this.name = name;
         this.flavor = flavor;

@@ -8,6 +8,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+import apps.nerdyginger.cleanplateclub.Converters;
 import apps.nerdyginger.cleanplateclub.DatabaseHelper;
 import apps.nerdyginger.cleanplateclub.models.Recipe;
 
@@ -22,8 +23,10 @@ public class RecipeDao {
         SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
         String sql = "Select * from Recipes where _ID = ?";
         Cursor cursor = db.rawQuery(sql, new String[] {id});
-        String name = "", author = "", datePublished = "", description = "", totalTime = "", keywords = "";
-        String recipeYield = "", recipeCategory = "", recipeCuisine = "", recipeInstructions = "";
+        String name = "", author = "", datePublished = "", description = "", totalTime = "";
+        ArrayList<String> keywords = new ArrayList<>();
+        String recipeYield = "", recipeCategory = "", recipeCuisine = "";
+        ArrayList<String> recipeInstructions = new ArrayList<>();
         int nutritionId = 0;
         try {
             if (cursor.getCount() > 0) {
@@ -33,12 +36,12 @@ public class RecipeDao {
             author = cursor.getString(cursor.getColumnIndex("author"));
             description = cursor.getString(cursor.getColumnIndex("description"));
             totalTime = cursor.getString(cursor.getColumnIndex("totalTime"));
-            keywords = cursor.getString(cursor.getColumnIndex("keywords"));
+            keywords = Converters.fromString(cursor.getString(cursor.getColumnIndex("keywords")));
             recipeYield = cursor.getString(cursor.getColumnIndex("recipeYield"));
             recipeCategory = cursor.getString(cursor.getColumnIndex("recipeCategory"));
             recipeCuisine = cursor.getString(cursor.getColumnIndex("recipeCuisine"));
             nutritionId = cursor.getInt(cursor.getColumnIndex("nutrition"));
-            recipeInstructions = cursor.getString(cursor.getColumnIndex("recipeInstructions"));
+            recipeInstructions = Converters.fromString(cursor.getString(cursor.getColumnIndex("recipeInstructions")));
         } catch (Exception e) {
             Log.e("Database Error", e.toString());
         } finally {
@@ -57,9 +60,9 @@ public class RecipeDao {
         SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM Recipes", new String[] {});
         List<Recipe> recipes = new ArrayList<>();
-        String name = "", author = "", datePublished = "", description = "", totalTime = "", keywords = "";
-        String recipeYield = "", recipeCategory = "", recipeCuisine = "", recipeInstructions = "";
-        int nutritionId = 0;
+        String name, author, datePublished, description, totalTime, recipeYield, recipeCategory, recipeCuisine;
+        ArrayList<String> keywords, recipeInstructions;
+        int nutritionId;
         try {
             cursor.moveToFirst();
             while ( !cursor.isAfterLast()) {
@@ -69,12 +72,12 @@ public class RecipeDao {
                 datePublished = cursor.getString(cursor.getColumnIndex("datePublished"));
                 description = cursor.getString(cursor.getColumnIndex("description"));
                 totalTime = cursor.getString(cursor.getColumnIndex("totalTime"));
-                keywords = cursor.getString(cursor.getColumnIndex("keywords"));
+                keywords = Converters.fromString(cursor.getString(cursor.getColumnIndex("keywords")));
                 recipeYield = cursor.getString(cursor.getColumnIndex("recipeYield"));
                 recipeCategory = cursor.getString(cursor.getColumnIndex("recipeCategory"));
                 recipeCuisine = cursor.getString(cursor.getColumnIndex("recipeCuisine"));
                 nutritionId = cursor.getInt(cursor.getColumnIndex("nutrition"));
-                recipeInstructions = cursor.getString(cursor.getColumnIndex("recipeInstructions"));
+                recipeInstructions = Converters.fromString(cursor.getString(cursor.getColumnIndex("recipeInstructions")));
                 recipes.add(new Recipe(id, name, author, datePublished, description, totalTime, keywords, recipeYield, recipeCategory,
                         recipeCuisine, nutritionId, recipeInstructions));
             }

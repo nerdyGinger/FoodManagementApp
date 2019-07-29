@@ -5,7 +5,6 @@ import android.content.Context;
 import java.util.ArrayList;
 import java.util.List;
 
-import apps.nerdyginger.cleanplateclub.dao.ItemDao;
 
 public class Recipe {
     private int _ID;
@@ -14,12 +13,12 @@ public class Recipe {
     private String datePublished;
     private String description;
     private String totalTime;
-    private String keywords;
+    private ArrayList<String> keywords;
     private String recipeYield;
     private String recipeCategory;
     private String recipeCuisine;
     private int nutritionId;
-    private String recipeInstructions;
+    private ArrayList<String> recipeInstructions;
 
     public int get_ID() {
         return _ID;
@@ -45,7 +44,7 @@ public class Recipe {
         return totalTime;
     }
 
-    public String getKeywords() {
+    public ArrayList<String> getKeywords() {
         return keywords;
     }
 
@@ -65,7 +64,7 @@ public class Recipe {
         return nutritionId;
     }
 
-    public String getRecipeInstructions() {
+    public ArrayList<String> getRecipeInstructions() {
         return recipeInstructions;
     }
 
@@ -85,7 +84,7 @@ public class Recipe {
         this.description = description;
     }
 
-    public void setKeywords(String keywords) {
+    public void setKeywords(ArrayList<String> keywords) {
         this.keywords = keywords;
     }
 
@@ -105,7 +104,7 @@ public class Recipe {
         this.nutritionId = nutritionId;
     }
 
-    public void setRecipeInstructions(String recipeInstructions) {
+    public void setRecipeInstructions(ArrayList<String> recipeInstructions) {
         this.recipeInstructions = recipeInstructions;
     }
 
@@ -114,8 +113,8 @@ public class Recipe {
     }
 
     public Recipe(int _ID, String name, String author, String datePublished, String description,
-                  String totalTime, String keywords, String recipeYield, String recipeCategory,
-                  String recipeCuisine, int nutritionId, String recipeInstructions) {
+                  String totalTime, ArrayList<String> keywords, String recipeYield, String recipeCategory,
+                  String recipeCuisine, int nutritionId, ArrayList<String> recipeInstructions) {
         this._ID = _ID;
         this.name = name;
         this.author = author;
@@ -128,10 +127,5 @@ public class Recipe {
         this.recipeCuisine = recipeCuisine;
         this.nutritionId = nutritionId;
         this.recipeInstructions = recipeInstructions;
-    }
-
-    public String[] getKeywordsList() {
-        String stripped = keywords.substring(1, keywords.length() - 1);
-        return stripped.split(",");
     }
 }
