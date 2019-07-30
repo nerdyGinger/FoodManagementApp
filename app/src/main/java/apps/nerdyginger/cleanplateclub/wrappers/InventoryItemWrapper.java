@@ -107,12 +107,13 @@ public class InventoryItemWrapper {
             UserItem item = itemDao.getItemById(inventoryItem.getItemId());
             this.itemCategory = categoryDao.getCategoryName(String.valueOf(item.getCategory()));
             this.itemFlavor = flavorDao.getFlavorName(String.valueOf(item.getFlavor()));
-            //add allergies
+            this.itemAllergies = item.getAllergy();
         } else {
             ItemDao itemDao = new ItemDao(context);
             Item item = itemDao.getItemFromId(String.valueOf(inventoryItem.getItemId()));
             this.itemCategory = categoryDao.getCategoryName(String.valueOf(item.getCategory()));
             this.itemFlavor = flavorDao.getFlavorName(String.valueOf(item.getFlavor()));
+            this.itemAllergies = item.getAllergy();
         }
     }
 }

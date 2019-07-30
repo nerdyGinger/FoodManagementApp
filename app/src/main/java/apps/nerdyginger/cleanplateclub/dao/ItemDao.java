@@ -8,6 +8,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+import apps.nerdyginger.cleanplateclub.Converters;
 import apps.nerdyginger.cleanplateclub.DatabaseHelper;
 import apps.nerdyginger.cleanplateclub.models.Item;
 
@@ -22,7 +23,8 @@ public class ItemDao {
         SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
         String sql = "Select * from Item where _ID = ?";
         String name = "";
-        int flavorId = 0, categoryId = 0, allergyId = 0;
+        int flavorId = 0, categoryId = 0;
+        ArrayList<String> allergyId = new ArrayList<>();
         Cursor cursor = db.rawQuery(sql, new String[] {id});
         try {
             if (cursor.getCount() > 0) {
@@ -31,7 +33,7 @@ public class ItemDao {
             name = cursor.getString(cursor.getColumnIndex("name"));
             flavorId = cursor.getInt(cursor.getColumnIndex("flavor"));
             categoryId = cursor.getInt(cursor.getColumnIndex("category"));
-            allergyId = cursor.getInt(cursor.getColumnIndex("allergy"));
+            allergyId = Converters.fromString(cursor.getString(cursor.getColumnIndex("allergy")));
         } catch (Exception e) {
             Log.e("Database Error", e.toString());
         } finally {
@@ -74,8 +76,8 @@ public class ItemDao {
                 String name = cursor.getString(cursor.getColumnIndex("name"));
                 int flavorId = cursor.getInt(cursor.getColumnIndex("flavor"));
                 int categoryId = cursor.getInt(cursor.getColumnIndex("category"));
-                int allergyId = cursor.getInt(cursor.getColumnIndex("allergy"));
-                items.add(new Item(id, name, flavorId, categoryId, allergyId));
+                ArrayList<String> allergyIds = Converters.fromString(cursor.getString(cursor.getColumnIndex("allergy")));
+                items.add(new Item(id, name, flavorId, categoryId, allergyIds));
                 cursor.moveToNext();
             }
         } catch (Exception e) {

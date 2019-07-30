@@ -2,6 +2,7 @@ package apps.nerdyginger.cleanplateclub;
 
 import androidx.room.Database;
 import androidx.room.RoomDatabase;
+import androidx.room.TypeConverters;
 
 import apps.nerdyginger.cleanplateclub.dao.UserInventoryDao;
 import apps.nerdyginger.cleanplateclub.dao.UserItemDao;
@@ -15,6 +16,7 @@ import apps.nerdyginger.cleanplateclub.models.UserRecipe;
 import apps.nerdyginger.cleanplateclub.models.UserRecipeItemJoin;
 
 @Database(entities = {UserItem.class, UserRecipe.class, UserNutrition.class, UserInventory.class, UserRecipeItemJoin.class}, version = 1)
+@TypeConverters({Converters.class})
 public abstract class UserCustomDatabase extends RoomDatabase {
     public abstract UserItemDao getUserItemDao();
     public abstract UserRecipeDao getUserRecipeDao();

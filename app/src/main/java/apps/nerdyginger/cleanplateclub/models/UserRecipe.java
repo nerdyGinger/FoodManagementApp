@@ -24,12 +24,12 @@ public class UserRecipe {
     private String datePublished;
     private String description;
     private String totalTime;
-    private String keywords;
+    private ArrayList<String> keywords;
     private String recipeYield;
     private String recipeCategory;
     private String recipeCuisine;
     private int nutritionId;
-    private String recipeInstructions;
+    private ArrayList<String> recipeInstructions;
 
     @Ignore
     private UserCustomDatabase database;
@@ -82,11 +82,11 @@ public class UserRecipe {
         this.totalTime = totalTime;
     }
 
-    public String getKeywords() {
+    public ArrayList<String> getKeywords() {
         return keywords;
     }
 
-    public void setKeywords(String keywords) {
+    public void setKeywords(ArrayList<String> keywords) {
         this.keywords = keywords;
     }
 
@@ -122,16 +122,11 @@ public class UserRecipe {
         this.nutritionId = nutritionId;
     }
 
-    public String getRecipeInstructions() {
+    public ArrayList<String> getRecipeInstructions() {
         return recipeInstructions;
     }
 
-    public void setRecipeInstructions(String recipeInstructions) {
+    public void setRecipeInstructions(ArrayList<String> recipeInstructions) {
         this.recipeInstructions = recipeInstructions;
-    }
-
-    public String[] getKeywordsList() {
-        String stripped = keywords.substring(1, keywords.length() - 1);
-        return stripped.split(",");
     }
 }
