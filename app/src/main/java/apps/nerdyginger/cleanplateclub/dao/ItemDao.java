@@ -21,10 +21,9 @@ public class ItemDao {
 
     public Item getItemFromId(String id) {
         SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
-        String sql = "Select * from Item where _ID = ?";
+        String sql = "Select * from Item where rowid = ?";
         String name = "";
         int flavorId = 0, categoryId = 0;
-        ArrayList<String> allergyId = new ArrayList<>();
         Cursor cursor = db.rawQuery(sql, new String[] {id});
         try {
             if (cursor.getCount() > 0) {
@@ -33,23 +32,13 @@ public class ItemDao {
             name = cursor.getString(cursor.getColumnIndex("name"));
             flavorId = cursor.getInt(cursor.getColumnIndex("flavor"));
             categoryId = cursor.getInt(cursor.getColumnIndex("category"));
-            allergyId = Converters.fromString(cursor.getString(cursor.getColumnIndex("allergy")));
         } catch (Exception e) {
             Log.e("Database Error", e.toString());
         } finally {
             cursor.close();
             db.close();
         }
-<<<<<<< HEAD
-        String name = cursor.getString(cursor.getColumnIndex("name"));
-        int flavorId = cursor.getInt(cursor.getColumnIndex("flavor"));
-        int categoryId = cursor.getInt(cursor.getColumnIndex("category"));
-        cursor.close();
-        db.close();
         return new Item(Integer.parseInt(id), name, flavorId, categoryId);
-=======
-        return new Item(Integer.parseInt(id), name, flavorId, categoryId, allergyId);
->>>>>>> 3cf8ce920780f64588915e2d2545daf93aeccedf
     }
 
     public List<Item> buildItemListFromDb() {
@@ -61,23 +50,14 @@ public class ItemDao {
         SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM Item", new String[] {});
         List<Item> items = new ArrayList<>();
-<<<<<<< HEAD
-        while ( !cursor.isAfterLast()) {
-            int id = cursor.getInt(cursor.getColumnIndex("_ID"));
-            String name = cursor.getString(cursor.getColumnIndex("name"));
-            int flavorId = cursor.getInt(cursor.getColumnIndex("flavor"));
-            int categoryId = cursor.getInt(cursor.getColumnIndex("category"));
-            items.add(new Item(id, name, flavorId, categoryId));
-=======
         try {
             cursor.moveToFirst();
             while ( !cursor.isAfterLast()) {
-                int id = cursor.getInt(cursor.getColumnIndex("_ID"));
+                int id = cursor.getInt(cursor.getColumnIndex("rowid"));
                 String name = cursor.getString(cursor.getColumnIndex("name"));
                 int flavorId = cursor.getInt(cursor.getColumnIndex("flavor"));
                 int categoryId = cursor.getInt(cursor.getColumnIndex("category"));
-                ArrayList<String> allergyIds = Converters.fromString(cursor.getString(cursor.getColumnIndex("allergy")));
-                items.add(new Item(id, name, flavorId, categoryId, allergyIds));
+                items.add(new Item(id, name, flavorId, categoryId));
                 cursor.moveToNext();
             }
         } catch (Exception e) {
@@ -85,7 +65,6 @@ public class ItemDao {
         } finally {
             cursor.close();
             db.close();
->>>>>>> 3cf8ce920780f64588915e2d2545daf93aeccedf
         }
         return items;
     }
@@ -109,12 +88,12 @@ public class ItemDao {
     }
 
     public String getItemName(String id) {
-        String sql = "Select name from Item where _ID = ?";
+        String sql = "Select name from Item where rowid = ?";
         return runQuerySingle(sql, new String[] {id}, "name");
     }
 
     public String getItemId(String name) {
         String sql = "Select _ID from Item where name = ?";
-        return runQuerySingle(sql, new String[] {name}, "_ID");
+        return runQuerySingle(sql, new String[] {name}, "rowid");
     }
 }

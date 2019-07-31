@@ -21,7 +21,7 @@ public class RecipeDao {
 
     public Recipe buildRecipeFromId(String id) {
         SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
-        String sql = "Select * from Recipes where _ID = ?";
+        String sql = "Select * from Recipes where rowid = ?";
         Cursor cursor = db.rawQuery(sql, new String[] {id});
         String name = "", author = "", datePublished = "", description = "", totalTime = "";
         ArrayList<String> keywords = new ArrayList<>();
@@ -66,7 +66,7 @@ public class RecipeDao {
         try {
             cursor.moveToFirst();
             while ( !cursor.isAfterLast()) {
-                int id = cursor.getInt(cursor.getColumnIndex("_ID"));
+                int id = cursor.getInt(cursor.getColumnIndex("rowid"));
                 name = cursor.getString(cursor.getColumnIndex("name"));
                 author = cursor.getString(cursor.getColumnIndex("author"));
                 datePublished = cursor.getString(cursor.getColumnIndex("datePublished"));
@@ -110,11 +110,11 @@ public class RecipeDao {
 
     public String getRecipeId(String name) {
         String sql = "Select _ID from Recipes where name = ?";
-        return runQuerySingle(sql, new String[] {name}, "_ID");
+        return runQuerySingle(sql, new String[] {name}, "rowid");
     }
 
     public String getRecipeName(String id) {
-        String sql = "Select name from Recipes where _ID = ?";
+        String sql = "Select name from Recipes where rowid = ?";
         return runQuerySingle(sql, new String[] {id}, "name");
     }
 }

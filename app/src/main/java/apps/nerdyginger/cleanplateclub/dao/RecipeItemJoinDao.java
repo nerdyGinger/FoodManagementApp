@@ -21,7 +21,7 @@ public class RecipeItemJoinDao {
 
     public List<Recipe> getRecipesByItem(String itemId) {
         SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
-        String sql = "Select * from Recipe INNER JOIN RecipeItemJoin ON Recipe._ID=RecipeItemJoin.recipeId WHERE RecipeItemJoin.itemId = ?";
+        String sql = "Select * from Recipe INNER JOIN RecipeItemJoin ON Recipe.rowid=RecipeItemJoin.recipeId WHERE RecipeItemJoin.itemId = ?";
         String[] params = new String[] {itemId};
         List<Recipe> recipes = new ArrayList<>();
         Cursor cursor = db.rawQuery(sql, params);
@@ -45,7 +45,7 @@ public class RecipeItemJoinDao {
 
     public List<Item> getItemsInRecipe(String recipeId) {
         SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
-        String sql = "SELECT * FROM Item INNER JOIN RecipeItemJoin ON Item._ID=RecipeItemJoin.itemId WHERE RecipeItemJoin.recipeId = ?";
+        String sql = "SELECT * FROM Item INNER JOIN RecipeItemJoin ON Item.rowid=RecipeItemJoin.itemId WHERE RecipeItemJoin.recipeId = ?";
         String[] params = new String[] {recipeId};
         List<Item> items = new ArrayList<>();
         Cursor cursor = db.rawQuery(sql, params);

@@ -21,7 +21,7 @@ public class NutritionDao {
 
     public Nutrition buildNutritionFromId(String id) {
         SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
-        String sql = "Select * from Nutrition where _ID = ?";
+        String sql = "Select * from Nutrition where rowid = ?";
         Cursor cursor = db.rawQuery(sql, new String[] {id});
         String name = "", servingSize = "", calories = "", sugarContent = "", sodiumContent = "", fatContent = "";
         String saturatedFat = "", transFat = "", carbs = "", fiber = "", protein = "", cholesterol = "";
@@ -84,7 +84,7 @@ public class NutritionDao {
         try {
             cursor.moveToFirst();
             while ( !cursor.isAfterLast()) {
-                int id = cursor.getInt(cursor.getColumnIndex("_ID"));
+                int id = cursor.getInt(cursor.getColumnIndex("rowid"));
                 name = cursor.getString(cursor.getColumnIndex("recipeName"));
                 servingSize = cursor.getString(cursor.getColumnIndex("servingSize"));
                 calories = cursor.getString(cursor.getColumnIndex("calories"));
@@ -111,12 +111,12 @@ public class NutritionDao {
     }
 
     public String getNutritionName(String id) {
-        String sql = "SELECT recipeName FROM Nutrition WHERE _ID = ?";
+        String sql = "SELECT recipeName FROM Nutrition WHERE rowid = ?";
         return runQuerySingle(sql, new String[] {id}, "recipeName");
     }
 
     public String getNutritionId(String name) {
         String sql = "SELECT id FROM Nutrition WHERE recipeName = ?";
-        return runQuerySingle(sql, new String[] {name}, "_ID");
+        return runQuerySingle(sql, new String[] {name}, "rowid");
     }
 }

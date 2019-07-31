@@ -105,15 +105,12 @@ public class DatabaseTest {
     }
 
     @Test
-    public void superTablesTest() throws Exception {
-        String recipeName = recipeDao.getRecipeName("1");
-        String recipeId = recipeDao.getRecipeId(recipeName);
-        String itemName = itemDao.getItemName("1");
+    public void itemDbTest() throws Exception {
+        Item item = itemDao.getItemFromId("189");
+        String itemName = item.getName();
         String itemId = itemDao.getItemId(itemName);
-        Assert.assertEquals("Whole Milk", itemName);
-        Assert.assertEquals("1", itemId);
-        Assert.assertEquals("Pioneer Woman's Glazed Donuts", recipeName);
-        Assert.assertEquals("1", recipeId);
+        Assert.assertEquals("Unsweetened Applesauce", itemName);
+        Assert.assertEquals("189", itemId);
 
     }
 
