@@ -15,6 +15,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,9 +44,23 @@ public class InventoryFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view =  inflater.inflate(R.layout.fragment_inventory, container, false);
+
+        // Set up floating action button
+        FloatingActionButton addButton = view.findViewById(R.id.inventoryFloatingAddBtn);
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //what to do when the add button is clicked; open dialog? new activity?
+            }
+        });
+
         // Get inventory data
         if (userDatabase == null) {
-            userDatabase = Room.databaseBuilder(getContext(), UserCustomDatabase.class, "userDatabase").build();
+            userDatabase = Room.databaseBuilder(getContext(), UserCustomDatabase.class, "userDatabase")
+                    .fallbackToDestructiveMigration() //don't do this in production!!!
+                    .build();
         }
         final UserInventoryDao inventoryDao = userDatabase.getUserInventoryDao();
         final List<UserInventory>[] dataList = new List[]{new ArrayList<>()};
@@ -55,8 +71,7 @@ public class InventoryFragment extends Fragment {
             }
         }).start();
 
-        // Inflate the layout for this fragment
-        View view =  inflater.inflate(R.layout.fragment_inventory, container, false);
+        // Fill in the RecyclerView with inventory data
         RecyclerView rv = view.findViewById(R.id.inventoryRecycler);
         rv.addItemDecoration(new DividerItemDecoration(this.getContext(), LinearLayoutManager.VERTICAL));
         rv.setHasFixedSize(true);
