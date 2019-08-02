@@ -55,7 +55,7 @@ public class RecipeItemJoinDao {
                 ItemDao itemDao = new ItemDao(context);
                 while (!cursor.isAfterLast()) {
                     Integer id = cursor.getInt(cursor.getColumnIndex("itemId"));
-                    items.add(itemDao.buildItemFromId(id.toString()));
+                    items.add(itemDao.getItemFromId(id.toString()));
                 }
             }
         } catch (Exception e) {

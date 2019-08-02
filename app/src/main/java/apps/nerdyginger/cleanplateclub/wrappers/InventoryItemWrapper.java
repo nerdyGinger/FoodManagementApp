@@ -9,6 +9,7 @@ import java.util.List;
 
 import apps.nerdyginger.cleanplateclub.DatabaseHelper;
 import apps.nerdyginger.cleanplateclub.UserCustomDatabase;
+import apps.nerdyginger.cleanplateclub.dao.AllergyItemJoinDao;
 import apps.nerdyginger.cleanplateclub.dao.CategoryDao;
 import apps.nerdyginger.cleanplateclub.dao.FlavorDao;
 import apps.nerdyginger.cleanplateclub.dao.ItemDao;
@@ -16,6 +17,8 @@ import apps.nerdyginger.cleanplateclub.dao.UnitDao;
 import apps.nerdyginger.cleanplateclub.dao.UnitSystemDao;
 import apps.nerdyginger.cleanplateclub.dao.UserInventoryDao;
 import apps.nerdyginger.cleanplateclub.dao.UserItemDao;
+import apps.nerdyginger.cleanplateclub.models.Allergy;
+import apps.nerdyginger.cleanplateclub.models.AllergyItemJoin;
 import apps.nerdyginger.cleanplateclub.models.Item;
 import apps.nerdyginger.cleanplateclub.models.Unit;
 import apps.nerdyginger.cleanplateclub.models.UserInventory;
@@ -111,9 +114,13 @@ public class InventoryItemWrapper {
         } else {
             ItemDao itemDao = new ItemDao(context);
             Item item = itemDao.getItemFromId(String.valueOf(inventoryItem.getItemId()));
+            AllergyItemJoinDao allergyItemJoinDao = new AllergyItemJoinDao(context);
             this.itemCategory = categoryDao.getCategoryName(String.valueOf(item.getCategory()));
             this.itemFlavor = flavorDao.getFlavorName(String.valueOf(item.getFlavor()));
-            this.itemAllergies = item.getAllergy();
+            List<Allergy> allergies = allergyItemJoinDao.getAllergiesByItem(itemId);
+            for (int i=0; i<allergies.size(); i++) {
+                this.itemAllergies.add(allergies.get(i).getName());
+            }
         }
     }
 }

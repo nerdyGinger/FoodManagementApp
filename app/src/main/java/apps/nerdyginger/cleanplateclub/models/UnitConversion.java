@@ -1,5 +1,10 @@
 package apps.nerdyginger.cleanplateclub.models;
 
+/*
+    Class object for the UnitConversion DB table. This table shouldn't be used,
+    since all conversions should be handled through the DAO, but it is here
+    for the sake of... standards, I guess?
+ */
 public class UnitConversion {
     private int _ID;
     private int fromUnitId;

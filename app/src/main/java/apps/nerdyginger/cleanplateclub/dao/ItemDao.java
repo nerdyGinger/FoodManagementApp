@@ -93,7 +93,7 @@ public class ItemDao {
     }
 
     public String getItemId(String name) {
-        String sql = "Select _ID from Item where name = ?";
+        String sql = "Select rowid from Item where name = ?";
         return runQuerySingle(sql, new String[] {name}, "rowid");
     }
 }

@@ -12,7 +12,7 @@ import java.io.InputStream;
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static String ASSETS_PATH = "databases";
     private static String DATABASE_NAME = "food.sqlite3";
-    private static int DATABASE_VERSION = 1;
+    private static int DATABASE_VERSION = 2;
     private Context mContext;
     private SharedPreferences preferences;
 

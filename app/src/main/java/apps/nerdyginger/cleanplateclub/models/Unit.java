@@ -5,6 +5,7 @@ public class Unit {
     private String fullName;
     private String abbreviation;
     private int systemId;
+    private String type;
 
     public int get_ID() {
         return _ID;
@@ -38,10 +39,19 @@ public class Unit {
         this.systemId = systemId;
     }
 
-    public Unit(int _ID, String fullName, String abbreviation, int systemId) {
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public Unit(int _ID, String fullName, String abbreviation, int systemId, String type) {
         this._ID = _ID;
         this.fullName = fullName;
         this.abbreviation = abbreviation;
         this.systemId = systemId;
+        this.type = type;
     }
 }

@@ -83,13 +83,13 @@ public class DatabaseTest {
     @Test
     public void rawSQLiteTest() throws Exception {
         SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM Allergy WHERE _ID = ?", new String[] {"1"});
+        Cursor cursor = db.rawQuery("SELECT * FROM Item WHERE rowid = ?", new String[] {"1"});
         if (cursor.getCount() > 0) {
             cursor.moveToFirst();
         }
         String output = cursor.getString(cursor.getColumnIndex("name"));
         cursor.close();
-        Assert.assertEquals("Peanuts", output);
+        Assert.assertEquals("Pillsbury Golden Layer Buttermilk Biscuits", output);
     }
 
     @Test
@@ -101,7 +101,7 @@ public class DatabaseTest {
         Assert.assertEquals("Sweet", flavorName);
         Assert.assertEquals("Dairy", categoryName);
         Assert.assertEquals("Peanuts", allergyName);
-        Assert.assertEquals("Pioneer Woman's Glazed Donuts", nutritionName);
+        Assert.assertEquals("", nutritionName);
     }
 
     @Test
