@@ -21,7 +21,7 @@ public class UnitDao {
     public Unit getUnitById(String id) {
         SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
         String sql = "Select * from Unit where _ID = ?";
-        String fullName = "", abbrev = "";
+        String fullName = "", abbrev = "", type = "";
         int systemId = 0;
         Cursor cursor = db.rawQuery(sql, new String[] {id});
         try {
@@ -31,13 +31,14 @@ public class UnitDao {
             fullName = cursor.getString(cursor.getColumnIndex("fullName"));
             abbrev = cursor.getString(cursor.getColumnIndex("abbreviation"));
             systemId = cursor.getInt(cursor.getColumnIndex("systemId"));
+            type = cursor.getString(cursor.getColumnIndex("type"));
         } catch (Exception e) {
             Log.e("Database Error", e.toString());
         } finally {
             cursor.close();
             db.close();
         }
-        return new Unit(Integer.parseInt(id), fullName, abbrev, systemId);
+        return new Unit(Integer.parseInt(id), fullName, abbrev, systemId, type);
     }
 
     public List<Unit> getAllUnits() {
@@ -51,8 +52,9 @@ public class UnitDao {
                 int id = cursor.getInt(cursor.getColumnIndex("_ID"));
                 String fullName = cursor.getString(cursor.getColumnIndex("fullName"));
                 String abbrev = cursor.getString(cursor.getColumnIndex("abbreviation"));
+                String type = cursor.getString(cursor.getColumnIndex("type"));
                 int systemId = cursor.getInt(cursor.getColumnIndex("systemId"));
-                units.add(new Unit(id, fullName, abbrev, systemId));
+                units.add(new Unit(id, fullName, abbrev, systemId, type));
                 cursor.moveToNext();
             }
         } catch (Exception e) {
