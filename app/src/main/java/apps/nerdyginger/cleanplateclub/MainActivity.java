@@ -16,7 +16,8 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
                                                                RecipesFragment.OnFragmentInteractionListener,
                                                                InventoryFragment.OnFragmentInteractionListener,
                                                                ListsFragment.OnFragmentInteractionListener,
-                                                               TipsFragment.OnFragmentInteractionListener {
+                                                               TipsFragment.OnFragmentInteractionListener,
+                                                               AddInventoryDialog.AddInventoryDialogListener {
     //This is the main activity (fittingly named, ya?) that handles the interactions from the
     //main tabbed screens
     @Override
@@ -84,4 +85,17 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 
     @Override
     public void onFragmentInteraction(Uri uri) {    }
+
+    @Override
+    public void onAddInventoryDialogNegativeClick(AddInventoryDialog dialog) {
+        dialog.dismiss();
+    }
+
+    @Override
+    public void onAddInventoryDialogPositiveClick(AddInventoryDialog dialog, String itemName, int quantity,
+                                                  String unitName, int stockLevel) {
+        InventoryFragment frag = new InventoryFragment();
+        frag.addItem(itemName, quantity, unitName, stockLevel);
+        dialog.dismiss();
+    }
 }

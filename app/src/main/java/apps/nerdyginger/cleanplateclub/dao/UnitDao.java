@@ -41,6 +41,26 @@ public class UnitDao {
         return new Unit(Integer.parseInt(id), fullName, abbrev, systemId, type);
     }
 
+    public List<String> getAllUnitNames() {
+        SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
+        String sql = "Select fullName from Unit";
+        Cursor cursor = db.rawQuery(sql, new String[] {});
+        List<String> names = new ArrayList<>();
+        try {
+            cursor.moveToFirst();
+            while( !cursor.isAfterLast()) {
+                names.add(cursor.getString(cursor.getColumnIndex("fullName")));
+                cursor.moveToNext();
+            }
+        } catch (Exception e) {
+            Log.e("Database Error", e.toString());
+        } finally {
+            cursor.close();
+            db.close();
+        }
+        return names;
+    }
+
     public List<Unit> getAllUnits() {
         SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
         String sql = "Select * from Unit";

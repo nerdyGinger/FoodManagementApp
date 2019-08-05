@@ -69,6 +69,25 @@ public class ItemDao {
         return items;
     }
 
+    public List<String> getAllItemNames() {
+        SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT name FROM Item", new String[] {});
+        List<String> names = new ArrayList<>();
+        try {
+            cursor.moveToFirst();
+            while ( !cursor.isAfterLast()) {
+                names.add(cursor.getString(cursor.getColumnIndex("name")));
+                cursor.moveToNext();
+            }
+        } catch (Exception e) {
+            Log.e("Database Error", e.toString());
+        } finally {
+            cursor.close();
+            db.close();
+        }
+        return names;
+    }
+
     private String runQuerySingle(String sql, String[] params, String column) {
         SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
         Cursor cursor = db.rawQuery(sql, params);
