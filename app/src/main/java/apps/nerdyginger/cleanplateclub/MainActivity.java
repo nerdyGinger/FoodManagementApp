@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -95,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
     public void onAddInventoryDialogPositiveClick(AddInventoryDialog dialog, String itemName, int quantity,
                                                   String unitName, int stockLevel) {
         InventoryFragment frag = new InventoryFragment();
-        frag.addItem(itemName, quantity, unitName, stockLevel);
+        frag.addItem(getApplicationContext(), itemName, quantity, unitName, stockLevel);
         dialog.dismiss();
     }
 }

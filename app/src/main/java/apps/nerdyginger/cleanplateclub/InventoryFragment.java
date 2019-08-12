@@ -1,6 +1,7 @@
 package apps.nerdyginger.cleanplateclub;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import androidx.room.Room;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -32,6 +34,9 @@ public class InventoryFragment extends Fragment {
     private UserCustomDatabase userDatabase;
     private OnFragmentInteractionListener mListener;
     private AddInventoryDialog addItemDialog;
+    private SharedPreferences userPreferences;
+    private Context context;
+    private List<UserInventory> data;
 
     public InventoryFragment() {
         // Required empty public constructor
@@ -40,19 +45,36 @@ public class InventoryFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        userPreferences = context.getSharedPreferences(context.getPackageName() + "userPreferences", Context.MODE_PRIVATE);
+
+        //currently in userPreferences: String("unitSystemId", "3");
+
     }
 
-    public void addItem(String itemName, int quantity, String unitName, int stockLevel) {
-        UserInventoryDao dao = userDatabase.getUserInventoryDao();
-        UserInventory item = new UserInventory();
-        /*Uncomment when deletion is also set up 
+
+    public void addItem(final Context mContext, String itemName, int quantity, final String unitName, int stockLevel) {
+        if (userDatabase == null) {
+        userDatabase = Room.databaseBuilder(mContext, UserCustomDatabase.class, "userDatabase")
+                .fallbackToDestructiveMigration() //don't do this in production!!!
+                .build();
+            userPreferences = mContext.getSharedPreferences(mContext.getPackageName() + "userPreferences", Context.MODE_PRIVATE);
+        }
+        final UserInventory item = new UserInventory();
+        //Uncomment when deletion is also set up
         item.setItemName(itemName);
         if (quantity != 0) {
             item.setQuantity(quantity);
         }
-        UnitDao unitDao = new UnitDao(getContext());
-        //TODO: Figure out how to connect UnitId to spinner
-        item.setMaxQuantity(quantity * 100 / stockLevel);*/
+        item.setMaxQuantity(quantity * 100 / stockLevel);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                UserInventoryDao dao = userDatabase.getUserInventoryDao();
+                final UnitDao unitDao = new UnitDao(mContext);
+                item.setUnit(unitDao.getUnitIdByNameAndSystem(unitName, userPreferences.getString("unitSystemId", "1")));
+                dao.insert(item);
+            }
+        }).start();
     }
 
     @Override
@@ -73,22 +95,15 @@ public class InventoryFragment extends Fragment {
 
         // Get inventory data
         if (userDatabase == null) {
-            userDatabase = Room.databaseBuilder(Objects.requireNonNull(getContext()), UserCustomDatabase.class, "userDatabase")
+            userDatabase = Room.databaseBuilder(context, UserCustomDatabase.class, "userDatabase")
                     .fallbackToDestructiveMigration() //don't do this in production!!!
                     .build();
         }
         final UserInventoryDao inventoryDao = userDatabase.getUserInventoryDao();
-        final List[] dataList = new List[]{new ArrayList<>()};
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                dataList[0] = inventoryDao.getAllInventoryItems();
-            }
-        }).start();
 
         // Fill in the RecyclerView with inventory data
         RecyclerView rv = view.findViewById(R.id.inventoryRecycler);
-        rv.addItemDecoration(new DividerItemDecoration(Objects.requireNonNull(this.getContext()), LinearLayoutManager.VERTICAL));
+        rv.addItemDecoration(new DividerItemDecoration(context, LinearLayoutManager.VERTICAL));
         rv.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         rv.setLayoutManager(llm);
@@ -103,8 +118,13 @@ public class InventoryFragment extends Fragment {
                 return true;
             }
         };
-        InventoryListAdapter adapter = new InventoryListAdapter(listener);
-        adapter.updateData(dataList[0]);
+        final InventoryListAdapter adapter = new InventoryListAdapter(listener);new Thread(new Runnable() {
+            @Override
+            public void run() {
+                data = inventoryDao.getAllInventoryItems();
+            }
+        }).start();
+        adapter.updateData(data);
         rv.setAdapter(adapter);
 
         return view;
@@ -113,6 +133,7 @@ public class InventoryFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        this.context = context;
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
         } else {

@@ -85,4 +85,45 @@ public class UnitDao {
         }
         return units;
     }
+
+    public List<String> getAllUnitNamesBySystemId(String systemId) {
+        SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
+        String sql = "Select * from Unit where systemId = ?";
+        Cursor cursor = db.rawQuery(sql, new String[] {systemId});
+        List<String> units = new ArrayList<>();
+        try {
+            cursor.moveToFirst();
+            while ( !cursor.isAfterLast()) {
+                String fullName = cursor.getString(cursor.getColumnIndex("fullName"));
+                units.add(fullName);
+                cursor.moveToNext();
+            }
+        } catch (Exception e) {
+            Log.e("Database Error", e.toString());
+        } finally {
+            cursor.close();
+            db.close();
+        }
+        return units;
+    }
+
+    public String getUnitIdByNameAndSystem(String unitName, String systemId) {
+        SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
+        String sql = "Select _ID from Unit where fullName = ? and systemId = ?";
+        Cursor cursor = db.rawQuery(sql, new String[] {unitName, systemId});
+        int unitId = 0;
+        try {
+
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+            }
+            unitId = cursor.getInt(cursor.getColumnIndex("_ID"));
+        } catch (Exception e) {
+            Log.e("Database Error", e.toString());
+        } finally {
+            cursor.close();
+            db.close();
+        }
+        return String.valueOf(unitId);
+    }
 }
