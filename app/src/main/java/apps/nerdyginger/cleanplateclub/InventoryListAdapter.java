@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -55,15 +56,16 @@ public class InventoryListAdapter extends RecyclerView.Adapter<RecyclerView.View
         myListener = listener;
     }
 
+    @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         switch (viewType) {
             case 1:
-                View v = LayoutInflater.from(context).inflate(R.layout.inventory_list_trackable, parent, false);
+                View v = LayoutInflater.from(context).inflate(R.layout.inventory_list_item, parent, false);
                 return new RowViewHolder(v, myListener);
             case 2:
-                View view = LayoutInflater.from(context).inflate(R.layout.inventory_list_item, parent, false);
+                View view = LayoutInflater.from(context).inflate(R.layout.inventory_list_trackable, parent, false);
                 return new LifebarViewHolder(view, myListener);
         }
         View view = LayoutInflater.from(context).inflate(R.layout.inventory_list_item, parent, false);

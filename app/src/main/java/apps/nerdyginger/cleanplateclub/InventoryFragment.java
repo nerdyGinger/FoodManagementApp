@@ -8,6 +8,9 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,6 +40,7 @@ public class InventoryFragment extends Fragment {
     private SharedPreferences userPreferences;
     private Context context;
     private List<UserInventory> data;
+    private InventoryViewModel inventoryViewModel;
 
     public InventoryFragment() {
         // Required empty public constructor
@@ -118,15 +122,15 @@ public class InventoryFragment extends Fragment {
                 return true;
             }
         };
-        final InventoryListAdapter adapter = new InventoryListAdapter(listener);new Thread(new Runnable() {
-            @Override
-            public void run() {
-                data = inventoryDao.getAllInventoryItems();
-            }
-        }).start();
-        adapter.updateData(data);
+        final InventoryListAdapter adapter = new InventoryListAdapter(listener);
         rv.setAdapter(adapter);
-
+        inventoryViewModel = ViewModelProviders.of(this).get(InventoryViewModel.class);
+        inventoryViewModel.getInventoryList().observe(this, new Observer<List<UserInventory>>() {
+            @Override
+            public void onChanged(List<UserInventory> userInventories) {
+                adapter.updateData(userInventories);
+            }
+        });
         return view;
     }
 

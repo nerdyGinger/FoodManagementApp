@@ -1,5 +1,6 @@
 package apps.nerdyginger.cleanplateclub.dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -23,6 +24,9 @@ public interface UserInventoryDao {
 
     @Query("SELECT * FROM inventory")
     List<UserInventory> getAllInventoryItems();
+
+    @Query("SELECT * FROM inventory")
+    LiveData<List<UserInventory>> getAllInventoryItemsAsLiveData();
 
     @Query("SELECT * FROM inventory WHERE _ID = :id")
     UserInventory getInventoryItemById(int id);
