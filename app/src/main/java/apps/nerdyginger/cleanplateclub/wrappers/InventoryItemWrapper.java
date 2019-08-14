@@ -2,6 +2,7 @@ package apps.nerdyginger.cleanplateclub.wrappers;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 
 import androidx.room.Room;
 
@@ -86,6 +87,10 @@ public class InventoryItemWrapper {
 
     public void setItemAllergies(List<String> itemAllergies) {
         this.itemAllergies = itemAllergies;
+    }
+
+    public InventoryItemWrapper() {
+        //empty constructor
     }
 
     public InventoryItemWrapper (Context context, int inventoryId) {

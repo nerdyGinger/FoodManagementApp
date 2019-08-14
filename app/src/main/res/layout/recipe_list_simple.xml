@@ -12,6 +12,9 @@
         android:layout_alignParentTop="true"
         android:textSize="16sp"
         android:textStyle="bold"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:maxEms="5"
         />
 
     <Button

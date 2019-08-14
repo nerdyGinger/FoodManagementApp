@@ -11,15 +11,22 @@
 
     <TextView
         android:id="@+id/item_name_trackable"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
+        android:layout_alignEnd="@+id/lifebar"
+        android:layout_marginEnd="55dp"
+        android:layout_alignParentStart="true"
+        android:gravity="start"
         android:textSize="16sp"
-        android:textStyle="bold"/>
+        android:textStyle="bold"
+        android:ellipsize="end"
+        android:maxLines="1"
+        />
 
     <ProgressBar
         android:id="@+id/lifebar"
-        android:layout_width="150dp"
+        android:layout_width="50dp"
         android:layout_height="wrap_content"
         android:layout_toStartOf="@+id/item_quantity_trackable"
         android:layout_marginEnd="20dp"

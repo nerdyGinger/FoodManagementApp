@@ -128,7 +128,7 @@ public class InventoryFragment extends Fragment {
         inventoryViewModel.getInventoryList().observe(this, new Observer<List<UserInventory>>() {
             @Override
             public void onChanged(List<UserInventory> userInventories) {
-                adapter.updateData(userInventories);
+                adapter.updateData(userInventories, context);
             }
         });
         return view;

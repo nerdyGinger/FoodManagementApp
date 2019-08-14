@@ -12,6 +12,9 @@
         android:layout_alignParentTop="true"
         android:textSize="16sp"
         android:textStyle="bold"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:maxLength="25"
         />
 
     <TextView
@@ -35,6 +38,7 @@
     <ImageView
         android:id="@+id/recipeIndicatorBarDetailed"
         android:layout_width="10dp"
+        android:src="@drawable/green_bar"
         android:layout_height="match_parent"
         android:layout_alignParentEnd="true"
         />

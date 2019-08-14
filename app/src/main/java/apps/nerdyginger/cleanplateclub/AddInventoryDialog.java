@@ -92,7 +92,7 @@ public class AddInventoryDialog extends DialogFragment {
                 int quantity = Integer.parseInt(quantityBox.getText().toString());
                 String unitName = unitSpinner.getSelectedItem().toString();
                 int stockLevel = stockMeter.getProgress();
-                if (name != "") {
+                if (!name.equals("")) {
                     //TODO: Refine logic for inventory additions
                     mListener.onAddInventoryDialogPositiveClick(AddInventoryDialog.this, name,
                             quantity, unitName, stockLevel);
