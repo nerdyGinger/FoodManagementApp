@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
@@ -131,6 +132,8 @@ public class InventoryFragment extends Fragment {
                 adapter.updateData(userInventories, context);
             }
         });
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new InventorySwipeDeleteCallback(adapter, context, inventoryViewModel));
+        itemTouchHelper.attachToRecyclerView(rv);
         return view;
     }
 

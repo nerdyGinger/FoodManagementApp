@@ -12,18 +12,25 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import apps.nerdyginger.cleanplateclub.dao.UnitDao;
+import apps.nerdyginger.cleanplateclub.models.Unit;
 import apps.nerdyginger.cleanplateclub.models.UserInventory;
 import apps.nerdyginger.cleanplateclub.wrappers.InventoryItemWrapper;
 
 public class InventoryListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private RecyclerViewClickListener myListener;
     private List<UserInventory> dataSet = new ArrayList<>();
-    private List<InventoryItemWrapper> itemWrappers = new ArrayList<>();
+    private List<Unit> itemUnits = new ArrayList<>();
     private TextView itemName, itemQuantity, itemNameLifebar, itemQuantityLifebar;
     private ProgressBar lifebar;
+    private UserInventory deletedItem;
+    private int deletedPosition;
+    private Context mContext;
 
     public class RowViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private RecyclerViewClickListener rowListener;
@@ -81,10 +88,10 @@ public class InventoryListAdapter extends RecyclerView.Adapter<RecyclerView.View
             case 1:
                 RowViewHolder rowHolder = (RowViewHolder) holder;
                 UserInventory item = dataSet.get(position);
-                InventoryItemWrapper wrapper = itemWrappers.get(position);
+                Unit unit = itemUnits.get(position);
                 itemName.setText(item.getItemName());
                 if (item.isQuantify()) { //check if item is actually quantified first
-                    itemQuantity.setText(item.getQuantity() + " " +  wrapper.getUnitAbbreviation());
+                    itemQuantity.setText(item.getQuantity() + " " +  unit.getAbbreviation());
                 } else {                 //otherwise, quantity needs to be empty string
                     itemQuantity.setText("");
                 }
@@ -92,27 +99,52 @@ public class InventoryListAdapter extends RecyclerView.Adapter<RecyclerView.View
             case 2:
                 LifebarViewHolder lifebarHolder = (LifebarViewHolder) holder;
                 UserInventory item2 = dataSet.get(position);
-                InventoryItemWrapper wrapper2 = itemWrappers.get(position);
+                Unit unit2 = itemUnits.get(position);
                 itemNameLifebar.setText(item2.getItemName());
-                itemQuantityLifebar.setText(item2.getQuantity() + " " + wrapper2.getUnitAbbreviation());
+                itemQuantityLifebar.setText(item2.getQuantity() + " " + unit2.getAbbreviation());
                 lifebar.setMax(item2.getMaxQuantity());
                 lifebar.setProgress(item2.getQuantity());
         }
     }
 
     public void updateData(List<UserInventory> data, final Context context) {
+        mContext = context;
+        UnitDao unitDao = new UnitDao(context);
         dataSet.clear();
         dataSet.addAll(data);
         notifyDataSetChanged();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for (int i=0; i<dataSet.size(); i++) {
-                    Log.e("_IDs", String.valueOf(dataSet.get(i).get_ID()));
-                    itemWrappers.add(new InventoryItemWrapper(context, dataSet.get(i).get_ID()));
-                }
-            }
-        }).start();
+        for (int i=0; i<dataSet.size(); i++) {
+            Log.e("_IDs", String.valueOf(dataSet.get(i).get_ID()));
+            itemUnits.add(unitDao.getUnitById(dataSet.get(i).getUnit()));
+        }
+    }
+
+    public UserInventory deleteItem(int position) {
+        deletedItem = dataSet.get(position);
+        deletedPosition = position;
+        dataSet.remove(position);
+        itemUnits.remove(position);
+
+        notifyItemRemoved(position);
+        //showUndoSnackBar();
+        return deletedItem;
+    }
+/*
+    private void showUndoSnackBar() {
+        View view = .findViewById(R.id.coo rdinator_layout);
+        Snackbar snackbar = Snackbar.make(view, R.string.snack_bar_text,
+                Snackbar.LENGTH_LONG);
+        snackbar.setAction("Undo delete item?", v -> undoDelete());
+        snackbar.show();
+    }*/
+
+    private void undoDelete() {
+        dataSet.add(deletedPosition, deletedItem);
+        notifyItemInserted(deletedPosition);
+    }
+
+    public Context getContext() {
+        return mContext;
     }
 
     public int getItemCount() {
