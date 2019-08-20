@@ -7,6 +7,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,6 +21,7 @@ import apps.nerdyginger.cleanplateclub.models.UserInventory;
 public class InventorySwipeDeleteCallback extends ItemTouchHelper.SimpleCallback {
     private InventoryListAdapter mAdapter;
     private InventoryViewModel mModel;
+    private Context mContext;
     private Drawable icon;
     private final ColorDrawable background;
 
@@ -32,14 +34,21 @@ public class InventorySwipeDeleteCallback extends ItemTouchHelper.SimpleCallback
     }
 
     @Override
-    public void onSwiped(RecyclerView.ViewHolder holder, int direction) {
+    public void onSwiped(@NonNull RecyclerView.ViewHolder holder, int direction) {
         int position = holder.getAdapterPosition();
-        UserInventory deletedItem = mAdapter.deleteItem(position);
-        mModel.deleteItem(deletedItem);
+        final UserInventory deletedItem = mAdapter.deleteItem(position);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                UserCustomDatabase db = UserCustomDatabase.getDatabase(mContext);
+                db.getUserInventoryDao().delete(deletedItem);
+            }
+        }).start();
+        //mModel.deleteItem(deletedItem);
     }
 
     @Override
-    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder holder, RecyclerView.ViewHolder holder2) {
+    public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder holder, @NonNull RecyclerView.ViewHolder holder2) {
         return true;
     }
 

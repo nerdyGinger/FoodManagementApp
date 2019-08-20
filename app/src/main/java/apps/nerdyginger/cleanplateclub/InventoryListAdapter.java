@@ -12,15 +12,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.snackbar.Snackbar;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import apps.nerdyginger.cleanplateclub.dao.UnitDao;
 import apps.nerdyginger.cleanplateclub.models.Unit;
 import apps.nerdyginger.cleanplateclub.models.UserInventory;
-import apps.nerdyginger.cleanplateclub.wrappers.InventoryItemWrapper;
 
 public class InventoryListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private RecyclerViewClickListener myListener;
@@ -30,7 +27,6 @@ public class InventoryListAdapter extends RecyclerView.Adapter<RecyclerView.View
     private ProgressBar lifebar;
     private UserInventory deletedItem;
     private int deletedPosition;
-    private Context mContext;
 
     public class RowViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private RecyclerViewClickListener rowListener;
@@ -66,6 +62,9 @@ public class InventoryListAdapter extends RecyclerView.Adapter<RecyclerView.View
         myListener = listener;
     }
 
+    //empty constructor
+    InventoryListAdapter() {}
+
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -78,13 +77,14 @@ public class InventoryListAdapter extends RecyclerView.Adapter<RecyclerView.View
                 View view = LayoutInflater.from(context).inflate(R.layout.inventory_list_trackable, parent, false);
                 return new LifebarViewHolder(view, myListener);
         }
+        //shouldn't happen
         View view = LayoutInflater.from(context).inflate(R.layout.inventory_list_item, parent, false);
         return new RowViewHolder(view, myListener);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-                switch(holder.getItemViewType()) {
+        switch(holder.getItemViewType()) {
             case 1:
                 RowViewHolder rowHolder = (RowViewHolder) holder;
                 UserInventory item = dataSet.get(position);
@@ -104,19 +104,20 @@ public class InventoryListAdapter extends RecyclerView.Adapter<RecyclerView.View
                 itemQuantityLifebar.setText(item2.getQuantity() + " " + unit2.getAbbreviation());
                 lifebar.setMax(item2.getMaxQuantity());
                 lifebar.setProgress(item2.getQuantity());
+                break;
         }
     }
 
     public void updateData(List<UserInventory> data, final Context context) {
-        mContext = context;
         UnitDao unitDao = new UnitDao(context);
         dataSet.clear();
+        itemUnits.clear();
         dataSet.addAll(data);
-        notifyDataSetChanged();
         for (int i=0; i<dataSet.size(); i++) {
-            Log.e("_IDs", String.valueOf(dataSet.get(i).get_ID()));
+            //Log.e("_IDs", String.valueOf(dataSet.get(i).get_ID()));
             itemUnits.add(unitDao.getUnitById(dataSet.get(i).getUnit()));
         }
+        notifyDataSetChanged();
     }
 
     public UserInventory deleteItem(int position) {
@@ -124,8 +125,9 @@ public class InventoryListAdapter extends RecyclerView.Adapter<RecyclerView.View
         deletedPosition = position;
         dataSet.remove(position);
         itemUnits.remove(position);
-
+        //notifyDataSetChanged();
         notifyItemRemoved(position);
+        notifyItemRangeChanged(position, getItemCount());
         //showUndoSnackBar();
         return deletedItem;
     }
@@ -140,11 +142,9 @@ public class InventoryListAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     private void undoDelete() {
         dataSet.add(deletedPosition, deletedItem);
+        //add back in the unit, as well
         notifyItemInserted(deletedPosition);
-    }
-
-    public Context getContext() {
-        return mContext;
+        notifyItemRangeChanged(deletedPosition, getItemCount());
     }
 
     public int getItemCount() {

@@ -42,9 +42,14 @@ public class InventoryFragment extends Fragment {
     private Context context;
     private List<UserInventory> data;
     private InventoryViewModel inventoryViewModel;
+    private InventoryListAdapter adapter = new InventoryListAdapter();
 
     public InventoryFragment() {
         // Required empty public constructor
+    }
+
+    public InventoryListAdapter getAdapter() {
+        return adapter;
     }
 
     @Override
@@ -101,7 +106,7 @@ public class InventoryFragment extends Fragment {
         // Get inventory data
         if (userDatabase == null) {
             userDatabase = Room.databaseBuilder(context, UserCustomDatabase.class, "userDatabase")
-                    .fallbackToDestructiveMigration() //don't do this in production!!!
+                    .fallbackToDestructiveMigration() //don't do this in production!!! //TODO: write user db migrations to remove destructive  migrations
                     .build();
         }
         final UserInventoryDao inventoryDao = userDatabase.getUserInventoryDao();
@@ -123,7 +128,7 @@ public class InventoryFragment extends Fragment {
                 return true;
             }
         };
-        final InventoryListAdapter adapter = new InventoryListAdapter(listener);
+        adapter = new InventoryListAdapter(listener);
         rv.setAdapter(adapter);
         inventoryViewModel = ViewModelProviders.of(this).get(InventoryViewModel.class);
         inventoryViewModel.getInventoryList().observe(this, new Observer<List<UserInventory>>() {
