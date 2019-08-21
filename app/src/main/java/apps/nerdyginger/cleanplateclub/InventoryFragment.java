@@ -8,6 +8,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
@@ -114,7 +115,6 @@ public class InventoryFragment extends Fragment {
         // Fill in the RecyclerView with inventory data
         RecyclerView rv = view.findViewById(R.id.inventoryRecycler);
         rv.addItemDecoration(new DividerItemDecoration(context, LinearLayoutManager.VERTICAL));
-        rv.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         rv.setLayoutManager(llm);
         RecyclerViewClickListener listener = new RecyclerViewClickListener() {
@@ -130,13 +130,24 @@ public class InventoryFragment extends Fragment {
         };
         adapter = new InventoryListAdapter(listener);
         rv.setAdapter(adapter);
+        //rv.setItemViewCacheSize(10);
+        /*new Thread(new Runnable() {
+            @Override
+            public void run() {
+                UserInventoryDao dao = UserCustomDatabase.getDatabase(context).getUserInventoryDao();
+                data = dao.getAllInventoryItems();
+            }
+        }).start();*/
+
         inventoryViewModel = ViewModelProviders.of(this).get(InventoryViewModel.class);
         inventoryViewModel.getInventoryList().observe(this, new Observer<List<UserInventory>>() {
             @Override
             public void onChanged(List<UserInventory> userInventories) {
+                data = userInventories;
                 adapter.updateData(userInventories, context);
             }
         });
+        //adapter.updateData(data, context);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new InventorySwipeDeleteCallback(adapter, context, inventoryViewModel));
         itemTouchHelper.attachToRecyclerView(rv);
         return view;

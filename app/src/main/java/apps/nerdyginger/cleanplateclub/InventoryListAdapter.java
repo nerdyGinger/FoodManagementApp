@@ -1,8 +1,6 @@
 package apps.nerdyginger.cleanplateclub;
 
 import android.content.Context;
-import android.text.Layout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,8 +21,8 @@ public class InventoryListAdapter extends RecyclerView.Adapter<RecyclerView.View
     private RecyclerViewClickListener myListener;
     private List<UserInventory> dataSet = new ArrayList<>();
     private List<Unit> itemUnits = new ArrayList<>();
-    private TextView itemName, itemQuantity, itemNameLifebar, itemQuantityLifebar;
-    private ProgressBar lifebar;
+    private TextView itemName, itemQuantity, itemNameLifeBar, itemQuantityLifeBar;
+    private ProgressBar lifeBar;
     private UserInventory deletedItem;
     private int deletedPosition;
 
@@ -42,13 +40,13 @@ public class InventoryListAdapter extends RecyclerView.Adapter<RecyclerView.View
         }
     }
 
-    public class LifebarViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class LifeBarViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private RecyclerViewClickListener rowListener;
-        LifebarViewHolder (View v, RecyclerViewClickListener listener) {
+        LifeBarViewHolder (View v, RecyclerViewClickListener listener) {
             super(v);
-            itemNameLifebar = v.findViewById(R.id.item_name_trackable);
-            itemQuantityLifebar = v.findViewById(R.id.item_quantity_trackable);
-            lifebar = v.findViewById(R.id.lifebar);
+            itemNameLifeBar = v.findViewById(R.id.item_name_trackable);
+            itemQuantityLifeBar = v.findViewById(R.id.item_quantity_trackable);
+            lifeBar = v.findViewById(R.id.lifebar);
             myListener = listener;
             v.setOnClickListener(this);
         }
@@ -60,6 +58,7 @@ public class InventoryListAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     InventoryListAdapter(RecyclerViewClickListener listener) {
         myListener = listener;
+        setHasStableIds(true);
     }
 
     //empty constructor
@@ -75,7 +74,7 @@ public class InventoryListAdapter extends RecyclerView.Adapter<RecyclerView.View
                 return new RowViewHolder(v, myListener);
             case 2:
                 View view = LayoutInflater.from(context).inflate(R.layout.inventory_list_trackable, parent, false);
-                return new LifebarViewHolder(view, myListener);
+                return new LifeBarViewHolder(view, myListener);
         }
         //shouldn't happen
         View view = LayoutInflater.from(context).inflate(R.layout.inventory_list_item, parent, false);
@@ -97,18 +96,19 @@ public class InventoryListAdapter extends RecyclerView.Adapter<RecyclerView.View
                 }
                 break;
             case 2:
-                LifebarViewHolder lifebarHolder = (LifebarViewHolder) holder;
+                LifeBarViewHolder lifebarHolder = (LifeBarViewHolder) holder;
                 UserInventory item2 = dataSet.get(position);
                 Unit unit2 = itemUnits.get(position);
-                itemNameLifebar.setText(item2.getItemName());
-                itemQuantityLifebar.setText(item2.getQuantity() + " " + unit2.getAbbreviation());
-                lifebar.setMax(item2.getMaxQuantity());
-                lifebar.setProgress(item2.getQuantity());
+                itemNameLifeBar.setText(item2.getItemName());
+                itemQuantityLifeBar.setText(item2.getQuantity() + " " + unit2.getAbbreviation());
+                lifeBar.setMax(item2.getMaxQuantity());
+                lifeBar.setProgress(item2.getQuantity());
                 break;
         }
     }
 
     public void updateData(List<UserInventory> data, final Context context) {
+        if (data == null) { return; }
         UnitDao unitDao = new UnitDao(context);
         dataSet.clear();
         itemUnits.clear();
@@ -147,6 +147,11 @@ public class InventoryListAdapter extends RecyclerView.Adapter<RecyclerView.View
         notifyItemRangeChanged(deletedPosition, getItemCount());
     }
 
+    public UserInventory getItemAtPosition(int position) {
+        return dataSet.get(position);
+    }
+
+    @Override
     public int getItemCount() {
         return dataSet.size();
     }
