@@ -25,13 +25,12 @@ import apps.nerdyginger.cleanplateclub.dao.InventoryHelperDao;
 import apps.nerdyginger.cleanplateclub.dao.ItemDao;
 import apps.nerdyginger.cleanplateclub.dao.NutritionDao;
 import apps.nerdyginger.cleanplateclub.dao.RecipeDao;
-import apps.nerdyginger.cleanplateclub.dao.UserInventoryDao;
+import apps.nerdyginger.cleanplateclub.dao.UserInventoryItemDao;
 import apps.nerdyginger.cleanplateclub.dao.UserItemDao;
 import apps.nerdyginger.cleanplateclub.dao.UserNutritionDao;
 import apps.nerdyginger.cleanplateclub.dao.UserRecipeDao;
 import apps.nerdyginger.cleanplateclub.models.Item;
-import apps.nerdyginger.cleanplateclub.models.Recipe;
-import apps.nerdyginger.cleanplateclub.models.UserInventory;
+import apps.nerdyginger.cleanplateclub.models.UserInventoryItem;
 import apps.nerdyginger.cleanplateclub.models.UserItem;
 import apps.nerdyginger.cleanplateclub.models.UserNutrition;
 import apps.nerdyginger.cleanplateclub.models.UserRecipe;
@@ -48,7 +47,7 @@ public class DatabaseTest {
     private UserItemDao userItemDao;
     private UserRecipeDao userRecipeDao;
     private UserNutritionDao userNutritionDao;
-    private UserInventoryDao userInventoryDao;
+    private UserInventoryItemDao userInventoryDao;
 
     private Context context;
 
@@ -145,18 +144,18 @@ public class DatabaseTest {
         UserItem i1 = new UserItem();
         i1.setName("flour");
         userItemDao.insert(i1);
-        UserInventory invItem1 = new UserInventory();
+        UserInventoryItem invItem1 = new UserInventoryItem();
         invItem1.setItemId(i1.get_ID());
         invItem1.setItemName(i1.getName());
         userInventoryDao.insert(invItem1);
         List<Item> readonlyDbItems = itemDao.getAllItems();
         for (int i=0; i<readonlyDbItems.size(); i++) {
-            UserInventory temp = new UserInventory();
+            UserInventoryItem temp = new UserInventoryItem();
             temp.setItemId(readonlyDbItems.get(i).get_ID());
             temp.setItemName(readonlyDbItems.get(i).getName());
             userInventoryDao.insert(temp);
         }
-        List<UserInventory> inventoryList = userInventoryDao.getAllInventoryItems();
+        List<UserInventoryItem> inventoryList = userInventoryDao.getAllInventoryItems();
         InventoryHelperDao helperDao = new InventoryHelperDao(context);
         List<String> names = helperDao.getAllItemNames();
         for (int i=0; i<names.size(); i++) {

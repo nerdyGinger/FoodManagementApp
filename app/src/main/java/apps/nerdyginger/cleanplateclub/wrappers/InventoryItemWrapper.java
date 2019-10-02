@@ -1,14 +1,11 @@
 package apps.nerdyginger.cleanplateclub.wrappers;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.AsyncTask;
 
 import androidx.room.Room;
 
 import java.util.List;
 
-import apps.nerdyginger.cleanplateclub.DatabaseHelper;
 import apps.nerdyginger.cleanplateclub.UserCustomDatabase;
 import apps.nerdyginger.cleanplateclub.dao.AllergyItemJoinDao;
 import apps.nerdyginger.cleanplateclub.dao.CategoryDao;
@@ -16,13 +13,12 @@ import apps.nerdyginger.cleanplateclub.dao.FlavorDao;
 import apps.nerdyginger.cleanplateclub.dao.ItemDao;
 import apps.nerdyginger.cleanplateclub.dao.UnitDao;
 import apps.nerdyginger.cleanplateclub.dao.UnitSystemDao;
-import apps.nerdyginger.cleanplateclub.dao.UserInventoryDao;
+import apps.nerdyginger.cleanplateclub.dao.UserInventoryItemDao;
 import apps.nerdyginger.cleanplateclub.dao.UserItemDao;
 import apps.nerdyginger.cleanplateclub.models.Allergy;
-import apps.nerdyginger.cleanplateclub.models.AllergyItemJoin;
 import apps.nerdyginger.cleanplateclub.models.Item;
 import apps.nerdyginger.cleanplateclub.models.Unit;
-import apps.nerdyginger.cleanplateclub.models.UserInventory;
+import apps.nerdyginger.cleanplateclub.models.UserInventoryItem;
 import apps.nerdyginger.cleanplateclub.models.UserItem;
 
 public class InventoryItemWrapper {
@@ -95,8 +91,8 @@ public class InventoryItemWrapper {
 
     public InventoryItemWrapper (Context context, int inventoryId) {
         UserCustomDatabase customDb = Room.inMemoryDatabaseBuilder(context, UserCustomDatabase.class).build();
-        UserInventoryDao inventoryDao = customDb.getUserInventoryDao();
-        UserInventory inventoryItem = inventoryDao.getInventoryItemById(inventoryId);
+        UserInventoryItemDao inventoryDao = customDb.getUserInventoryDao();
+        UserInventoryItem inventoryItem = inventoryDao.getInventoryItemById(inventoryId);
         CategoryDao categoryDao = new CategoryDao(context);
         FlavorDao flavorDao = new FlavorDao(context);
         UnitSystemDao systemDao = new UnitSystemDao(context);

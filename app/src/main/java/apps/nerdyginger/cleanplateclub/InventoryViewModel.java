@@ -9,10 +9,10 @@ import androidx.lifecycle.LiveData;
 
 import java.util.List;
 
-import apps.nerdyginger.cleanplateclub.models.UserInventory;
+import apps.nerdyginger.cleanplateclub.models.UserInventoryItem;
 
 public class InventoryViewModel extends AndroidViewModel {
-    private final LiveData<List<UserInventory>> dataList;
+    private final LiveData<List<UserInventoryItem>> dataList;
     private UserCustomDatabase database;
 
     public InventoryViewModel(@NonNull Application application) {
@@ -21,15 +21,15 @@ public class InventoryViewModel extends AndroidViewModel {
         dataList = database.getUserInventoryDao().getAllInventoryItemsAsLiveData();
     }
 
-    public LiveData<List<UserInventory>> getInventoryList() {
+    public LiveData<List<UserInventoryItem>> getInventoryList() {
         return dataList;
     }
 
-    public void deleteItem(UserInventory item) {
+    public void deleteItem(UserInventoryItem item) {
         new deleteAsyncTask(database).execute(item);
     }
 
-    private static class deleteAsyncTask extends AsyncTask<UserInventory, Void, Void> {
+    private static class deleteAsyncTask extends AsyncTask<UserInventoryItem, Void, Void> {
         private UserCustomDatabase db;
 
         deleteAsyncTask(UserCustomDatabase database) {
@@ -37,7 +37,7 @@ public class InventoryViewModel extends AndroidViewModel {
         }
 
         @Override
-        protected Void doInBackground(final UserInventory... params) {
+        protected Void doInBackground(final UserInventoryItem... params) {
             db.getUserInventoryDao().delete(params[0]);
             return null;
         }

@@ -1,174 +1,142 @@
 package apps.nerdyginger.cleanplateclub;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import apps.nerdyginger.cleanplateclub.dao.UnitDao;
-import apps.nerdyginger.cleanplateclub.models.Unit;
-import apps.nerdyginger.cleanplateclub.models.UserInventory;
+import apps.nerdyginger.cleanplateclub.models.UserInventoryItem;
 
 public class InventoryListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private RecyclerViewClickListener myListener;
-    private List<UserInventory> dataSet = new ArrayList<>();
-    private List<Unit> itemUnits = new ArrayList<>();
-    private TextView itemName, itemQuantity, itemNameLifeBar, itemQuantityLifeBar;
-    private ProgressBar lifeBar;
-    private UserInventory deletedItem;
-    private int deletedPosition;
+    private List<UserInventoryItem> dataSet = new ArrayList<>();
+    private RecyclerViewClickListener mListener;
 
-    public class RowViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private RecyclerViewClickListener rowListener;
-        RowViewHolder  (View v, RecyclerViewClickListener listener) {
-            super(v);
-            itemName = v.findViewById(R.id.item_name);
-            itemQuantity = v.findViewById(R.id.item_quantity);
-            v.setOnClickListener(this);
+    public class SimpleItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        TextView itemName, itemQuantity;
+
+        SimpleItemViewHolder(View itemView) {
+            super(itemView);
+            itemName = itemView.findViewById(R.id.item_name);
+            itemQuantity = itemView.findViewById(R.id.item_quantity);
+            itemView.setOnClickListener(this);
         }
         @Override
         public void onClick(View view) {
-            myListener.onClick(view, getAdapterPosition());
+            mListener.onClick(view, getAdapterPosition());
         }
     }
 
     public class LifeBarViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private RecyclerViewClickListener rowListener;
-        LifeBarViewHolder (View v, RecyclerViewClickListener listener) {
-            super(v);
-            itemNameLifeBar = v.findViewById(R.id.item_name_trackable);
-            itemQuantityLifeBar = v.findViewById(R.id.item_quantity_trackable);
-            lifeBar = v.findViewById(R.id.lifebar);
-            myListener = listener;
-            v.setOnClickListener(this);
+        TextView itemName, itemQuantity;
+        ProgressBar lifeBar;
+
+        LifeBarViewHolder(View itemView) {
+            super(itemView);
+            itemName = itemView.findViewById(R.id.item_name_trackable);
+            itemQuantity = itemView.findViewById(R.id.item_quantity_trackable);
+            lifeBar = itemView.findViewById(R.id.lifebar);
+            itemView.setOnClickListener(this);
         }
         @Override
         public void onClick(View view) {
-            myListener.onClick(view, getAdapterPosition());
+            mListener.onClick(view, getAdapterPosition());
         }
     }
+
+    InventoryListAdapter() { }
 
     InventoryListAdapter(RecyclerViewClickListener listener) {
-        myListener = listener;
-        setHasStableIds(true);
+        mListener = listener;
     }
 
-    //empty constructor
-    InventoryListAdapter() {}
-
-    @NonNull
-    @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Context context = parent.getContext();
-        switch (viewType) {
-            case 1:
-                View v = LayoutInflater.from(context).inflate(R.layout.inventory_list_item, parent, false);
-                return new RowViewHolder(v, myListener);
-            case 2:
-                View view = LayoutInflater.from(context).inflate(R.layout.inventory_list_trackable, parent, false);
-                return new LifeBarViewHolder(view, myListener);
+    void updateData(List<UserInventoryItem> data) {
+        if (data == null) {
+            Log.e("-PRO TIPS!(and errors)-", "InventoryListAdapter data set was null");
+            return;
         }
-        //shouldn't happen
-        View view = LayoutInflater.from(context).inflate(R.layout.inventory_list_item, parent, false);
-        return new RowViewHolder(view, myListener);
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        switch(holder.getItemViewType()) {
-            case 1:
-                RowViewHolder rowHolder = (RowViewHolder) holder;
-                UserInventory item = dataSet.get(position);
-                Unit unit = itemUnits.get(position);
-                itemName.setText(item.getItemName());
-                if (item.isQuantify()) { //check if item is actually quantified first
-                    itemQuantity.setText(item.getQuantity() + " " +  unit.getAbbreviation());
-                } else {                 //otherwise, quantity needs to be empty string
-                    itemQuantity.setText("");
-                }
-                break;
-            case 2:
-                LifeBarViewHolder lifebarHolder = (LifeBarViewHolder) holder;
-                UserInventory item2 = dataSet.get(position);
-                Unit unit2 = itemUnits.get(position);
-                itemNameLifeBar.setText(item2.getItemName());
-                itemQuantityLifeBar.setText(item2.getQuantity() + " " + unit2.getAbbreviation());
-                lifeBar.setMax(item2.getMaxQuantity());
-                lifeBar.setProgress(item2.getQuantity());
-                break;
-        }
-    }
-
-    public void updateData(List<UserInventory> data, final Context context) {
-        if (data == null) { return; }
-        UnitDao unitDao = new UnitDao(context);
         dataSet.clear();
-        itemUnits.clear();
         dataSet.addAll(data);
-        for (int i=0; i<dataSet.size(); i++) {
-            //Log.e("_IDs", String.valueOf(dataSet.get(i).get_ID()));
-            itemUnits.add(unitDao.getUnitById(dataSet.get(i).getUnit()));
-        }
         notifyDataSetChanged();
     }
 
-    public UserInventory deleteItem(int position) {
-        deletedItem = dataSet.get(position);
-        deletedPosition = position;
+    UserInventoryItem getItemAtPosition(int position) {
+        return dataSet.get(position);
+    }
+
+    UserInventoryItem deleteItem(int position) {
+        UserInventoryItem deletedItem = dataSet.get(position);
+        int deletedPosition = position;
         dataSet.remove(position);
-        itemUnits.remove(position);
-        //notifyDataSetChanged();
         notifyItemRemoved(position);
-        notifyItemRangeChanged(position, getItemCount());
-        //showUndoSnackBar();
+        //notifyItemRangeChanged(position, getItemCount());
+        //showUndoSnackBar(); ??????
         return deletedItem;
     }
-/*
-    private void showUndoSnackBar() {
-        View view = .findViewById(R.id.coo rdinator_layout);
-        Snackbar snackbar = Snackbar.make(view, R.string.snack_bar_text,
-                Snackbar.LENGTH_LONG);
-        snackbar.setAction("Undo delete item?", v -> undoDelete());
-        snackbar.show();
-    }*/
 
-    private void undoDelete() {
-        dataSet.add(deletedPosition, deletedItem);
-        //add back in the unit, as well
-        notifyItemInserted(deletedPosition);
-        notifyItemRangeChanged(deletedPosition, getItemCount());
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        Context context = parent.getContext();
+        LayoutInflater inflater = LayoutInflater.from(context);
+
+        if (viewType == 1) {
+            View view = inflater.inflate(R.layout.inventory_list_item, parent, false);
+            return new SimpleItemViewHolder(view);
+        } else {
+            //inflate other layout
+            View view = inflater.inflate(R.layout.inventory_list_trackable, parent, false);
+            return new LifeBarViewHolder(view);
+        }
     }
 
-    public UserInventory getItemAtPosition(int position) {
-        return dataSet.get(position);
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+        UserInventoryItem item = dataSet.get(position);
+        if (viewHolder.getItemViewType() == 1) { // ---> item is not being tracked
+            SimpleItemViewHolder simpleHolder = (SimpleItemViewHolder) viewHolder;
+            TextView name = simpleHolder.itemName;
+            name.setText(item.getItemName());
+            TextView quantity = simpleHolder.itemQuantity;
+            if (item.isQuantify()) {    //check if item is quantified
+                quantity.setText(item.getQuantity() + " "); //TODO: add unit tracking
+            } else {
+                quantity.setText("");
+            }
+        } else { // -----------------------------------> user is tracking quantity
+            LifeBarViewHolder detailHolder = (LifeBarViewHolder) viewHolder;
+            TextView name = detailHolder.itemName;
+            name.setText(item.getItemName());
+            TextView quantity = detailHolder.itemQuantity;
+            quantity.setText(item.getQuantity() + " "); //TODO: add unit tracking
+            ProgressBar lifeBar = detailHolder.lifeBar;
+            lifeBar.setMax(item.getMaxQuantity());
+            lifeBar.setProgress(item.getQuantity());
+        }
     }
 
     @Override
     public int getItemCount() {
-        return dataSet.size();
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        UserInventory item = dataSet.get(position);
-        if (item.isMultiUnit()) {
-            //is quantified with target max
-            return 2;
-        } else {
-            return 1;
+        try {
+            return dataSet.size();
+        } catch (Exception e){
+            return 0;
         }
     }
 
     @Override
-    public long getItemId(int position) {
-        return position;
+    public int getItemViewType(int position) {
+        UserInventoryItem item = dataSet.get(position);
+        if (item.isMultiUnit()) {
+            // user is tracking quantities (has target max)
+            return 2;
+        } else {
+            return 1;
+        }
     }
 }

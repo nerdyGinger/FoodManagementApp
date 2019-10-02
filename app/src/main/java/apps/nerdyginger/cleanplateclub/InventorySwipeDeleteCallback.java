@@ -12,7 +12,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
-import apps.nerdyginger.cleanplateclub.models.UserInventory;
+import apps.nerdyginger.cleanplateclub.models.UserInventoryItem;
 
 /*
     Thanks where thanks is due -- I really appreciate the dev community!
@@ -29,14 +29,14 @@ public class InventorySwipeDeleteCallback extends ItemTouchHelper.SimpleCallback
         super(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
         mAdapter = adapter;
         mModel = viewModel;
-        icon = ContextCompat.getDrawable(context, R.drawable.ic_home); //TODO: get delete icon
-        background = new ColorDrawable(Color.RED);
+        icon = ContextCompat.getDrawable(context, R.drawable.ic_delete); //TODO: credit icons!
+        background = new ColorDrawable(Color.RED); // trash icon made by Kiranshastry on flaticon.com
     }
 
     @Override
     public void onSwiped(@NonNull RecyclerView.ViewHolder holder, int direction) {
         int position = holder.getAdapterPosition();
-        final UserInventory deletedItem = mAdapter.deleteItem(position);
+        final UserInventoryItem deletedItem = mAdapter.deleteItem(position);
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -44,7 +44,7 @@ public class InventorySwipeDeleteCallback extends ItemTouchHelper.SimpleCallback
                 db.getUserInventoryDao().delete(deletedItem);
             }
         }).start();
-        //mModel.deleteItem(deletedItem);
+        mModel.deleteItem(deletedItem);
     }
 
     @Override

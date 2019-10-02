@@ -9,30 +9,30 @@ import androidx.room.Update;
 
 import java.util.List;
 
-import apps.nerdyginger.cleanplateclub.models.UserInventory;
+import apps.nerdyginger.cleanplateclub.models.UserInventoryItem;
 
 @Dao
-public interface UserInventoryDao {
+public interface UserInventoryItemDao {
     @Insert
-    void insert(UserInventory... inventoryItems);
+    void insert(UserInventoryItem... inventoryItems);
 
     @Update
-    void update(UserInventory... inventoryItems);
+    void update(UserInventoryItem... inventoryItems);
 
     @Delete
-    void delete(UserInventory inventoryItem);
+    void delete(UserInventoryItem inventoryItem);
 
     @Query("SELECT * FROM inventory")
-    List<UserInventory> getAllInventoryItems();
+    List<UserInventoryItem> getAllInventoryItems();
 
     @Query("SELECT * FROM inventory")
-    LiveData<List<UserInventory>> getAllInventoryItemsAsLiveData();
+    LiveData<List<UserInventoryItem>> getAllInventoryItemsAsLiveData();
 
     @Query("SELECT * FROM inventory WHERE _ID = :id")
-    UserInventory getInventoryItemById(int id);
+    UserInventoryItem getInventoryItemById(int id);
 
     @Query("SELECT * FROM inventory WHERE itemName LIKE :name")
-    UserInventory getInventoryItemByName(String name);
+    UserInventoryItem getInventoryItemByName(String name);
 
     @Query("SELECT itemName FROM inventory WHERE _ID = :id")
     String getInventoryItemNameById(int id);

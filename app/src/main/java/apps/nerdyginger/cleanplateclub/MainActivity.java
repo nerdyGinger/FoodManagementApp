@@ -16,8 +16,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
                                                                RecipesFragment.OnFragmentInteractionListener,
                                                                InventoryFragment.OnFragmentInteractionListener,
                                                                ListsFragment.OnFragmentInteractionListener,
-                                                               TipsFragment.OnFragmentInteractionListener,
-                                                               AddInventoryDialog.AddInventoryDialogListener {
+                                                               TipsFragment.OnFragmentInteractionListener {
     private String fragmentTag;
     private Fragment currentFragment;
 
@@ -128,17 +127,4 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 
     @Override
     public void onFragmentInteraction(Uri uri) {    }
-
-    @Override
-    public void onAddInventoryDialogNegativeClick(AddInventoryDialog dialog) {
-        dialog.dismiss();
-    }
-
-    @Override
-    public void onAddInventoryDialogPositiveClick(AddInventoryDialog dialog, String itemName, int quantity,
-                                                  String unitName, int stockLevel) {
-        InventoryFragment frag = (InventoryFragment) currentFragment;
-        frag.addItem(getApplicationContext(), itemName, quantity, unitName, stockLevel);
-        dialog.dismiss();
-    }
 }

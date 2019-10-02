@@ -7,23 +7,12 @@
     android:layout_height="wrap_content"
     >
 
-    <TextView
-        android:id="@+id/addInventoryInfo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerInParent="true"
-        android:text="Add Item to Inventory"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        />
-
     <androidx.appcompat.widget.AppCompatAutoCompleteTextView
         android:id="@+id/addInventorySearch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:layout_below="@+id/addInventoryInfo"
+        android:layout_alignParentTop="true"
         android:layout_margin="15dp"
         android:hint="Search item name in database"
         />
@@ -62,11 +51,12 @@
             android:id="@+id/addInventoryQuantityInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Enter unit and stock level below to stock tracking"
-            android:layout_margin="15dp"
             android:layout_below="@+id/addInventoryQuantity"
-            android:layout_centerInParent="true"
-            />
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="15dp"
+            android:text="Enter unit and stock level below to stock tracking" />
 
         <Spinner
             android:id="@+id/addInventoryUnit"
@@ -79,8 +69,8 @@
 
         <SeekBar
             android:id="@+id/addInventoryStockMeter"
-            android:layout_width="20dp"
-            android:layout_height="120dp"
+            android:layout_width="5dp"
+            android:layout_height="150dp"
             android:max="100"
             android:progress="50"
             android:layout_alignParentEnd="true"
@@ -90,23 +80,5 @@
             android:layout_margin="15dp"
             />
     </RelativeLayout>
-
-    <Button
-        android:id="@+id/addInventoryCancelBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/quantityContainer"
-        android:text="Cancel"
-        />
-
-    <Button
-        android:id="@+id/addInventoryAddBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@+id/quantityContainer"
-        android:text="Add"
-        />
 
 </RelativeLayout>

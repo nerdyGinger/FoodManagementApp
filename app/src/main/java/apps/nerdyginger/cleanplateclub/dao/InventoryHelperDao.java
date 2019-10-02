@@ -8,12 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import apps.nerdyginger.cleanplateclub.UserCustomDatabase;
-import apps.nerdyginger.cleanplateclub.models.UserInventory;
+import apps.nerdyginger.cleanplateclub.models.UserInventoryItem;
 import apps.nerdyginger.cleanplateclub.models.UserItem;
 
 public class InventoryHelperDao {
     private UserItemDao userItemDao;
-    private UserInventoryDao inventoryDao;
+    private UserInventoryItemDao inventoryDao;
 
     public InventoryHelperDao(Context context) {
         UserCustomDatabase customDb = Room.inMemoryDatabaseBuilder(context, UserCustomDatabase.class).build();
@@ -46,7 +46,7 @@ public class InventoryHelperDao {
 
     public List<String> getReadOnlyItemNames() {
         List<String> justNames = new ArrayList<>();
-        List<UserInventory> inventoryItems = inventoryDao.getAllInventoryItems();
+        List<UserInventoryItem> inventoryItems = inventoryDao.getAllInventoryItems();
         for (int i=0; i<inventoryItems.size(); i++) {
             if ( ! inventoryItems.get(i).isUserAdded()) {
                 justNames.add(inventoryItems.get(i).getItemName());
@@ -66,7 +66,7 @@ public class InventoryHelperDao {
 
     public List<Integer> getReadOnlyItemIds() {
         List<Integer> justIds = new ArrayList<>();
-        List<UserInventory> inventoryItems = inventoryDao.getAllInventoryItems();
+        List<UserInventoryItem> inventoryItems = inventoryDao.getAllInventoryItems();
         for (int i=0; i<inventoryItems.size(); i++) {
             if ( ! inventoryItems.get(i).isUserAdded()) {
                 justIds.add(inventoryItems.get(i).getItemId());

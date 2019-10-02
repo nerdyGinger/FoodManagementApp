@@ -5,7 +5,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "inventory")
-public class UserInventory {
+public class UserInventoryItem {
     @PrimaryKey(autoGenerate = true)
     private int _ID;
 
