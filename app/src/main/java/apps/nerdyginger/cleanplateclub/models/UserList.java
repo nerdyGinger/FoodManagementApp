@@ -14,7 +14,7 @@ import apps.nerdyginger.cleanplateclub.UserCustomDatabase;
 import apps.nerdyginger.cleanplateclub.dao.UserItemDao;
 
 @Entity(tableName = "userLists")
-public class UserLists {
+public class UserList {
     @PrimaryKey(autoGenerate = true)
     private int _ID;
 

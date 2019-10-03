@@ -15,11 +15,11 @@ import apps.nerdyginger.cleanplateclub.models.UserInventoryItem;
 import apps.nerdyginger.cleanplateclub.models.UserItem;
 import apps.nerdyginger.cleanplateclub.models.UserNutrition;
 import apps.nerdyginger.cleanplateclub.models.UserRecipe;
-import apps.nerdyginger.cleanplateclub.models.UserRecipeBox;
+import apps.nerdyginger.cleanplateclub.models.UserRecipeBoxItem;
 import apps.nerdyginger.cleanplateclub.models.UserRecipeItemJoin;
 
 @Database(entities = {UserItem.class, UserRecipe.class, UserNutrition.class, UserInventoryItem.class, UserRecipeItemJoin.class,
-                        UserRecipeBox.class }, version = 3)
+                        UserRecipeBoxItem.class }, version = 3)
 @TypeConverters({Converters.class})
 public abstract class UserCustomDatabase extends RoomDatabase {
     public abstract UserItemDao getUserItemDao();
@@ -28,7 +28,7 @@ public abstract class UserCustomDatabase extends RoomDatabase {
     public abstract UserInventoryItemDao getUserInventoryDao();
     public abstract UserRecipeItemJoinDao getUserRecipeItemJoinDao();
     public abstract UserRecipeBoxDao getUserRecipeBoxDao();
-    //public abstract UserLists getUserLists();
+    //public abstract UserList getUserLists();
     private static UserCustomDatabase INSTANCE;
 
     public static UserCustomDatabase getDatabase(Context context) {

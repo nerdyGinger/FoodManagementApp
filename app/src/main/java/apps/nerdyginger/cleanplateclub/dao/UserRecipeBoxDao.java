@@ -9,25 +9,25 @@ import androidx.room.Update;
 
 import java.util.List;
 
-import apps.nerdyginger.cleanplateclub.models.UserRecipeBox;
+import apps.nerdyginger.cleanplateclub.models.UserRecipeBoxItem;
 
 @Dao
 public interface UserRecipeBoxDao {
     @Insert
-    void insert(UserRecipeBox... recipes);
+    void insert(UserRecipeBoxItem... recipes);
 
     @Update
-    void update(UserRecipeBox... recipes);
+    void update(UserRecipeBoxItem... recipes);
 
     @Delete
-    void delete(UserRecipeBox recipe);
+    void delete(UserRecipeBoxItem recipe);
 
-    @Query("Select * from recipeBox")
-    List<UserRecipeBox> getAllRecipes();
+    @Query("Select * from UserRecipeBoxItem")
+    List<UserRecipeBoxItem> getAllRecipes();
 
-    @Query("Select * from recipeBox")
-    LiveData<List<UserRecipeBox>> getAllRecipesAsLiveData();
+    @Query("Select * from UserRecipeBoxItem")
+    LiveData<List<UserRecipeBoxItem>> getAllRecipesAsLiveData();
 
-    @Query("Select * from recipeBox where _ID = :id")
-    UserRecipeBox getRecipeById(int id);
+    @Query("Select * from UserRecipeBoxItem where _ID = :id")
+    UserRecipeBoxItem getRecipeById(int id);
 }

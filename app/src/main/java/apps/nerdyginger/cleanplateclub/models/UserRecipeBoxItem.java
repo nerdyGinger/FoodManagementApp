@@ -4,7 +4,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "recipeBox")
-public class UserRecipeBox {
+public class UserRecipeBoxItem {
     @PrimaryKey(autoGenerate = true)
     private int _ID;
 

@@ -17,13 +17,6 @@
         android:maxEms="5"
         />
 
-    <Button
-        android:id="@+id/recipeMoreBtnSimple"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toStartOf="@+id/recipeIndicatorBarSimple"
-        />
-
     <ImageView
         android:id="@+id/recipeIndicatorBarSimple"
         android:contentDescription="Status indicator"

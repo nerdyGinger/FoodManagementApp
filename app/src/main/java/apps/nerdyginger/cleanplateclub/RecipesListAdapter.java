@@ -2,6 +2,7 @@ package apps.nerdyginger.cleanplateclub;
 
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,135 +13,126 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-import apps.nerdyginger.cleanplateclub.models.Recipe;
-import apps.nerdyginger.cleanplateclub.models.UserRecipe;
+import apps.nerdyginger.cleanplateclub.models.UserRecipeBoxItem;
 
 public class RecipesListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    RecyclerViewClickListener myListener;
-    boolean detailedList;
-    private List<Recipe> readOnlyDataSet = new ArrayList<>();
-    private List<UserRecipe> customDataSet = new ArrayList<>();
-    private TextView recipeNameSimple, recipeNameDetailed, recipeServingsDetailed, recipeCategoryDetailed;
+    private List<UserRecipeBoxItem> dataSet = new ArrayList<>();
+    private RecyclerViewClickListener mListener;
 
-    public RecipesListAdapter(RecyclerViewClickListener listener, boolean detailed) {
-        myListener = listener;
-        detailedList = detailed;
-    }
+    public class SimpleRecipeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        TextView recipeName;
+        //ImageView statusBar;
 
-    public class SimpleRowViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private RecyclerViewClickListener rowListener;
-        SimpleRowViewHolder  (View v, RecyclerViewClickListener listener) {
-            super(v);
-            recipeNameSimple = v.findViewById(R.id.recipeNameSimple);
-            v.setOnClickListener(this);
+        SimpleRecipeViewHolder(View itemView) {
+            super(itemView);
+            recipeName = itemView.findViewById(R.id.recipeNameSimple);
+            //statusBar = itemView.findViewById(R.id.recipeIndicatorBarSimple);
+            itemView.setOnClickListener(this);
         }
         @Override
         public void onClick(View view) {
-            myListener.onClick(view, getAdapterPosition());
+            mListener.onClick(view, getAdapterPosition());
         }
     }
 
-    public class DetailedRowViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private RecyclerViewClickListener rowListener;
-        DetailedRowViewHolder (View v, RecyclerViewClickListener listener) {
-            super(v);
-            recipeNameDetailed = v.findViewById(R.id.recipeNameDetailed);
-            recipeServingsDetailed = v.findViewById(R.id.recipeServingsDetailed);
-            recipeCategoryDetailed = v.findViewById(R.id.recipeCategoryDetailed);
-            v.setOnClickListener(this);
+    public class DetailedRecipeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        TextView recipeName, servings, category;
+        //ImageView statusBar;
+
+        DetailedRecipeViewHolder(View itemView) {
+            super(itemView);
+            recipeName = itemView.findViewById(R.id.recipeNameDetailed);
+            servings = itemView.findViewById(R.id.recipeServingsDetailed);
+            category = itemView.findViewById(R.id.recipeCategoryDetailed);
+            //statusBar = itemView.findViewById(R.id.recipeIndicatorBarDetailed);
+            itemView.setOnClickListener(this);
         }
         @Override
         public void onClick(View view) {
-            myListener.onClick(view, getAdapterPosition());
+            mListener.onClick(view, getAdapterPosition());
         }
+    }
+
+    RecipesListAdapter() { } //empty constructor
+
+    RecipesListAdapter(RecyclerViewClickListener listener) {
+        mListener = listener;
+    }
+
+    void updateData(List<UserRecipeBoxItem> data) {
+        if (data == null) {
+            Log.e("-PRO TIPS!(and errors)-", "InventoryListAdapter data set was null");
+            return;
+        }
+        dataSet.clear();
+        dataSet.addAll(data);
+        notifyDataSetChanged();
+    }
+
+    UserRecipeBoxItem getItemAtPosition(int position) {
+        return dataSet.get(position);
+    }
+
+    UserRecipeBoxItem deleteItem(int position) {
+        UserRecipeBoxItem deletedItem = dataSet.get(position);
+        int deletedPosition = position;
+        dataSet.remove(position);
+        notifyItemRemoved(position);
+        //notifyItemRangeChanged(position, getItemCount());
+        //showUndoSnackBar(); ??????
+        return deletedItem;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
-        switch (viewType) {
-            case 1:
-                View v = LayoutInflater.from(context).inflate(R.layout.recipe_list_simple, parent, false);
-                return new SimpleRowViewHolder(v, myListener);
-            case 2:
-                View view = LayoutInflater.from(context).inflate(R.layout.recipe_list_detailed, parent, false);
-                return new DetailedRowViewHolder(view, myListener);
+        LayoutInflater inflater = LayoutInflater.from(context);
+
+        if (viewType == 1) {
+            View view = inflater.inflate(R.layout.recipe_list_simple, parent, false);
+            return new SimpleRecipeViewHolder(view);
+        } else {
+            //inflate other layout
+            View view = inflater.inflate(R.layout.recipe_list_detailed, parent, false);
+            return new DetailedRecipeViewHolder(view);
         }
-        View view = LayoutInflater.from(context).inflate(R.layout.recipe_list_simple, parent, false);
-        return new SimpleRowViewHolder(view, myListener);
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if (isCustomRecipe(position)) {
-            UserRecipe recipe = customDataSet.get(position);
-            switch(holder.getItemViewType()) {
-                case 1:
-                    SimpleRowViewHolder simpleRowViewHolder = (SimpleRowViewHolder) holder;
-                    recipeNameSimple.setText(recipe.getName());
-                    break;
-                case 2:
-                    DetailedRowViewHolder detailedRowViewHolder = (DetailedRowViewHolder) holder;
-                    recipeNameDetailed.setText(recipe.getName());
-                    recipeServingsDetailed.setText(recipe.getRecipeYield());
-                    recipeCategoryDetailed.setText(recipe.getRecipeCategory());
-            }
-        }
-        else {
-            Recipe recipe = readOnlyDataSet.get(position-getCustomItemCount());
-            switch(holder.getItemViewType()) {
-                case 1:
-                    SimpleRowViewHolder simpleRowViewHolder = (SimpleRowViewHolder) holder;
-                    recipeNameSimple.setText(recipe.getName());
-                    break;
-                case 2:
-                    DetailedRowViewHolder detailedRowViewHolder = (DetailedRowViewHolder) holder;
-                    recipeNameDetailed.setText(recipe.getName());
-                    recipeServingsDetailed.setText(recipe.getRecipeYield());
-                    recipeCategoryDetailed.setText(recipe.getRecipeCategory());
-            }
+    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+        UserRecipeBoxItem item = dataSet.get(position);
+        if (viewHolder.getItemViewType() == 1) { // ---> viewing simple recipe list
+            SimpleRecipeViewHolder simpleHolder = (SimpleRecipeViewHolder) viewHolder;
+            TextView name = simpleHolder.recipeName;
+            name.setText(item.getItemName());
+        } else { // -----------------------------------> viewing detailed recipe list
+            DetailedRecipeViewHolder detailHolder = (DetailedRecipeViewHolder) viewHolder;
+            TextView name = detailHolder.recipeName;
+            name.setText(item.getItemName());
+            TextView servings = detailHolder.servings;
+            servings.setText(item.getServings());
+            TextView category = detailHolder.category;
+            category.setText(item.getCategory());
         }
     }
 
-    public void updateReadOnlyData(List<Recipe> data) {
-        readOnlyDataSet.clear();
-        readOnlyDataSet.addAll(data);
-        notifyDataSetChanged();
-    }
-
-    public void updateCustomData(List<UserRecipe> data) {
-        customDataSet.clear();
-        customDataSet.addAll(data);
-        notifyDataSetChanged();
-    }
-
+    @Override
     public int getItemCount() {
-        return customDataSet.size() + readOnlyDataSet.size();
-    }
-
-    public int getCustomItemCount() {
-        return customDataSet.size();
-    }
-
-    public int getReadOnlyItemCount() {
-        return readOnlyDataSet.size();
-    }
-
-    public boolean isCustomRecipe(int position) {
-        return (position < getCustomItemCount());
+        try {
+            return dataSet.size();
+        } catch (Exception e){
+            return 0;
+        }
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (detailedList) {
+        UserRecipeBoxItem item = dataSet.get(position);
+        if (false) { //TODO: change to check preferences
+            // user has set preference to detailed recipe list
             return 2;
         } else {
             return 1;
         }
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
     }
 }

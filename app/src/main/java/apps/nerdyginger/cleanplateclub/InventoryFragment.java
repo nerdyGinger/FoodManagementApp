@@ -80,12 +80,12 @@ public class InventoryFragment extends Fragment {
         return units;
     }
 
-    public void addItem(final Context mContext, String itemName, int quantity, final String unitName, int stockLevel) {
+    public void addItem(String itemName, int quantity, final String unitName, int stockLevel) {
         if (userDatabase == null) {
-            userDatabase = Room.databaseBuilder(mContext, UserCustomDatabase.class, "userDatabase")
+            userDatabase = Room.databaseBuilder(context, UserCustomDatabase.class, "userDatabase")
                 .fallbackToDestructiveMigration() //don't do this in production!!!
                 .build();
-            userPreferences = mContext.getSharedPreferences(mContext.getPackageName() + "userPreferences", Context.MODE_PRIVATE);
+            userPreferences = context.getSharedPreferences(context.getPackageName() + "userPreferences", Context.MODE_PRIVATE);
         }
         final UserInventoryItem item = new UserInventoryItem();
         //Uncomment when deletion is also set up
@@ -98,7 +98,7 @@ public class InventoryFragment extends Fragment {
             @Override
             public void run() {
                 UserInventoryItemDao dao = userDatabase.getUserInventoryDao();
-                final UnitDao unitDao = new UnitDao(mContext);
+                final UnitDao unitDao = new UnitDao(context);
                 item.setUnit(unitDao.getUnitIdByNameAndSystem(unitName, userPreferences.getString("unitSystemId", "1")));
                 dao.insert(item);
             }
@@ -145,7 +145,7 @@ public class InventoryFragment extends Fragment {
                         int stockLevel = stockMeter.getProgress();
                         if (!name.equals("")) {
                             //TODO: Refine logic for inventory additions (set level but not unit)
-                            addItem(context, name, quantity, unitName, stockLevel);
+                            addItem(name, quantity, unitName, stockLevel);
                         }
                         adapter.updateData(data);
                     }
@@ -164,7 +164,7 @@ public class InventoryFragment extends Fragment {
         // Get inventory data
         if (userDatabase == null) {
             userDatabase = Room.databaseBuilder(context, UserCustomDatabase.class, "userDatabase")
-                    .fallbackToDestructiveMigration() //don't do this in production!!! //TODO: write user db migrations to remove destructive  migrations
+                    .fallbackToDestructiveMigration() //don't do this in production!!! //TODO: write user db migrations to remove destructive migrations
                     .build();
         }
         final UserInventoryItemDao inventoryDao = userDatabase.getUserInventoryDao();

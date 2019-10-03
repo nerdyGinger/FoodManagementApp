@@ -8,29 +8,29 @@ import androidx.room.Update;
 
 import java.util.List;
 
-import apps.nerdyginger.cleanplateclub.models.UserLists;
+import apps.nerdyginger.cleanplateclub.models.UserList;
 
 @Dao
 public interface UserListsDao {
     @Insert
-    void insert(UserLists... userLists);
+    void insert(UserList... userLists);
 
     @Update
-    void update(UserLists... userLists);
+    void update(UserList... userLists);
 
     @Delete
-    void delete(UserLists... userList);
+    void delete(UserList... userList);
 
-    @Query("SELECT * FROM userLists WHERE _ID = :id")
-    UserLists getListById(int id);
+    @Query("SELECT * FROM UserList WHERE _ID = :id")
+    UserList getListById(int id);
 
-    @Query("SELECT * FROM userLists WHERE listName LIKE :name")
-    UserLists getListByName(String name);
+    @Query("SELECT * FROM UserList WHERE listName LIKE :name")
+    UserList getListByName(String name);
 
-    @Query("SELECT listName FROM userLists")
+    @Query("SELECT listName FROM UserList")
     List<String> getAllListNames();
 
-    @Query("SELECT * FROM userLists")
-    List<UserLists> getAllLists();
+    @Query("SELECT * FROM UserList")
+    List<UserList> getAllLists();
 
 }
