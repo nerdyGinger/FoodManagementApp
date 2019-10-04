@@ -104,11 +104,11 @@ public class RecipesListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (viewHolder.getItemViewType() == 1) { // ---> viewing simple recipe list
             SimpleRecipeViewHolder simpleHolder = (SimpleRecipeViewHolder) viewHolder;
             TextView name = simpleHolder.recipeName;
-            name.setText(item.getItemName());
+            name.setText(item.getRecipeName());
         } else { // -----------------------------------> viewing detailed recipe list
             DetailedRecipeViewHolder detailHolder = (DetailedRecipeViewHolder) viewHolder;
             TextView name = detailHolder.recipeName;
-            name.setText(item.getItemName());
+            name.setText(item.getRecipeName());
             TextView servings = detailHolder.servings;
             servings.setText(item.getServings());
             TextView category = detailHolder.category;
@@ -127,7 +127,7 @@ public class RecipesListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public int getItemViewType(int position) {
-        UserRecipeBoxItem item = dataSet.get(position);
+        UserRecipeBoxItem recipe = dataSet.get(position);
         if (false) { //TODO: change to check preferences
             // user has set preference to detailed recipe list
             return 2;

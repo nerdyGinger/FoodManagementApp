@@ -22,12 +22,12 @@ public interface UserRecipeBoxDao {
     @Delete
     void delete(UserRecipeBoxItem recipe);
 
-    @Query("Select * from UserRecipeBoxItem")
+    @Query("Select * from recipeBox")
     List<UserRecipeBoxItem> getAllRecipes();
 
-    @Query("Select * from UserRecipeBoxItem")
+    @Query("Select * from recipeBox")
     LiveData<List<UserRecipeBoxItem>> getAllRecipesAsLiveData();
 
-    @Query("Select * from UserRecipeBoxItem where _ID = :id")
+    @Query("Select * from recipeBox where _ID = :id")
     UserRecipeBoxItem getRecipeById(int id);
 }

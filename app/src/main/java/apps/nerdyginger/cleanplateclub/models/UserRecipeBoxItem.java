@@ -12,6 +12,12 @@ public class UserRecipeBoxItem {
 
     private int recipeId;
 
+    private String recipeName;
+
+    private String category;
+
+    private String servings;
+
     public int get_ID() {
         return _ID;
     }
@@ -34,5 +40,29 @@ public class UserRecipeBoxItem {
 
     public void setRecipeId(int recipeId) {
         this.recipeId = recipeId;
+    }
+
+    public String getRecipeName() {
+        return recipeName;
+    }
+
+    public void setRecipeName(String recipeName) {
+        this.recipeName = recipeName;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public String getServings() {
+        return servings;
+    }
+
+    public void setServings(String servings) {
+        this.servings = servings;
     }
 }

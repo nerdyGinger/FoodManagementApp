@@ -1,20 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".RecipesFragment">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <SearchView
+        android:id="@+id/recipesSearchBar"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hello, Rachel"/>
+        android:layout_alignParentTop="true"
+        />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recipesRecycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-
+        android:layout_below="@+id/recipesSearchBar"
         />
 
-</FrameLayout>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/recipesFloatingAddBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_gravity="bottom|end"
+        android:src="@drawable/plus96px"
+        android:elevation="0dp"
+        app:elevation="0dp"
+        app:backgroundTint="@color/colorAccent"
+        />
+
+</RelativeLayout>

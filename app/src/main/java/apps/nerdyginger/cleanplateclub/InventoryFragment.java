@@ -107,6 +107,45 @@ public class InventoryFragment extends Fragment {
         adapter.updateData(data);
     }
 
+    public void addItemBtnClick(AlertDialog.Builder dialogBuilder, View addItemView) {
+        final AutoCompleteTextView search = addItemView.findViewById(R.id.addInventorySearch);
+        List<String> names = getItems();
+        ArrayAdapter<String> namesAdapter = new ArrayAdapter<>(Objects.requireNonNull(getContext()),
+                android.R.layout.simple_dropdown_item_1line, names);
+        search.setAdapter(namesAdapter);
+        final EditText quantityBox = addItemView.findViewById(R.id.addInventoryQuantity);
+        final Spinner unitSpinner = addItemView.findViewById(R.id.addInventoryUnit);
+        List<String> units = getUnits();
+        ArrayAdapter<String> unitsAdapter = new ArrayAdapter<>(Objects.requireNonNull(getContext()), android.R.layout.simple_dropdown_item_1line, units);
+        unitSpinner.setAdapter(unitsAdapter);
+        final SeekBar stockMeter = addItemView.findViewById(R.id.addInventoryStockMeter);
+
+        dialogBuilder.setView(addItemView);
+        dialogBuilder.setTitle("Add Item");
+        dialogBuilder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String name = search.getText().toString();
+                int quantity = Integer.parseInt((quantityBox.getText().toString().equals("") ? "0" : quantityBox.getText().toString()));
+                String unitName = unitSpinner.getSelectedItem().toString();
+                int stockLevel = stockMeter.getProgress();
+                if (!name.equals("")) {
+                    //TODO: Refine logic for inventory additions (set level but not unit)
+                    addItem(name, quantity, unitName, stockLevel);
+                }
+                adapter.updateData(data);
+            }
+        });
+        dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // don't do anything
+            }
+        });
+        AlertDialog dialog = dialogBuilder.create();
+        dialog.show();
+    }
+
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -121,53 +160,16 @@ public class InventoryFragment extends Fragment {
                 //TODO: figure out how to hide soft keyboard on focus change (cause that's really annoying)
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
                 final View addItemView = inflater.inflate(R.layout.dialog_add_inventory_item, null);
-
-                final AutoCompleteTextView search = addItemView.findViewById(R.id.addInventorySearch);
-                List<String> names = getItems();
-                ArrayAdapter<String> namesAdapter = new ArrayAdapter<>(Objects.requireNonNull(getContext()),
-                        android.R.layout.simple_dropdown_item_1line, names);
-                search.setAdapter(namesAdapter);
-                final EditText quantityBox = addItemView.findViewById(R.id.addInventoryQuantity);
-                final Spinner unitSpinner = addItemView.findViewById(R.id.addInventoryUnit);
-                List<String> units = getUnits();
-                ArrayAdapter<String> unitsAdapter = new ArrayAdapter<>(Objects.requireNonNull(getContext()), android.R.layout.simple_dropdown_item_1line, units);
-                unitSpinner.setAdapter(unitsAdapter);
-                final SeekBar stockMeter = addItemView.findViewById(R.id.addInventoryStockMeter);
-
-                dialogBuilder.setView(addItemView);
-                dialogBuilder.setTitle("Add Item");
-                dialogBuilder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String name = search.getText().toString();
-                        int quantity = Integer.parseInt((quantityBox.getText().toString().equals("") ? "0" : quantityBox.getText().toString()));
-                        String unitName = unitSpinner.getSelectedItem().toString();
-                        int stockLevel = stockMeter.getProgress();
-                        if (!name.equals("")) {
-                            //TODO: Refine logic for inventory additions (set level but not unit)
-                            addItem(name, quantity, unitName, stockLevel);
-                        }
-                        adapter.updateData(data);
-                    }
-                });
-                dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // don't do anything
-                    }
-                });
-                AlertDialog dialog = dialogBuilder.create();
-                dialog.show();
+                addItemBtnClick(dialogBuilder, addItemView);
             }
         });
 
-        // Get inventory data
+        // Initialize user database
         if (userDatabase == null) {
             userDatabase = Room.databaseBuilder(context, UserCustomDatabase.class, "userDatabase")
                     .fallbackToDestructiveMigration() //don't do this in production!!! //TODO: write user db migrations to remove destructive migrations
                     .build();
         }
-        final UserInventoryItemDao inventoryDao = userDatabase.getUserInventoryDao();
 
         // Fill in the RecyclerView with inventory data
         RecyclerView rv = view.findViewById(R.id.inventoryRecycler);
@@ -189,6 +191,7 @@ public class InventoryFragment extends Fragment {
         adapter = new InventoryListAdapter(listener);
         rv.setAdapter(adapter);
 
+        // Get inventory data
         inventoryViewModel = ViewModelProviders.of(this).get(InventoryViewModel.class);
         inventoryViewModel.getInventoryList().observe(this, new Observer<List<UserInventoryItem>>() {
             @Override

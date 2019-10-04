@@ -19,7 +19,7 @@ import apps.nerdyginger.cleanplateclub.models.UserRecipeBoxItem;
 import apps.nerdyginger.cleanplateclub.models.UserRecipeItemJoin;
 
 @Database(entities = {UserItem.class, UserRecipe.class, UserNutrition.class, UserInventoryItem.class, UserRecipeItemJoin.class,
-                        UserRecipeBoxItem.class }, version = 3)
+                        UserRecipeBoxItem.class }, version = 4)
 @TypeConverters({Converters.class})
 public abstract class UserCustomDatabase extends RoomDatabase {
     public abstract UserItemDao getUserItemDao();
