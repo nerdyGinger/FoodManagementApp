@@ -34,4 +34,6 @@
         app:backgroundTint="@color/colorAccent"
         />
 
+    <include layout="@layout/fab_recipe_menu" />
+
 </RelativeLayout>

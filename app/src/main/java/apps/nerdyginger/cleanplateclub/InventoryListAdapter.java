@@ -86,7 +86,7 @@ public class InventoryListAdapter extends RecyclerView.Adapter<RecyclerView.View
         LayoutInflater inflater = LayoutInflater.from(context);
 
         if (viewType == 1) {
-            View view = inflater.inflate(R.layout.inventory_list_item, parent, false);
+            View view = inflater.inflate(R.layout.inventory_list_simple, parent, false);
             return new SimpleItemViewHolder(view);
         } else {
             //inflate other layout

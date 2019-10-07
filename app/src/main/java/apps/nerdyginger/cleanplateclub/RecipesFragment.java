@@ -16,6 +16,9 @@ import androidx.room.Room;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -30,6 +33,9 @@ public class RecipesFragment extends Fragment {
     private UserCustomDatabase userDatabase;
     private List<UserRecipeBoxItem> data;
     private Context context;
+    private TextView customLabel, browseLabel;
+    private FloatingActionButton addBtn, customBtn, browseBtn;
+    private boolean fabMenuIsOpen = false;
 
     public RecipesFragment() {
         // Required empty public constructor
@@ -47,13 +53,7 @@ public class RecipesFragment extends Fragment {
         View view =  inflater.inflate(R.layout.fragment_recipes, container, false);
 
         // Set up floating action button
-        FloatingActionButton addBtn = view.findViewById(R.id.recipesFloatingAddBtn);
-        addBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
+        setupFabMenu(view);
 
         // Initialize user database
         if (userDatabase == null) {
@@ -114,6 +114,44 @@ public class RecipesFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    private void setupFabMenu(View parentView) {
+        addBtn = parentView.findViewById(R.id.recipesFloatingAddBtn);
+        customBtn = parentView.findViewById(R.id.fabMenuCustomBtn);
+        customLabel = parentView.findViewById(R.id.fabMenuCustomLabel);
+        browseBtn = parentView.findViewById(R.id.fabMenuBrowseBtn);
+        browseLabel = parentView.findViewById(R.id.fabMenuBrowseLabel);
+        final Animation fab_open = AnimationUtils.loadAnimation(context, R.anim.fab_menu_open);
+        final Animation fab_close = AnimationUtils.loadAnimation(context, R.anim.fab_menu_close);
+        final Animation fab_clock = AnimationUtils.loadAnimation(context, R.anim.fab_icon_clockwise);
+        final Animation fab_anticlock = AnimationUtils.loadAnimation(context, R.anim.fab_icon_anticlockwise);
+
+        addBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (fabMenuIsOpen) {
+                    customLabel.setVisibility(View.INVISIBLE);
+                    browseLabel.setVisibility(View.INVISIBLE);
+                    customBtn.startAnimation(fab_close);
+                    browseBtn.startAnimation(fab_close);
+                    addBtn.startAnimation(fab_anticlock);
+                    customBtn.setClickable(false);
+                    browseBtn.setClickable(false);
+                    fabMenuIsOpen = false;
+                } else {
+                    customLabel.setVisibility(View.VISIBLE);
+                    browseLabel.setVisibility(View.VISIBLE);
+                    customBtn.startAnimation(fab_open);
+                    browseBtn.startAnimation(fab_open);
+                    addBtn.startAnimation(fab_clock);
+                    customBtn.setClickable(true);
+                    browseBtn.setClickable(true);
+                    fabMenuIsOpen = true;
+                }
+
+            }
+        });
     }
 
     public interface OnFragmentInteractionListener {
