@@ -119,6 +119,10 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
         transaction.commit();
     }
 
+    void setCurrentFragment(Fragment fragment) {
+        currentFragment = fragment;
+    }
+
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);

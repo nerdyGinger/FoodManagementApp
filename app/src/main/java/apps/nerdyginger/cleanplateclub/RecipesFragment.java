@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
@@ -19,6 +20,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -35,6 +37,7 @@ public class RecipesFragment extends Fragment {
     private Context context;
     private TextView customLabel, browseLabel;
     private FloatingActionButton addBtn, customBtn, browseBtn;
+    private Animation fab_open, fab_close, fab_clock, fab_anticlock;
     private boolean fabMenuIsOpen = false;
 
     public RecipesFragment() {
@@ -119,39 +122,63 @@ public class RecipesFragment extends Fragment {
     private void setupFabMenu(View parentView) {
         addBtn = parentView.findViewById(R.id.recipesFloatingAddBtn);
         customBtn = parentView.findViewById(R.id.fabMenuCustomBtn);
+        customBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(context, "Not implemented yet, sorry!", Toast.LENGTH_SHORT).show();
+            }
+        });
         customLabel = parentView.findViewById(R.id.fabMenuCustomLabel);
         browseBtn = parentView.findViewById(R.id.fabMenuBrowseBtn);
+        browseBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                transaction.replace(R.id.frame_container, new BrowseRecipeFragment());
+                transaction.addToBackStack(null);
+                closeFab();
+                transaction.commit();
+            }
+        });
         browseLabel = parentView.findViewById(R.id.fabMenuBrowseLabel);
-        final Animation fab_open = AnimationUtils.loadAnimation(context, R.anim.fab_menu_open);
-        final Animation fab_close = AnimationUtils.loadAnimation(context, R.anim.fab_menu_close);
-        final Animation fab_clock = AnimationUtils.loadAnimation(context, R.anim.fab_icon_clockwise);
-        final Animation fab_anticlock = AnimationUtils.loadAnimation(context, R.anim.fab_icon_anticlockwise);
+        fab_open = AnimationUtils.loadAnimation(context, R.anim.fab_menu_open);
+        fab_close = AnimationUtils.loadAnimation(context, R.anim.fab_menu_close);
+        fab_clock = AnimationUtils.loadAnimation(context, R.anim.fab_icon_clockwise);
+        fab_anticlock = AnimationUtils.loadAnimation(context, R.anim.fab_icon_anticlockwise);
 
         addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (fabMenuIsOpen) {
-                    customLabel.setVisibility(View.INVISIBLE);
-                    browseLabel.setVisibility(View.INVISIBLE);
-                    customBtn.startAnimation(fab_close);
-                    browseBtn.startAnimation(fab_close);
-                    addBtn.startAnimation(fab_anticlock);
-                    customBtn.setClickable(false);
-                    browseBtn.setClickable(false);
-                    fabMenuIsOpen = false;
+                    closeFab();
                 } else {
-                    customLabel.setVisibility(View.VISIBLE);
-                    browseLabel.setVisibility(View.VISIBLE);
-                    customBtn.startAnimation(fab_open);
-                    browseBtn.startAnimation(fab_open);
-                    addBtn.startAnimation(fab_clock);
-                    customBtn.setClickable(true);
-                    browseBtn.setClickable(true);
-                    fabMenuIsOpen = true;
+                    openFab();
                 }
 
             }
         });
+    }
+
+    private void openFab() {
+        customLabel.setVisibility(View.VISIBLE);
+        browseLabel.setVisibility(View.VISIBLE);
+        customBtn.startAnimation(fab_open);
+        browseBtn.startAnimation(fab_open);
+        addBtn.startAnimation(fab_clock);
+        customBtn.setClickable(true);
+        browseBtn.setClickable(true);
+        fabMenuIsOpen = true;
+    }
+
+    private void closeFab() {
+        customLabel.setVisibility(View.INVISIBLE);
+        browseLabel.setVisibility(View.INVISIBLE);
+        customBtn.startAnimation(fab_close);
+        browseBtn.startAnimation(fab_close);
+        addBtn.startAnimation(fab_anticlock);
+        customBtn.setClickable(false);
+        browseBtn.setClickable(false);
+        fabMenuIsOpen = false;
     }
 
     public interface OnFragmentInteractionListener {
