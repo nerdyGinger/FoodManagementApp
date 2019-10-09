@@ -1,4 +1,4 @@
-package apps.nerdyginger.cleanplateclub;
+package apps.nerdyginger.cleanplateclub.adapters;
 
 import android.content.Context;
 import android.util.Log;
@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
+import apps.nerdyginger.cleanplateclub.R;
+import apps.nerdyginger.cleanplateclub.RecyclerViewClickListener;
 import apps.nerdyginger.cleanplateclub.models.UserInventoryItem;
 
 public class InventoryListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -50,13 +52,13 @@ public class InventoryListAdapter extends RecyclerView.Adapter<RecyclerView.View
         }
     }
 
-    InventoryListAdapter() { }
+    public InventoryListAdapter() { }
 
-    InventoryListAdapter(RecyclerViewClickListener listener) {
+    public InventoryListAdapter(RecyclerViewClickListener listener) {
         mListener = listener;
     }
 
-    void updateData(List<UserInventoryItem> data) {
+    public void updateData(List<UserInventoryItem> data) {
         if (data == null) {
             Log.e("-PRO TIPS!(and errors)-", "InventoryListAdapter data set was null");
             return;
@@ -66,11 +68,11 @@ public class InventoryListAdapter extends RecyclerView.Adapter<RecyclerView.View
         notifyDataSetChanged();
     }
 
-    UserInventoryItem getItemAtPosition(int position) {
+    public UserInventoryItem getItemAtPosition(int position) {
         return dataSet.get(position);
     }
 
-    UserInventoryItem deleteItem(int position) {
+    public UserInventoryItem deleteItem(int position) {
         UserInventoryItem deletedItem = dataSet.get(position);
         int deletedPosition = position;
         dataSet.remove(position);

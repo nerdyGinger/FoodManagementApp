@@ -1,4 +1,4 @@
-package apps.nerdyginger.cleanplateclub;
+package apps.nerdyginger.cleanplateclub.adapters;
 
 
 import android.content.Context;
@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
+import apps.nerdyginger.cleanplateclub.R;
+import apps.nerdyginger.cleanplateclub.RecyclerViewClickListener;
 import apps.nerdyginger.cleanplateclub.models.UserRecipeBoxItem;
 
 public class RecipesListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -53,13 +55,13 @@ public class RecipesListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-    RecipesListAdapter() { } //empty constructor
+    public RecipesListAdapter() { } //empty constructor
 
-    RecipesListAdapter(RecyclerViewClickListener listener) {
+    public RecipesListAdapter(RecyclerViewClickListener listener) {
         mListener = listener;
     }
 
-    void updateData(List<UserRecipeBoxItem> data) {
+    public void updateData(List<UserRecipeBoxItem> data) {
         if (data == null) {
             Log.e("-PRO TIPS!(and errors)-", "InventoryListAdapter data set was null");
             return;

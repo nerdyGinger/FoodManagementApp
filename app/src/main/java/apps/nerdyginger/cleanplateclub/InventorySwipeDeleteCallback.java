@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import apps.nerdyginger.cleanplateclub.adapters.InventoryListAdapter;
 import apps.nerdyginger.cleanplateclub.models.UserInventoryItem;
 
 /*
