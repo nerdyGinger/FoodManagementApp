@@ -5,58 +5,48 @@
     android:layout_height="match_parent"
     >
 
-    <SearchView
-        android:id="@+id/browseRecipesSearchBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        />
-
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/browseRecipesSearchBar">
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
         <RelativeLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            >
 
-            <TextView
-                android:id="@+id/browseCategoryRecommended"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Recommended"
-                android:layout_alignParentTop="true"
-                android:layout_margin="10dp"
+            <ImageView
+                android:id="@+id/recipeCardImage"
+                android:contentDescription="Recipe Image"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:src="@drawable/ic_chef"
+                android:layout_margin="5dp"
                 />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/browseScrollOne"
-                android:layout_width="match_parent"
-                android:layout_height="75dp"
-                android:layout_below="@+id/browseCategoryRecommended"
-                android:layout_margin="10dp">
-
-            </androidx.recyclerview.widget.RecyclerView>
-
             <TextView
-                android:id="@+id/browseCategoryTwo"
-                android:layout_width="wrap_content"
+                android:id="@+id/recipeCardName"
+                android:layout_width="115dp"
                 android:layout_height="wrap_content"
-                android:text="Sample Category"
-                android:layout_below="@+id/browseScrollOne"
-                android:layout_margin="10dp"
+                android:layout_margin="5dp"
+                android:layout_toEndOf="@+id/recipeCardImage"
+                android:textSize="16sp"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:text="This is an example of a long recipe name"
                 />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:layout_width="match_parent"
-                android:layout_height="75dp"
-                android:layout_below="@+id/browseCategoryTwo"
-                android:layout_margin="10dp">
-
-            </androidx.recyclerview.widget.RecyclerView>
+            <TextView
+                android:layout_width="75dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_below="@+id/recipeCardName"
+                android:layout_alignEnd="@+id/recipeCardName"
+                android:gravity="end"
+                android:text="Category"
+                />
 
         </RelativeLayout>
 
-    </androidx.core.widget.NestedScrollView>
+    </androidx.cardview.widget.CardView>
 
 </RelativeLayout>
