@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:orientation="vertical" android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     >
 
     <androidx.cardview.widget.CardView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:elevation="15dp"
+        android:layout_margin="5dp"
+        >
 
         <RelativeLayout
             android:layout_width="wrap_content"
@@ -36,12 +39,15 @@
                 />
 
             <TextView
-                android:layout_width="75dp"
+                android:id="@+id/recipeCardCategory"
+                android:layout_width="115dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:layout_below="@+id/recipeCardName"
                 android:layout_alignEnd="@+id/recipeCardName"
+                android:layout_alignBottom="@+id/recipeCardImage"
                 android:gravity="end"
+                android:maxLines="1"
+                android:ellipsize="end"
                 android:text="Category"
                 />
 

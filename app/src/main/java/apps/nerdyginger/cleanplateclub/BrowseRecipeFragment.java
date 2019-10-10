@@ -13,7 +13,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import apps.nerdyginger.cleanplateclub.adapters.BrowseRecipesCategoryAdapter;
+import apps.nerdyginger.cleanplateclub.models.BrowseRecipeCategory;
+import apps.nerdyginger.cleanplateclub.models.BrowseRecipeItem;
 
 
 public class BrowseRecipeFragment extends Fragment {
@@ -36,12 +41,35 @@ public class BrowseRecipeFragment extends Fragment {
 
         RecyclerView categoriesRv = view.findViewById(R.id.browseRecipesRecycler);
         categoriesRv.addItemDecoration(new DividerItemDecoration(context, LinearLayoutManager.VERTICAL));
-        LinearLayoutManager llm = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        LinearLayoutManager llm = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         categoriesRv.setLayoutManager(llm);
-        categoriesRv.setAdapter(new BrowseRecipesCategoryAdapter());
+        categoriesRv.setAdapter(new BrowseRecipesCategoryAdapter(generateRecipeCategories()));
 
 
         return view;
+    }
+
+    //TODO: Remove method when adding implementation is... added
+    private List<BrowseRecipeCategory> generateRecipeCategories() {
+        List<BrowseRecipeItem> collegeFare = new ArrayList<>();
+        collegeFare.add(new BrowseRecipeItem("PB & J", "Quick 'n' Easy"));
+        collegeFare.add(new BrowseRecipeItem("Microwave Pasta", "Quick 'n' Easy"));
+        collegeFare.add(new BrowseRecipeItem("Easy Frozen Bento Lunch", "Lunch"));
+        collegeFare.add(new BrowseRecipeItem("Instant Ramen", "Quick 'n' Easy"));
+
+        List<BrowseRecipeItem> snacks = new ArrayList<>();
+        snacks.add(new BrowseRecipeItem("Apple Granola Sandwich", "Healthy Snacks"));
+        snacks.add(new BrowseRecipeItem("Puppy Chow", "Unhealthy Snacks"));
+        snacks.add(new BrowseRecipeItem("Roasted Pumpkin Seeds", "Fall Favorites"));
+        snacks.add(new BrowseRecipeItem("Grandma's Ooey Gooey Brownie Bites", "Desserts"));
+        snacks.add(new BrowseRecipeItem("Carrot-Apple-slaw", "Sides"));
+        snacks.add(new BrowseRecipeItem("Russian Tea Cookies", "Desserts"));
+
+
+        List<BrowseRecipeCategory> parents = new ArrayList<>();
+        parents.add(new BrowseRecipeCategory("College Fare", collegeFare));
+        parents.add(new BrowseRecipeCategory("Snacks", snacks));
+        return parents;
     }
 
     @Override

@@ -6,33 +6,40 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import apps.nerdyginger.cleanplateclub.R;
+import apps.nerdyginger.cleanplateclub.models.BrowseRecipeCategory;
 
 public class BrowseRecipesCategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private List<RecyclerView> dataSet = new ArrayList<>();
+    private List<BrowseRecipeCategory> dataSet = new ArrayList<>();
+    private RecyclerView.RecycledViewPool viewPool = new RecyclerView.RecycledViewPool();
 
     public class CategoryViewHolder extends RecyclerView.ViewHolder {
         TextView categoryName;
-        RecyclerView rv;
+        RecyclerView childRv;
         CategoryViewHolder(View view) {
             super(view);
             categoryName = view.findViewById(R.id.browseRecipesCategoryName);
-            rv = view.findViewById(R.id.browseRecipesCategoryRecycler);
+            childRv = view.findViewById(R.id.browseRecipesCategoryRecycler);
         }
     }
 
     public BrowseRecipesCategoryAdapter() { }
 
-    public void updateData(List<RecyclerView> data) {
+    public  BrowseRecipesCategoryAdapter(List<BrowseRecipeCategory> data) {
         dataSet = data;
     }
 
-    public RecyclerView getItemAtPosition(int position) {
+    public void updateData(List<BrowseRecipeCategory> data) {
+        dataSet = data;
+    }
+
+    public BrowseRecipeCategory getItemAtPosition(int position) {
         return dataSet.get(position);
     }
 
@@ -46,10 +53,16 @@ public class BrowseRecipesCategoryAdapter extends RecyclerView.Adapter<RecyclerV
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-        RecyclerView item = dataSet.get(position);
+        BrowseRecipeCategory item = dataSet.get(position);
         CategoryViewHolder holder = (CategoryViewHolder) viewHolder;
-        holder.rv = item; //item.getRecyclerView(); // <--- ???
-        //holder.categoryName = item.getCategoryName();
+        holder.categoryName.setText(item.getCategoryName());
+
+        //set up child RecyclerViews
+        LinearLayoutManager childLlm = new LinearLayoutManager(holder.childRv.getContext(), LinearLayoutManager.HORIZONTAL, false);
+        childLlm.setInitialPrefetchItemCount(4);
+        holder.childRv.setLayoutManager(childLlm);
+        holder.childRv.setAdapter(new BrowseRecipesItemAdapter(item.getRecipeCards()));
+        holder.childRv.setRecycledViewPool(viewPool);
     }
 
     @Override
