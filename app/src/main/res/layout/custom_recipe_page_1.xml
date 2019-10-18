@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/customRecipeTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Custom Recipe"
+        android:textSize="18sp"
+        android:layout_margin="5dp"
+        android:layout_centerHorizontal="true"
+        />
+
+    <EditText
+        android:id="@+id/customRecipeName"
+        android:layout_width="200dp"
+        android:layout_height="45dp"
+        android:layout_margin="5dp"
+        android:layout_below="@+id/customRecipeTitle"
+        android:hint="Recipe Name"
+        />
+
+    <EditText
+        android:id="@+id/customRecipeAuthor"
+        android:layout_width="200dp"
+        android:layout_height="45dp"
+        android:layout_margin="5dp"
+        android:layout_below="@+id/customRecipeName"
+        android:hint="Author"
+        />
+
+    <!--Skipping date published-->
+
+    <EditText
+        android:id="@+id/customRecipeDescription"
+        android:layout_width="200dp"
+        android:layout_height="45dp"
+        android:layout_margin="5dp"
+        android:layout_below="@+id/customRecipeAuthor"
+        android:hint="Description"
+        />
+
+    <EditText
+        android:id="@+id/customRecipeTotalTime"
+        android:layout_width="200dp"
+        android:layout_height="45dp"
+        android:layout_margin="5dp"
+        android:layout_below="@+id/customRecipeDescription"
+        android:hint="Total Time"
+        />
+
+    <SearchView
+        android:id="@+id/customRecipeKeywordsSearch"
+        android:layout_width="200dp"
+        android:layout_height="45dp"
+        android:layout_margin="5dp"
+        android:layout_below="@+id/customRecipeTotalTime"
+        android:queryHint="Keywords"
+        />
+
+    <EditText
+        android:id="@+id/customRecipeYield"
+        android:layout_width="200dp"
+        android:layout_height="45dp"
+        android:layout_margin="5dp"
+        android:layout_toEndOf="@+id/customRecipeTotalTime"
+        android:layout_alignBaseline="@+id/customRecipeTotalTime"
+        android:hint="Recipe Yield"
+        />
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/customRecipeKeywords"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:layout_below="@+id/customRecipeKeywordsSearch"
+        />
+
+    <Spinner
+        android:id="@+id/customRecipeCategory"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:layout_below="@+id/customRecipeKeywords"
+        />
+
+    <Spinner
+        android:id="@+id/customRecipeCuisine"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginHorizontal="5dp"
+        android:layout_toEndOf="@+id/customRecipeCategory"
+        android:layout_alignBottom="@+id/customRecipeCategory" />
+
+    <!-- Skipping nutrition -->
+
+    <!-- Recipe ingredients -->
+
+    <!-- Recipe instructions -->
+
+
+</RelativeLayout>

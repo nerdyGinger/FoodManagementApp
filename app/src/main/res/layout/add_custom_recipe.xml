@@ -5,117 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/customRecipeTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Custom Recipe"
-        android:textSize="18sp"
-        android:layout_margin="5dp"
-        android:layout_centerHorizontal="true"
-        />
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/customRecipeViewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+    </androidx.viewpager.widget.ViewPager>
 
-    <TextView
-        android:id="@+id/customRecipeNameLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:layout_below="@+id/customRecipeTitle"
-        android:text="Recipe Name"
-        />
-
-    <EditText
-        android:id="@+id/customRecipeName"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:layout_toEndOf="@+id/customRecipeNameLabel"
-        android:layout_alignBaseline="@+id/customRecipeNameLabel"
-        />
-
-    <TextView
-        android:id="@+id/customRecipeAuthorLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:text="Author"
-        android:layout_below="@+id/customRecipeNameLabel"
-        />
-
-    <EditText
-        android:id="@+id/customRecipeAuthor"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:layout_toEndOf="@+id/customRecipeAuthorLabel"
-        android:layout_alignBaseline="@+id/customRecipeAuthorLabel"
-        />
-
-    <!--Skipping date published-->
-
-    <TextView
-        android:id="@+id/customRecipeDescriptionLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:text="Description"
-        android:layout_below="@+id/customRecipeAuthorLabel"
-        />
-
-    <EditText
-        android:id="@+id/customRecipeDescription"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:layout_toEndOf="@+id/customRecipeDescriptionLabel"
-        android:layout_alignBaseline="@+id/customRecipeDescriptionLabel"
-        />
-
-    <TextView
-        android:id="@+id/customRecipeTotalTimeLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:text="Total Time"
-        android:layout_below="@+id/customRecipeDescriptionLabel"
-        />
-
-    <EditText
-        android:id="@+id/customRecipeTotalTime"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:layout_toEndOf="@+id/customRecipeTotalTimeLabel"
-        android:layout_alignBaseline="@+id/customRecipeTotalTimeLabel"
-        />
-
-    <TextView
-        android:id="@+id/customRecipeKeywordsLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:text="Keywords"
-        android:layout_below="@+id/customRecipeTotalTimeLabel"
-        />
-
-    <!--TODO: Add the keywords input method-->
-
-    <TextView
-        android:id="@+id/customRecipeYieldLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:text="Recipe Yield"
-        android:layout_below="@+id/customRecipeKeywordsLabel"
-        />
-
-    <EditText
-        android:id="@+id/customRecipeYield"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:layout_toEndOf="@+id/customRecipeYieldLabel"
-        android:layout_alignBaseline="@+id/customRecipeYieldLabel"
-        />
 
 </RelativeLayout>

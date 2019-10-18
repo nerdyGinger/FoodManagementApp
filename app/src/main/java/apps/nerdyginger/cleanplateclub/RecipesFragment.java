@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
@@ -125,7 +126,9 @@ public class RecipesFragment extends Fragment {
         customBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context, "Not implemented yet, sorry!", Toast.LENGTH_SHORT).show();
+                CustomRecipeDialog dialog = new CustomRecipeDialog();
+                dialog.show(getFragmentManager(), "input a recipe!");
+                //Toast.makeText(context, "Not implemented yet, sorry!", Toast.LENGTH_SHORT).show();
             }
         });
         customLabel = parentView.findViewById(R.id.fabMenuCustomLabel);
