@@ -46,30 +46,30 @@
 
     <EditText
         android:id="@+id/customRecipeTotalTime"
-        android:layout_width="200dp"
+        android:layout_width="100dp"
         android:layout_height="45dp"
         android:layout_margin="5dp"
         android:layout_below="@+id/customRecipeDescription"
         android:hint="Total Time"
         />
 
+    <EditText
+        android:id="@+id/customRecipeYield"
+        android:layout_width="100dp"
+        android:layout_height="45dp"
+        android:layout_margin="5dp"
+        android:layout_below="@+id/customRecipeDescription"
+        android:layout_toEndOf="@+id/customRecipeTotalTime"
+        android:hint="Yield"
+        />
+
     <SearchView
         android:id="@+id/customRecipeKeywordsSearch"
-        android:layout_width="200dp"
+        android:layout_width="00dp"
         android:layout_height="45dp"
         android:layout_margin="5dp"
         android:layout_below="@+id/customRecipeTotalTime"
         android:queryHint="Keywords"
-        />
-
-    <EditText
-        android:id="@+id/customRecipeYield"
-        android:layout_width="200dp"
-        android:layout_height="45dp"
-        android:layout_margin="5dp"
-        android:layout_toEndOf="@+id/customRecipeTotalTime"
-        android:layout_alignBaseline="@+id/customRecipeTotalTime"
-        android:hint="Recipe Yield"
         />
 
     <com.google.android.material.chip.ChipGroup
