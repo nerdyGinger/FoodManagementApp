@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -15,11 +14,20 @@
         android:layout_centerHorizontal="true"
         />
 
+    <ImageButton
+        android:id="@+id/customRecipeImage"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_margin="5dp"
+        android:layout_below="@+id/customRecipeTitle"
+        />
+
     <EditText
         android:id="@+id/customRecipeName"
         android:layout_width="200dp"
-        android:layout_height="45dp"
+        android:layout_height="wrap_content"
         android:layout_margin="5dp"
+        android:layout_toEndOf="@+id/customRecipeImage"
         android:layout_below="@+id/customRecipeTitle"
         android:hint="Recipe Name"
         />
@@ -27,9 +35,10 @@
     <EditText
         android:id="@+id/customRecipeAuthor"
         android:layout_width="200dp"
-        android:layout_height="45dp"
+        android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:layout_below="@+id/customRecipeName"
+        android:layout_toEndOf="@+id/customRecipeImage"
         android:hint="Author"
         />
 
@@ -37,17 +46,23 @@
 
     <EditText
         android:id="@+id/customRecipeDescription"
-        android:layout_width="200dp"
-        android:layout_height="45dp"
+        android:layout_width="310dp"
+        android:layout_height="wrap_content"
         android:layout_margin="5dp"
-        android:layout_below="@+id/customRecipeAuthor"
+        android:layout_below="@+id/customRecipeImage"
+        android:inputType="textMultiLine"
+        android:lines="3"
+        android:background="@color/chef_launcher_background"
+        android:gravity="top"
         android:hint="Description"
         />
+
+    <!-- Start page 2 here? -->
 
     <EditText
         android:id="@+id/customRecipeTotalTime"
         android:layout_width="100dp"
-        android:layout_height="45dp"
+        android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:layout_below="@+id/customRecipeDescription"
         android:hint="Total Time"
@@ -56,7 +71,7 @@
     <EditText
         android:id="@+id/customRecipeYield"
         android:layout_width="100dp"
-        android:layout_height="45dp"
+        android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:layout_below="@+id/customRecipeDescription"
         android:layout_toEndOf="@+id/customRecipeTotalTime"
@@ -65,11 +80,13 @@
 
     <SearchView
         android:id="@+id/customRecipeKeywordsSearch"
-        android:layout_width="00dp"
-        android:layout_height="45dp"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:layout_below="@+id/customRecipeTotalTime"
+        android:layout_centerHorizontal="true"
         android:queryHint="Keywords"
+        android:iconifiedByDefault="false"
         />
 
     <com.google.android.material.chip.ChipGroup
@@ -78,6 +95,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:layout_below="@+id/customRecipeKeywordsSearch"
+        android:layout_centerHorizontal="true"
         />
 
     <Spinner
@@ -99,9 +117,9 @@
 
     <!-- Skipping nutrition -->
 
-    <!-- Recipe ingredients -->
+    <!-- Recipe ingredients: page 2 (3?) -->
 
-    <!-- Recipe instructions -->
+    <!-- Recipe instructions: page 3 (4?)-->
 
 
 </RelativeLayout>

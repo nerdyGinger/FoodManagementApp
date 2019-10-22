@@ -35,11 +35,11 @@ public class CustomRecipeDialog extends DialogFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.add_custom_recipe, container, false);
+        View rootView = inflater.inflate(R.layout.custom_recipe_page_1, container, false);
         //View parentView = inflater.inflate(R.layout.add_custom_recipe, container, false);
-        pager = (ViewPager) rootView.findViewById(R.id.customRecipeViewPager);
-        pagerAdapter = new ScreenSlidePagerAdapter(getFragmentManager());
-        pager.setAdapter(pagerAdapter);
+        //pager = (ViewPager) parentView.findViewById(R.id.customRecipeViewPager);
+        //pagerAdapter = new ScreenSlidePagerAdapter(getFragmentManager());
+        //pager.setAdapter(pagerAdapter);
         return rootView;
     }
 
