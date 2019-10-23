@@ -3,6 +3,7 @@ package apps.nerdyginger.cleanplateclub.dao;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import androidx.collection.ArrayMap;
 
@@ -39,9 +40,28 @@ public class CuisineDao {
         return cuisineList;
     }
 
-    private ArrayMap<String, String> getAllCuisines() {
+    public List<String> getAllCuisineNames() {
         SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM Category", new String[] {});
+        Cursor cursor = db.rawQuery("SELECT * FROM Cuisine", new String[] {});
+        List<String> cuisines = new ArrayList<>();
+        try{
+            cursor.moveToFirst();
+            while ( !cursor.isAfterLast()) {
+                String name = cursor.getString(cursor.getColumnIndex("name"));
+                cuisines.add(name);
+            }
+        } catch (Exception e) {
+            Log.e("Database Error", e.toString());
+        } finally {
+            cursor.close();
+            db.close();
+        }
+        return cuisines;
+    }
+
+    public ArrayMap<String, String> getAllCuisines() {
+        SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM Cuisine", new String[] {});
         cursor.moveToFirst();
         ArrayMap<String, String> cuisines = new ArrayMap<>();
         while ( !cursor.isAfterLast()) {

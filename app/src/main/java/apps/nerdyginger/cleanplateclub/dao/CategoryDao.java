@@ -7,6 +7,7 @@ import android.util.Log;
 
 import androidx.collection.ArrayMap;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +41,27 @@ public class CategoryDao {
         return categoryList;
     }
 
-    private ArrayMap<String, String> getAllCategories() {
+    public List<String> getAllCategoryNames() {
+        SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM Category", new String[] {});
+        List<String> categories = new ArrayList<>();
+        try {
+            cursor.moveToFirst();
+            while ( !cursor.isAfterLast()) {
+                String name = cursor.getString(cursor.getColumnIndex("name"));
+                categories.add(name);
+                cursor.moveToNext();
+            }
+        } catch (Exception e) {
+            Log.e("Database Error", e.toString());
+        } finally {
+            cursor.close();
+            db.close();
+        }
+        return categories;
+    }
+
+    public ArrayMap<String, String> getAllCategories() {
         SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM Category", new String[] {});
         ArrayMap<String, String> categories = new ArrayMap<>();

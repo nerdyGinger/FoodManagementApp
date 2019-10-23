@@ -3,6 +3,7 @@ package apps.nerdyginger.cleanplateclub;
 import android.app.ActionBar;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -10,7 +11,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
@@ -24,6 +27,12 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipDrawable;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.tabs.TabLayout;
+
+import java.util.List;
+
+import apps.nerdyginger.cleanplateclub.dao.CategoryDao;
+import apps.nerdyginger.cleanplateclub.dao.CuisineDao;
+import apps.nerdyginger.cleanplateclub.dao.UnitDao;
 
 /*
  * This is the dialog for custom recipe input. It must be beautiful, elegant, and absolutely dreamy.
@@ -121,10 +130,12 @@ public class CustomRecipeDialog extends DialogFragment {
                 //return first page
                 Fragment f = new FirstPageFragment();
                 return f;
+            } else if (position == 1) {
+                return new SecondPageFragment();
+            } else {
+                //defaults to third page
+                return new ThirdPageFragment();
             }
-            //continue ifs for other pages
-            Fragment f = new FirstPageFragment();
-            return f;
         }
 
         @Override
@@ -148,7 +159,75 @@ public class CustomRecipeDialog extends DialogFragment {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View view = inflater.inflate(R.layout.custom_recipe_page_1, container, false);
-            //handle view as needed
+
+            //add categories to spinner
+            Spinner categorySpinner = view.findViewById(R.id.customRecipeCategory);
+            ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, getCategories());
+            categorySpinner.setAdapter(categoryAdapter);
+
+            //add cuisines to spinner
+            Spinner cuisineSpinner = view.findViewById(R.id.customRecipeCuisine);
+            ArrayAdapter<String> cuisineAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, getCuisines());
+            cuisineSpinner.setAdapter(cuisineAdapter);
+
+            return view;
+        }
+
+        private List<String> getCategories() {
+            CategoryDao dao = new CategoryDao(getContext());
+            return dao.getAllCategoryNames();
+        }
+
+        private List<String> getCuisines() {
+            CuisineDao dao = new CuisineDao(getContext());
+            return dao.getAllCuisineNames();
+        }
+    }
+
+    public static class SecondPageFragment extends Fragment {
+
+        public SecondPageFragment() {
+            //empty constructor
+        }
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            View view = inflater.inflate(R.layout.custom_recipe_page_2, container, false);
+            //manipulate views as needed
+            Spinner unitSpinner = view.findViewById(R.id.customRecipeIngredientsUnit);
+            ArrayAdapter<String> unitAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, getUnits());
+            unitSpinner.setAdapter(unitAdapter);
+            return view;
+        }
+
+        private List<String> getUnits() {
+            SharedPreferences userPreferences = getContext().getSharedPreferences(getContext().getPackageName() + "userPreferences", Context.MODE_PRIVATE);
+            UnitDao dao = new UnitDao(getContext());
+            return dao.getAllUnitNamesBySystemId(userPreferences.getString("unitSystemId", "1"));
+        }
+    }
+
+    public static class ThirdPageFragment extends Fragment {
+
+        public ThirdPageFragment() {
+            //empty constructor
+        }
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            View view = inflater.inflate(R.layout.custom_recipe_page_2, container, false);
+            //manipulate views as needed
+
             return view;
         }
     }
