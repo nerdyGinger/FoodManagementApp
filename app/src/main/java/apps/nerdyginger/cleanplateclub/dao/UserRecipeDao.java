@@ -12,8 +12,9 @@ import apps.nerdyginger.cleanplateclub.models.UserRecipe;
 
 @Dao
 public interface UserRecipeDao {
+    //will return generated id
     @Insert
-    void insert(UserRecipe... recipes);
+    long[] insert(UserRecipe... recipes);
 
     @Update
     void update(UserRecipe... reicpes);

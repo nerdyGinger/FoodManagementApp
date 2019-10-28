@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/customRecipeInstructionsTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:text="Instructions"
+        />
+
+    <TextView
+        android:id="@+id/customRecipeInstructions"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_margin="5dp"
+        android:layout_below="@+id/customRecipeInstructionsTitle"
+        android:layout_centerHorizontal="true"
+        android:background="#e6e3e3"
+        android:textColor="@color/colorAccent"
+        android:scrollbars="vertical"
+        android:scrollbarAlwaysDrawVerticalTrack="true"
+        android:maxLines="9"
+        android:gravity="bottom"
+        />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/customRecipeInstructionsEntryLayout"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_margin="5dp"
+        android:layout_below="@+id/customRecipeInstructions"
+        android:layout_centerHorizontal="true"
+        android:hint="Instruction Text"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        >
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/customRecipeInstructionsEntry"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="top"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <ImageButton
+        android:id="@+id/customRecipeInstructionsAddBtn"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="5dp"
+        android:layout_below="@+id/customRecipeInstructionsEntryLayout"
+        android:layout_alignEnd="@+id/customRecipeInstructionsEntryLayout"
+        android:src="@android:drawable/ic_menu_add"
+        android:background="@drawable/add_button"
+        />
+
+
+</RelativeLayout>

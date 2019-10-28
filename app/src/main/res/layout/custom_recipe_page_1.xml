@@ -34,18 +34,26 @@
 
     <!--Skipping date published-->
 
-    <EditText
-        android:id="@+id/customRecipeDescription"
-        android:layout_width="310dp"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/customRecipeDescriptionLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:layout_below="@+id/customRecipeImage"
-        android:inputType="textMultiLine"
-        android:lines="3"
-        android:background="#f1f1f1"
-        android:gravity="top"
         android:hint="Description"
-        />
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        >
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/customRecipeDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine"
+            android:lines="3"
+            android:gravity="top"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <!-- Start page 2 here? -->
 
@@ -54,7 +62,7 @@
         android:layout_width="130dp"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
-        android:layout_below="@+id/customRecipeDescription"
+        android:layout_below="@+id/customRecipeDescriptionLayout"
         android:hint="Total Time"
         />
 
@@ -63,7 +71,7 @@
         android:layout_width="130dp"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
-        android:layout_below="@+id/customRecipeDescription"
+        android:layout_below="@+id/customRecipeDescriptionLayout"
         android:layout_toEndOf="@+id/customRecipeTotalTime"
         android:hint="Yield"
         />
