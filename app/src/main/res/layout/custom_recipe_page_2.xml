@@ -22,6 +22,10 @@
         android:enabled="false"
         android:scrollbarAlwaysDrawVerticalTrack="true"
         android:background="#e6e3e3"
+        android:textColor="@color/colorAccent"
+        android:scrollbars="vertical"
+        android:maxLines="9"
+        android:gravity="bottom"
         />
 
     <AutoCompleteTextView

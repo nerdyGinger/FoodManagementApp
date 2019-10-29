@@ -48,13 +48,16 @@ import apps.nerdyginger.cleanplateclub.dao.CategoryDao;
 import apps.nerdyginger.cleanplateclub.dao.CuisineDao;
 import apps.nerdyginger.cleanplateclub.dao.ItemDao;
 import apps.nerdyginger.cleanplateclub.dao.UnitDao;
+import apps.nerdyginger.cleanplateclub.dao.UserInventoryItemDao;
+import apps.nerdyginger.cleanplateclub.dao.UserRecipeDao;
+import apps.nerdyginger.cleanplateclub.dao.UserRecipeItemJoinDao;
 import apps.nerdyginger.cleanplateclub.models.UserItem;
 import apps.nerdyginger.cleanplateclub.models.UserRecipe;
 import apps.nerdyginger.cleanplateclub.models.UserRecipeItemJoin;
 
 /*
  * This is the dialog for custom recipe input. It must be beautiful, elegant, and absolutely dreamy.
- * Last Edited: 10/18/19
+ * Last Edited: 10/29/19
  */
 public class CustomRecipeDialog extends DialogFragment {
     private static final int pages = 3; // Slide-able pages for basic info, ingredients, and instructions
@@ -63,6 +66,7 @@ public class CustomRecipeDialog extends DialogFragment {
     Button nextBtn;
     private static final UserRecipe newRecipe = new UserRecipe();
     private static final ArrayList<UserRecipeItemJoin> ingredientsList = new ArrayList<>();
+    private static final ArrayList<String> keywordsList = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -106,17 +110,34 @@ public class CustomRecipeDialog extends DialogFragment {
             @Override
             public void onClick(View v) {
                 if (pager.getCurrentItem() == 2) {
-                    //save newRecipe (generate id)
-                    //final int newRecipeId = (int) dao.insert(newRecipe);
-                    for (int i=0; i<ingredientsList.size()-1; i++) {
-                        //ingredientsList.get(i).recipeId = newRecipeId;
-                    }
+                    newRecipe.setKeywords(keywordsList);
+                    //performInsertOperations();
                     dismiss();
                 } else {
                     pager.setCurrentItem(pager.getCurrentItem() + 1, true);
                 }
             }
         });
+    }
+
+    private void performInsertOperations(){
+        try {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    UserCustomDatabase db = UserCustomDatabase.getDatabase(getContext());
+                    UserRecipeDao dao = db.getUserRecipeDao();
+                    UserRecipeItemJoinDao itemsDao = db.getUserRecipeItemJoinDao();
+                    long[] id = dao.insert(newRecipe);
+                    for (int i=0; i<ingredientsList.size()-1; i++) {
+                        ingredientsList.get(i).recipeId = (int) id[0];
+                        itemsDao.insert(ingredientsList.get(i));
+                    }
+                }
+            }).start();
+        } catch (Exception e) {
+            Log.e("Database Error", e.toString());
+        }
     }
 
     /*
@@ -205,13 +226,25 @@ public class CustomRecipeDialog extends DialogFragment {
             keywordSearch.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
                 @Override
                 public boolean onSuggestionSelect(int position) {
-                    //getChip(keywordChipGroup, getTextFromSomewhere());
+                    getChip(keywordChipGroup, keywordSearch.getQuery().toString());
                     return false;
                 }
 
                 @Override
                 public boolean onSuggestionClick(int position) {
-                    //getChip(keywordChipGroup, getTextFromSomewhere());
+                    getChip(keywordChipGroup, keywordSearch.getQuery().toString());
+                    return false;
+                }
+            });
+            keywordSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    getChip(keywordChipGroup, keywordSearch.getQuery().toString());
+                    return false;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String newText) {
                     return false;
                 }
             });
@@ -297,7 +330,7 @@ public class CustomRecipeDialog extends DialogFragment {
         }
 
         // Adds a new to chip to the input chip group (recipe keywords)
-        protected Chip getChip(final ChipGroup entryChipGroup, String text) {
+        protected void getChip(final ChipGroup entryChipGroup, String text) {
             final Chip chip = new Chip(getContext());
             chip.setChipDrawable(ChipDrawable.createFromResource(getContext(), R.xml.keyword_chip));
             int paddingDp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, getResources().getDisplayMetrics());
@@ -307,9 +340,12 @@ public class CustomRecipeDialog extends DialogFragment {
                 @Override
                 public void onClick(View v) {
                     entryChipGroup.removeView(chip);
+                    int keywordIndex = keywordsList.indexOf(chip.getText().toString());
+                    if (keywordIndex != -1) { keywordsList.remove(keywordIndex); }
                 }
             });
-            return chip;
+            entryChipGroup.addView(chip);
+            keywordsList.add(text);
         }
 
         private List<String> getCategories() {
@@ -324,6 +360,7 @@ public class CustomRecipeDialog extends DialogFragment {
     }
 
     public static class SecondPageFragment extends Fragment {
+        TextView ingredientsText;
 
         public SecondPageFragment() {
             //empty constructor
@@ -337,6 +374,7 @@ public class CustomRecipeDialog extends DialogFragment {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View view = inflater.inflate(R.layout.custom_recipe_page_2, container, false);
+            ingredientsText = view.findViewById(R.id.customRecipeIngredients);
 
             //add units to unit spinner
             final Spinner unitSpinner = view.findViewById(R.id.customRecipeIngredientsUnit);
@@ -358,21 +396,41 @@ public class CustomRecipeDialog extends DialogFragment {
                 @Override
                 public void onClick(View v) {
                     UserRecipeItemJoin joinItem = new UserRecipeItemJoin();
-                    joinItem.itemId = getItemId(ingredientName.getText().toString());
+                    joinItem.itemName = ingredientName.getText().toString();
+                    ingredientName.setText("");
+                    joinItem.itemId = getItemId(joinItem.itemName); //set to -1 if not in db
                     joinItem.quantity = ingredientAmount.getText().toString();
+                    ingredientAmount.setText("");
+                    //TODO: add default (empty) unit
                     joinItem.unit = unitAdapter.getItem(unitSpinner.getSelectedItemPosition());
-                    joinItem.detail = ingredientDetail.getText().toString();
+                    if (ingredientDetail.getText().toString().equals("")) {
+                        joinItem.detail = "";
+                    } else {
+                        joinItem.detail = "(" + ingredientDetail.getText().toString() + ")";
+                        ingredientDetail.setText("");
+                    }
                     ingredientsList.add(joinItem);
+                    addIngredientText(joinItem);
                 }
             });
 
             return view;
         }
 
+        private void addIngredientText(UserRecipeItemJoin joinItem) {
+            String newText = joinItem.itemName + " " + joinItem.detail + "   " + joinItem.quantity + " " + joinItem.unit + "\n\n";
+            ingredientsText.append(newText);
+        }
+
         private int getItemId(String name) {
-            ItemDao dao = new ItemDao(getContext());
-            String stringId =  dao.getItemId(name);
-            return Integer.parseInt(stringId);
+            try {
+                ItemDao dao = new ItemDao(getContext());
+                String stringId =  dao.getItemId(name);
+                return Integer.parseInt(stringId);
+            } catch (Exception e) {
+                //item doesn't exist in db
+                return -1;
+            }
         }
 
         private List<String> getItems() {
