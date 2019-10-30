@@ -49,6 +49,7 @@ public class CuisineDao {
             while ( !cursor.isAfterLast()) {
                 String name = cursor.getString(cursor.getColumnIndex("name"));
                 cuisines.add(name);
+                cursor.moveToNext();
             }
         } catch (Exception e) {
             Log.e("Database Error", e.toString());
