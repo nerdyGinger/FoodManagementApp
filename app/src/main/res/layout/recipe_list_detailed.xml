@@ -3,14 +3,24 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="50dp">
+
+    <ImageView
+        android:id="@+id/recipeImageDetailed"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="5dp"
+        android:src="@drawable/ic_recipes"
+        />
 
     <TextView
         android:id="@+id/recipeNameDetailed"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:textSize="16sp"
+        android:layout_toEndOf="@+id/recipeImageDetailed"
+        android:layout_margin="5dp"
+        android:textSize="18sp"
         android:textStyle="bold"
         android:ellipsize="end"
         android:maxLines="1"
@@ -19,22 +29,25 @@
 
     <TextView
         android:id="@+id/recipeServingsDetailed"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/recipeNameDetailed"
-        android:textSize="14sp"
+        android:layout_toEndOf="@+id/recipeImageDetailed"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="5dp"
+        android:textSize="12sp"
         />
 
     <TextView
         android:id="@+id/recipeCategoryDetailed"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toStartOf="@+id/recipeIndicatorBarDetailed"
-        android:layout_below="@+id/recipeNameDetailed"
-        android:textSize="14sp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="5dp"
+        android:textSize="12sp"
         />
 
+    <!--
     <ImageView
         android:id="@+id/recipeIndicatorBarDetailed"
         android:layout_width="10dp"
@@ -42,5 +55,6 @@
         android:layout_height="match_parent"
         android:layout_alignParentEnd="true"
         />
+        -->
 
 </RelativeLayout>

@@ -3,12 +3,17 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:scrollbarAlwaysDrawVerticalTrack="true">
+    android:scrollbarAlwaysDrawVerticalTrack="true"
+    android:requiresFadingEdge="vertical"
+    android:fadingEdgeLength="15dp"
+    >
 
     <RelativeLayout
         android:orientation="vertical"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/cardview_light_background"
+        >
 
 
         <ImageButton
@@ -81,7 +86,7 @@
 
         <SearchView
             android:id="@+id/customRecipeKeywordsSearch"
-            android:layout_width="250dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:layout_below="@+id/customRecipeTotalTime"
@@ -101,7 +106,7 @@
 
         <Spinner
             android:id="@+id/customRecipeCategory"
-            android:layout_width="130dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:layout_below="@+id/customRecipeKeywords"
@@ -109,11 +114,10 @@
 
         <Spinner
             android:id="@+id/customRecipeCuisine"
-            android:layout_width="130dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            android:layout_toEndOf="@+id/customRecipeCategory"
-            android:layout_below="@+id/customRecipeKeywords"/>
+            android:layout_below="@+id/customRecipeCategory"/>
 
         <!-- Skipping nutrition -->
 

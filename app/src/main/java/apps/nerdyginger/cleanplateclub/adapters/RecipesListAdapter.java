@@ -130,7 +130,7 @@ public class RecipesListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public int getItemViewType(int position) {
         UserRecipeBoxItem recipe = dataSet.get(position);
-        if (false) { //TODO: change to check preferences
+        if (true) { //TODO: change to check preferences
             // user has set preference to detailed recipe list
             return 2;
         } else {

@@ -1,5 +1,6 @@
 package apps.nerdyginger.cleanplateclub.dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -24,6 +25,9 @@ public interface UserRecipeDao {
 
     @Query("SELECT * FROM userRecipes")
     List<UserRecipe> getAllUserRecipes();
+
+    @Query("SELECT * FROM userRecipes")
+    LiveData<List<UserRecipe>> getAllUserRecipesAsLiveData();
 
     @Query("SELECT * FROM userRecipes WHERE _ID = :id")
     UserRecipe getUserRecipeById(int id);

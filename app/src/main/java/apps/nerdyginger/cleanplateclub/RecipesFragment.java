@@ -128,7 +128,7 @@ public class RecipesFragment extends Fragment {
             public void onClick(View v) {
                 CustomRecipeDialog dialog = new CustomRecipeDialog();
                 dialog.show(getFragmentManager(), "input a recipe!");
-                //Toast.makeText(context, "Not implemented yet, sorry!", Toast.LENGTH_SHORT).show();
+                closeFab();
             }
         });
         customLabel = parentView.findViewById(R.id.fabMenuCustomLabel);

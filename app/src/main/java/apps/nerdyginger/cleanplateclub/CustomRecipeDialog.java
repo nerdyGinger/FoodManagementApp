@@ -49,15 +49,18 @@ import apps.nerdyginger.cleanplateclub.dao.CuisineDao;
 import apps.nerdyginger.cleanplateclub.dao.ItemDao;
 import apps.nerdyginger.cleanplateclub.dao.UnitDao;
 import apps.nerdyginger.cleanplateclub.dao.UserInventoryItemDao;
+import apps.nerdyginger.cleanplateclub.dao.UserRecipeBoxDao;
 import apps.nerdyginger.cleanplateclub.dao.UserRecipeDao;
 import apps.nerdyginger.cleanplateclub.dao.UserRecipeItemJoinDao;
+import apps.nerdyginger.cleanplateclub.models.Recipe;
 import apps.nerdyginger.cleanplateclub.models.UserItem;
 import apps.nerdyginger.cleanplateclub.models.UserRecipe;
+import apps.nerdyginger.cleanplateclub.models.UserRecipeBoxItem;
 import apps.nerdyginger.cleanplateclub.models.UserRecipeItemJoin;
 
 /*
  * This is the dialog for custom recipe input. It must be beautiful, elegant, and absolutely dreamy.
- * Last Edited: 10/29/19
+ * Last Edited: 10/30/19
  */
 public class CustomRecipeDialog extends DialogFragment {
     private static final int pages = 3; // Slide-able pages for basic info, ingredients, and instructions
@@ -68,6 +71,24 @@ public class CustomRecipeDialog extends DialogFragment {
     private static final ArrayList<UserRecipeItemJoin> ingredientsList = new ArrayList<>();
     private static final ArrayList<String> keywordsList = new ArrayList<>();
 
+    //enable reuse for viewing/editing recipes
+    //   "create"   ---   new custom recipe
+    //   "view"     ---   view existing recipe (not editable)
+    //   "edit"     ---   edit existing recipe
+    private String MODE;
+    static UserRecipeBoxItem existingItem;
+
+    //empty constructor, default "create" mode
+    public CustomRecipeDialog() {
+        MODE = "create";
+    }
+
+    //constructor to set mode, pass in existing item
+    public CustomRecipeDialog(String mode, UserRecipeBoxItem item) {
+        MODE = mode;
+        existingItem = item;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,13 +96,12 @@ public class CustomRecipeDialog extends DialogFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        //View rootView = inflater.inflate(R.layout.custom_recipe_page_1, container, false);
         View parentView = inflater.inflate(R.layout.add_custom_recipe, container, false);
         pager = (ViewPager) parentView.findViewById(R.id.customRecipeViewPager);
         pager.setOffscreenPageLimit(2);
         TabLayout tabs = (TabLayout) parentView.findViewById(R.id.customRecipePagerDots);
         tabs.setupWithViewPager(pager, true);
-        pagerAdapter = new ScreenSlidePagerAdapter(getChildFragmentManager());
+        pagerAdapter = new ScreenSlidePagerAdapter(getChildFragmentManager(), MODE);
         pager.setAdapter(pagerAdapter);
         addDialogBtnClicks(parentView);
         return parentView;
@@ -111,7 +131,7 @@ public class CustomRecipeDialog extends DialogFragment {
             public void onClick(View v) {
                 if (pager.getCurrentItem() == 2) {
                     newRecipe.setKeywords(keywordsList);
-                    //performInsertOperations();
+                    performInsertOperations();
                     dismiss();
                 } else {
                     pager.setCurrentItem(pager.getCurrentItem() + 1, true);
@@ -125,11 +145,30 @@ public class CustomRecipeDialog extends DialogFragment {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
+                    //insert UserRecipe
                     UserCustomDatabase db = UserCustomDatabase.getDatabase(getContext());
                     UserRecipeDao dao = db.getUserRecipeDao();
                     UserRecipeItemJoinDao itemsDao = db.getUserRecipeItemJoinDao();
+                    UserRecipeBoxDao recipeBoxDao = db.getUserRecipeBoxDao();
                     long[] id = dao.insert(newRecipe);
+
+                    //insert UserRecipeBoxItem
+                    UserRecipeBoxItem boxItem = new UserRecipeBoxItem();
+                    boxItem.setUserAdded(true);
+                    boxItem.setRecipeId((int) id[0]);
+                    boxItem.setRecipeName(newRecipe.getName());
+                    boxItem.setCategory(newRecipe.getRecipeCategory());
+                    boxItem.setServings(newRecipe.getRecipeYield());
+                    recipeBoxDao.insert(boxItem);
+
+                    Log.e("DEBUG_DEBUG", "Recipe ID: " + String.valueOf(id[0]));
+
+                    //add ingredients to join table
                     for (int i=0; i<ingredientsList.size()-1; i++) {
+                        if (ingredientsList.get(i).itemId == -1) {
+                            ingredientsList.get(i).itemId = 0;
+                        }
+                        Log.e("DEBUG_DEBUG", "Item ID: " + String.valueOf(ingredientsList.get(i).itemId));
                         ingredientsList.get(i).recipeId = (int) id[0];
                         itemsDao.insert(ingredientsList.get(i));
                     }
@@ -144,23 +183,25 @@ public class CustomRecipeDialog extends DialogFragment {
      * Inner adapter class for our lovely pager in the custom recipe dialog
      */
     private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
+        private String parentMode;
 
-        ScreenSlidePagerAdapter (FragmentManager manager) {
+        ScreenSlidePagerAdapter (FragmentManager manager, String mode) {
             super(manager);
+            parentMode = mode;
         }
 
         @Override
         public Fragment getItem(int position) {
             if (position == 0) {
                 nextBtn.setText("Next");
-                return new FirstPageFragment();
+                return new FirstPageFragment(parentMode);
             } else if (position == 1) {
                 nextBtn.setText("Next");
-                return new SecondPageFragment();
+                return new SecondPageFragment(parentMode);
             } else {
                 //defaults to third page
                 nextBtn.setText("Save");
-                return new ThirdPageFragment();
+                return new ThirdPageFragment(parentMode);
             }
         }
 
@@ -172,11 +213,14 @@ public class CustomRecipeDialog extends DialogFragment {
     }
 
     public static class FirstPageFragment extends Fragment {
+        private UserRecipe existingCustomItem;
+        private Recipe existingDbItem;
+        private String MODE;
         private Bitmap bitmap;
         private ImageButton imageBtn;
 
-        public FirstPageFragment() {
-            //empty constructor
+        public FirstPageFragment(String mode) {
+            MODE = mode;
         }
 
         @Override
@@ -195,7 +239,9 @@ public class CustomRecipeDialog extends DialogFragment {
             categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    newRecipe.setRecipeCategory(categoryAdapter.getItem(position));
+                    if ( ! categoryAdapter.getItem(position).equals("Category")) {
+                        newRecipe.setRecipeCategory(categoryAdapter.getItem(position));
+                    }
                 }
 
                 @Override
@@ -211,7 +257,9 @@ public class CustomRecipeDialog extends DialogFragment {
             cuisineSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    newRecipe.setRecipeCuisine(cuisineAdapter.getItem(position));
+                    if ( ! cuisineAdapter.getItem(position).equals("Cuisine")) {
+                        newRecipe.setRecipeCuisine(cuisineAdapter.getItem(position));
+                    }
                 }
 
                 @Override
@@ -349,21 +397,37 @@ public class CustomRecipeDialog extends DialogFragment {
         }
 
         private List<String> getCategories() {
-            CategoryDao dao = new CategoryDao(getContext());
-            return dao.getAllCategoryNames();
+            List<String> categories = new ArrayList<>();
+            categories.add("Category");
+            if (MODE.equals("view") || MODE.equals("edit")) {
+                categories.add(existingItem.getCategory());
+            } else {
+                CategoryDao dao = new CategoryDao(getContext());
+                categories.addAll(dao.getAllCategoryNames());
+            }
+            return categories;
         }
 
         private List<String> getCuisines() {
-            CuisineDao dao = new CuisineDao(getContext());
-            return dao.getAllCuisineNames();
+            List<String> cuisines = new ArrayList<>();
+            cuisines.add("Cuisine");
+            if (MODE.equals("view") || MODE.equals("edit")) {
+                //TODO: figure out modular dialog implementation...
+                cuisines.add(existingDbItem.getRecipeCuisine());
+            } else {
+                CuisineDao dao = new CuisineDao(getContext());
+                cuisines.addAll(dao.getAllCuisineNames());
+            }
+            return cuisines;
         }
     }
 
     public static class SecondPageFragment extends Fragment {
         TextView ingredientsText;
+        private String MODE;
 
-        public SecondPageFragment() {
-            //empty constructor
+        public SecondPageFragment(String mode) {
+            MODE = mode;
         }
 
         @Override
@@ -401,8 +465,7 @@ public class CustomRecipeDialog extends DialogFragment {
                     joinItem.itemId = getItemId(joinItem.itemName); //set to -1 if not in db
                     joinItem.quantity = ingredientAmount.getText().toString();
                     ingredientAmount.setText("");
-                    //TODO: add default (empty) unit
-                    joinItem.unit = unitAdapter.getItem(unitSpinner.getSelectedItemPosition());
+                    joinItem.unit = unitAdapter.getItem(unitSpinner.getSelectedItemPosition()).equals("Units") ? "" : unitAdapter.getItem(unitSpinner.getSelectedItemPosition());
                     if (ingredientDetail.getText().toString().equals("")) {
                         joinItem.detail = "";
                     } else {
@@ -441,18 +504,22 @@ public class CustomRecipeDialog extends DialogFragment {
         }
 
         private List<String> getUnits() {
+            List<String> units = new ArrayList<>();
             SharedPreferences userPreferences = getContext().getSharedPreferences(getContext().getPackageName() + "userPreferences", Context.MODE_PRIVATE);
             UnitDao dao = new UnitDao(getContext());
-            return dao.getAllUnitNamesBySystemId(userPreferences.getString("unitSystemId", "1"));
+            units.add("Units");
+            units.addAll(dao.getAllUnitNamesBySystemId(userPreferences.getString("unitSystemId", "1")));
+            return units;
         }
     }
 
     public static class ThirdPageFragment extends Fragment {
+        private String MODE;
         private Integer steps = 0;
         private ArrayList<String> instructions = new ArrayList<>();
 
-        public ThirdPageFragment() {
-            //empty constructor
+        public ThirdPageFragment(String mode) {
+            MODE = mode;
         }
 
         @Override
