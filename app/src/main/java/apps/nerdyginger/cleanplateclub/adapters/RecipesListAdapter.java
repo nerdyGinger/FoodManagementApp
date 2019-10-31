@@ -71,7 +71,7 @@ public class RecipesListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         notifyDataSetChanged();
     }
 
-    UserRecipeBoxItem getItemAtPosition(int position) {
+    public UserRecipeBoxItem getItemAtPosition(int position) {
         return dataSet.get(position);
     }
 

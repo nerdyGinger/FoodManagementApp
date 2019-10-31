@@ -26,4 +26,8 @@ public interface UserRecipeItemJoinDao {
             "ON userItems._ID=userRecipeItemJoin.itemId " +
             "WHERE userRecipeItemJoin.recipeId=:recipeId")
     List<UserItem> getItemsInRecipe(int recipeId);
+
+    @Query("SELECT * FROM userRecipeItemJoin " +
+           "WHERE recipeId=:recipeId")
+    List<UserRecipeItemJoin> getJoinItemsInRecipe(int recipeId);
 }

@@ -11,6 +11,7 @@ import java.util.List;
 import apps.nerdyginger.cleanplateclub.DatabaseHelper;
 import apps.nerdyginger.cleanplateclub.models.Item;
 import apps.nerdyginger.cleanplateclub.models.Recipe;
+import apps.nerdyginger.cleanplateclub.models.RecipeItemJoin;
 
 public class RecipeItemJoinDao {
     private Context context;
@@ -32,6 +33,7 @@ public class RecipeItemJoinDao {
                 while (!cursor.isAfterLast()) {
                     Integer id = cursor.getInt(cursor.getColumnIndex("recipeId"));
                     recipes.add(recipeDao.buildRecipeFromId(id.toString()));
+                    cursor.moveToNext();
                 }
             }
         } catch (Exception e) {
@@ -56,6 +58,32 @@ public class RecipeItemJoinDao {
                 while (!cursor.isAfterLast()) {
                     Integer id = cursor.getInt(cursor.getColumnIndex("itemId"));
                     items.add(itemDao.getItemFromId(id.toString()));
+                    cursor.moveToNext();
+                }
+            }
+        } catch (Exception e) {
+            Log.e("Database Error", e.toString());
+        } finally {
+            cursor.close();
+            db.close();
+        }
+        return items;
+    }
+
+    public List<RecipeItemJoin> getJoinItemsInRecipe(String recipeId) {
+        SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
+        String sql = "SELECT * FROM RecipeItemJoin WHERE RecipeItemJoin.recipeId = ?";
+        String[] params = new String[] {recipeId};
+        List<RecipeItemJoin> items = new ArrayList<>();
+        Cursor cursor = db.rawQuery(sql, params);
+        try {
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                ItemDao itemDao = new ItemDao(context);
+                while (!cursor.isAfterLast()) {
+                    Integer id = cursor.getInt(cursor.getColumnIndex("itemId"));
+                    String name = cursor.getString(cursor.getColumnIndex("name")); //TODO: finish this here
+                    cursor.moveToNext();
                 }
             }
         } catch (Exception e) {
