@@ -76,8 +76,8 @@ public class RecipesFragment extends Fragment {
         RecyclerViewClickListener listener = new RecyclerViewClickListener() {
             @Override
             public void onClick(View view, int position) {
-                Toast.makeText(getContext(), adapter.getItemAtPosition(position).getRecipeName(), Toast.LENGTH_SHORT).show();
-                //add onClick implementation
+                CustomRecipeDialog dialog = new CustomRecipeDialog("edit", adapter.getItemAtPosition(position));
+                dialog.show(getFragmentManager(), "input a recipe!");
             }
 
             @Override

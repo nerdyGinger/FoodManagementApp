@@ -4,4 +4,5 @@
     <color name="colorPrimary">@color/chef_launcher_background</color>
     <color name="colorPrimaryDark">#2196F3</color>
     <color name="colorAccent">#D81B60</color>
+    <color name="editTextColor">@android:color/primary_text_light</color>
 </resources>

@@ -81,8 +81,12 @@ public class RecipeItemJoinDao {
                 cursor.moveToFirst();
                 ItemDao itemDao = new ItemDao(context);
                 while (!cursor.isAfterLast()) {
-                    Integer id = cursor.getInt(cursor.getColumnIndex("itemId"));
-                    String name = cursor.getString(cursor.getColumnIndex("name")); //TODO: finish this here
+                    Integer itemId = cursor.getInt(cursor.getColumnIndex("itemId"));
+                    //String name = cursor.getString(cursor.getColumnIndex("itemName"));                    //TODO: add itemName to db
+                    String quantity = cursor.getString(cursor.getColumnIndex("itemQuantity"));
+                    String unit = cursor.getString(cursor.getColumnIndex("itemUnit"));
+                    String detail = cursor.getString(cursor.getColumnIndex("itemDetail"));
+                    items.add(new RecipeItemJoin(Integer.parseInt(recipeId), itemId, quantity, unit, detail));
                     cursor.moveToNext();
                 }
             }
