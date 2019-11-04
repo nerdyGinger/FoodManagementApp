@@ -60,7 +60,7 @@ import apps.nerdyginger.cleanplateclub.models.UserRecipeItemJoin;
 
 /*
  * This is the dialog for custom recipe input. It must be beautiful, elegant, and absolutely dreamy.
- * Last Edited: 10/30/19
+ * Last Edited: 11/4/19
  */
 public class CustomRecipeDialog extends DialogFragment {
     private static final int pages = 3; // Slide-able pages for basic info, ingredients, and instructions
@@ -247,7 +247,57 @@ public class CustomRecipeDialog extends DialogFragment {
                     UserRecipeItemJoinDao joinDao = db.getUserRecipeItemJoinDao();
                     UserRecipeBoxDao recipeBoxDao = db.getUserRecipeBoxDao();
 
-                    //update
+                    if (existingItem.isUserAdded()) {
+                        //editing an existing custom recipe
+                        newRecipe.set_ID(existingItem.getRecipeId());
+                        dao.update(newRecipe);
+                        existingItem.setRecipeName(newRecipe.getName());
+                        existingItem.setCategory(newRecipe.getRecipeCategory());
+                        existingItem.setServings(newRecipe.getRecipeYield());
+                        recipeBoxDao.update(existingItem);
+
+                        Log.e("DEBUG_DEBUG", "...before the join block... existingItem.getRecipeId() = " + existingItem.getRecipeId());
+
+                        //delete old ingredient join items
+                        List<UserRecipeItemJoin> oldIngredients = joinDao.getJoinItemsInRecipe(existingItem.getRecipeId());
+                        for (int i=0; i<oldIngredients.size(); i++) {
+                            joinDao.delete(oldIngredients.get(i));
+                        }
+
+                        Log.e("DEBUG_DEBUG", "...after the delete block... oldIngredients.size() = " + oldIngredients.size());
+
+                        //add new ingredient join items
+                        for (int i=0; i<ingredientsList.size(); i++) {
+                            if (ingredientsList.get(i).itemId == -1) {
+                                ingredientsList.get(i).itemId = 0;
+                            }
+                            Log.e("DEBUG_DEBUG", "Item ID: " + ingredientsList.get(i).itemId);
+                            ingredientsList.get(i).recipeId = existingItem.getRecipeId();
+                            joinDao.insert(ingredientsList.get(i));
+                        }
+
+                    } else {
+                        //performing "Save As" on a read-only recipe
+                        long[] id = dao.insert(newRecipe);
+
+                        UserRecipeBoxItem boxItem = new UserRecipeBoxItem();
+                        boxItem.setUserAdded(true);
+                        boxItem.setRecipeId((int) id[0]);
+                        boxItem.setRecipeName(newRecipe.getName());
+                        boxItem.setCategory(newRecipe.getRecipeCategory());
+                        boxItem.setServings(newRecipe.getRecipeYield());
+                        recipeBoxDao.insert(boxItem);
+
+                        //add ingredients to join table
+                        for (int i=0; i<ingredientsList.size(); i++) {
+                            if (ingredientsList.get(i).itemId == -1) {
+                                ingredientsList.get(i).itemId = 0;
+                            }
+                            Log.e("DEBUG_DEBUG", "Item ID: " + ingredientsList.get(i).itemId);
+                            ingredientsList.get(i).recipeId = (int) id[0];
+                            joinDao.insert(ingredientsList.get(i));
+                        }
+                    }
                 }
             }).start();
         } catch (Exception e) {
@@ -433,12 +483,14 @@ public class CustomRecipeDialog extends DialogFragment {
                 @Override
                 public boolean onSuggestionSelect(int position) {
                     addChip(keywordChipGroup, keywordSearch.getQuery().toString());
+                    keywordsList.add(keywordSearch.getQuery().toString());
                     return false;
                 }
 
                 @Override
                 public boolean onSuggestionClick(int position) {
                     addChip(keywordChipGroup, keywordSearch.getQuery().toString());
+                    keywordsList.add(keywordSearch.getQuery().toString());
                     return false;
                 }
             });
@@ -446,6 +498,7 @@ public class CustomRecipeDialog extends DialogFragment {
                 @Override
                 public boolean onQueryTextSubmit(String query) {
                     addChip(keywordChipGroup, keywordSearch.getQuery().toString());
+                    keywordsList.add(keywordSearch.getQuery().toString());
                     return false;
                 }
 
@@ -553,7 +606,6 @@ public class CustomRecipeDialog extends DialogFragment {
                 }
             });
             entryChipGroup.addView(chip);
-            keywordsList.add(text);
         }
 
         private void setEntryBoxValues(List<EditText> entryBoxes) {
@@ -758,7 +810,6 @@ public class CustomRecipeDialog extends DialogFragment {
         private ArrayList<String> instructions = new ArrayList<>();
 
         //TODO: need instructions custom ViewGroup to allow editing!
-        //TODO: assign custom to newRecipe, also, can't edit a read-only recipe! (but maybe allow copying values over to custom to edit?)
 
         ThirdPageFragment(String mode) {
             MODE = mode;
@@ -783,11 +834,15 @@ public class CustomRecipeDialog extends DialogFragment {
                 //set up empty page
             } else if (MODE.equals("view")) {
                 //filled page that you can't edit
+                instructions = existingItem.isUserAdded() ? existingCustomRecipeItem.getRecipeInstructions() : readOnlyItem.getRecipeInstructions();
+                steps = instructions.size();
                 setInstructionsText(instructionsBox);
                 instructionEntry.setEnabled(false);
                 addBtn.setEnabled(false);
             } else if (MODE.equals("edit")) {
                 //have your data, and edit it, too!
+                instructions = existingItem.isUserAdded() ? existingCustomRecipeItem.getRecipeInstructions() : readOnlyItem.getRecipeInstructions();
+                steps = instructions.size(); //TODO: returning null???
                 setInstructionsText(instructionsBox);
             } else {
                 Log.e("Recipe Dialog Error", "Invalid mode selected: " + MODE);
@@ -801,9 +856,6 @@ public class CustomRecipeDialog extends DialogFragment {
                     instructionsBox.append(steps.toString() + ".) " + instructionEntry.getText() + "\n");
                     instructions.add(instructionEntry.getText().toString());
                     instructionEntry.setText("");
-                    if (existingItem.isUserAdded()) {
-                        existingCustomRecipeItem.setRecipeInstructions(instructions);
-                    }
                     newRecipe.setRecipeInstructions(instructions);
                 }
             });

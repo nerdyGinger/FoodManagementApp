@@ -75,7 +75,7 @@ public class RecipesListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         return dataSet.get(position);
     }
 
-    UserRecipeBoxItem deleteItem(int position) {
+    public UserRecipeBoxItem deleteItem(int position) {
         UserRecipeBoxItem deletedItem = dataSet.get(position);
         int deletedPosition = position;
         dataSet.remove(position);

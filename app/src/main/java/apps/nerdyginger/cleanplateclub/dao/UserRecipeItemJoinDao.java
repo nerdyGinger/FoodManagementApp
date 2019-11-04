@@ -1,6 +1,7 @@
 package apps.nerdyginger.cleanplateclub.dao;
 
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 
@@ -14,6 +15,9 @@ import apps.nerdyginger.cleanplateclub.models.UserRecipeItemJoin;
 public interface UserRecipeItemJoinDao {
     @Insert
     void insert(UserRecipeItemJoin userRecipeItemJoin);
+
+    @Delete
+    void delete(UserRecipeItemJoin userRecipeItemJoin);
 
     @Query("SELECT * FROM userRecipes " +
             "INNER JOIN userRecipeItemJoin " +

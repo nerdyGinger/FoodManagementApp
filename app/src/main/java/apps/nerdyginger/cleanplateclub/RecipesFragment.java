@@ -10,6 +10,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
@@ -27,6 +28,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.List;
 
 import apps.nerdyginger.cleanplateclub.adapters.RecipesListAdapter;
+import apps.nerdyginger.cleanplateclub.models.Item;
 import apps.nerdyginger.cleanplateclub.models.UserRecipeBoxItem;
 
 
@@ -99,7 +101,8 @@ public class RecipesFragment extends Fragment {
                 adapter.updateData(userRecipeBoxItems);
             }
         });
-        // to enable swipe to delete, need to create callback or edit inventory callback for item touch helper
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new RecipeSwipeDeleteCallback(adapter, context, recipeViewModel));
+        itemTouchHelper.attachToRecyclerView(rv);
 
         return view;
     }
