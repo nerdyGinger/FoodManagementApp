@@ -20,7 +20,7 @@
         android:layout_below="@+id/customRecipeInstructionsTitle"
         android:layout_centerHorizontal="true"
         android:background="#e6e3e3"
-        android:textColor="@color/colorAccent"
+        android:textColor="@color/custom_text_color"
         android:scrollbars="vertical"
         android:scrollbarAlwaysDrawVerticalTrack="true"
         android:maxLines="9"

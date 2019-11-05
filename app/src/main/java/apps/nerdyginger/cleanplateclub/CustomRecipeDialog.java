@@ -466,6 +466,8 @@ public class CustomRecipeDialog extends DialogFragment {
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                     if ( ! categoryAdapter.getItem(position).equals("Category") && ! MODE.equals("view")) {
                         newRecipe.setRecipeCategory(categoryAdapter.getItem(position));
+                    } else if (categoryAdapter.getItem(position).equals("Category")) {
+                        newRecipe.setRecipeCategory("");
                     }
                 }
 
@@ -487,6 +489,8 @@ public class CustomRecipeDialog extends DialogFragment {
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                     if ( ! cuisineAdapter.getItem(position).equals("Cuisine") && ! MODE.equals("view")) {
                         newRecipe.setRecipeCuisine(cuisineAdapter.getItem(position));
+                    } else if (cuisineAdapter.getItem(position).equals("Cuisine")) {
+                        newRecipe.setRecipeCuisine("");
                     }
                 }
 
