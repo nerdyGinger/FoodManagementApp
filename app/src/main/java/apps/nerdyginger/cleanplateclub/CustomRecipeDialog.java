@@ -65,8 +65,7 @@ import apps.nerdyginger.cleanplateclub.models.UserRecipeItemJoin;
 public class CustomRecipeDialog extends DialogFragment {
     private static final int pages = 3; // Slide-able pages for basic info, ingredients, and instructions
     private ViewPager pager;
-    private PagerAdapter pagerAdapter;
-    Button nextBtn;
+    private Button nextBtn;
     private static UserRecipe newRecipe = new UserRecipe();
     private static final ArrayList<UserRecipeItemJoin> ingredientsList = new ArrayList<>();
     private static final ArrayList<String> keywordsList = new ArrayList<>();
@@ -76,7 +75,7 @@ public class CustomRecipeDialog extends DialogFragment {
     //   "view"     ---   view existing recipe (not editable)
     //   "edit"     ---   edit existing recipe
     private String MODE;
-    static UserRecipeBoxItem existingItem;
+    private static UserRecipeBoxItem existingBoxItem;
 
     //for edit mode on read-only recipe
     private static Recipe readOnlyItem;
@@ -91,10 +90,10 @@ public class CustomRecipeDialog extends DialogFragment {
     }
 
     //constructor to set mode, pass in existing item
-    public CustomRecipeDialog(String mode, UserRecipeBoxItem item) {
+    CustomRecipeDialog(String mode, UserRecipeBoxItem item) {
         MODE = mode;
-        existingItem = item;
-        if ( ! MODE.equals("create") && ! existingItem.isUserAdded()) {
+        existingBoxItem = item;
+        if ( ! MODE.equals("create") && ! existingBoxItem.isUserAdded()) {
             //if passed in item is read-only, get from appropriate db
             getReadOnlyItem();
             if (MODE.equals("edit")) {
@@ -114,6 +113,15 @@ public class CustomRecipeDialog extends DialogFragment {
         } else if ( ! MODE.equals("create")) {
             //existing item is custom, so get whether viewing or editing
             getCustomItem();
+            newRecipe.setName(existingCustomRecipeItem.getName());
+            newRecipe.setAuthor(existingCustomRecipeItem.getAuthor());
+            newRecipe.setDescription(existingCustomRecipeItem.getDescription());
+            newRecipe.setTotalTime(existingCustomRecipeItem.getTotalTime());
+            newRecipe.setRecipeYield(existingCustomRecipeItem.getRecipeYield());
+            newRecipe.setKeywords(existingCustomRecipeItem.getKeywords());
+            newRecipe.setRecipeCategory(existingCustomRecipeItem.getRecipeCategory());
+            newRecipe.setRecipeCuisine(existingCustomRecipeItem.getRecipeCuisine());
+            newRecipe.setRecipeInstructions(existingCustomRecipeItem.getRecipeInstructions());
         }
     }
 
@@ -124,7 +132,7 @@ public class CustomRecipeDialog extends DialogFragment {
                 try {
                     UserCustomDatabase db = UserCustomDatabase.getDatabase(getContext());
                     UserRecipeDao dao = db.getUserRecipeDao();
-                    existingCustomRecipeItem = dao.getUserRecipeById(existingItem.getRecipeId());
+                    existingCustomRecipeItem = dao.getUserRecipeById(existingBoxItem.getRecipeId());
                 } catch (Exception e) {
                     Log.e("Database Error", "Error accessing read-only recipe item: " + e.toString());
                 }
@@ -144,7 +152,7 @@ public class CustomRecipeDialog extends DialogFragment {
             public void run() {
                 try {
                     RecipeDao dao = new RecipeDao(getContext());
-                    readOnlyItem = dao.buildRecipeFromId(String.valueOf(existingItem.getRecipeId()));
+                    readOnlyItem = dao.buildRecipeFromId(String.valueOf(existingBoxItem.getRecipeId()));
                 } catch (Exception e) {
                     Log.e("Database Error", "Error accessing read-only recipe item: " + e.toString());
                 }
@@ -170,8 +178,8 @@ public class CustomRecipeDialog extends DialogFragment {
         //find views
         TextView title = parentView.findViewById(R.id.customRecipeTitle);
         Button editBtn = parentView.findViewById(R.id.customRecipeEditBtn);
-        pager = (ViewPager) parentView.findViewById(R.id.customRecipeViewPager);
-        TabLayout tabs = (TabLayout) parentView.findViewById(R.id.customRecipePagerDots);
+        pager = parentView.findViewById(R.id.customRecipeViewPager);
+        TabLayout tabs = parentView.findViewById(R.id.customRecipePagerDots);
 
         //set parent views according to mode
         if (MODE.equals("view")) {
@@ -181,7 +189,7 @@ public class CustomRecipeDialog extends DialogFragment {
                 @Override
                 public void onClick(View v) {
                     getDialog().dismiss();
-                    CustomRecipeDialog dialog = new CustomRecipeDialog("edit", existingItem);
+                    CustomRecipeDialog dialog = new CustomRecipeDialog("edit", existingBoxItem);
                     dialog.show(getFragmentManager(), "input a recipe!");
                 }
             });
@@ -192,7 +200,7 @@ public class CustomRecipeDialog extends DialogFragment {
         //set up pages and pager dots
         pager.setOffscreenPageLimit(2);
         tabs.setupWithViewPager(pager, true);
-        pagerAdapter = new ScreenSlidePagerAdapter(getChildFragmentManager(), MODE);
+        PagerAdapter pagerAdapter = new ScreenSlidePagerAdapter(getChildFragmentManager(), MODE);
         pager.setAdapter(pagerAdapter);
 
         addDialogBtnClicks(parentView);
@@ -201,10 +209,13 @@ public class CustomRecipeDialog extends DialogFragment {
     }
 
     private void addDialogBtnClicks(View view) {
-        Button backBtn = view.findViewById(R.id.customRecipeBackBtn);
+        final Button backBtn = view.findViewById(R.id.customRecipeBackBtn);
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (pager.getCurrentItem() == 2) {
+                    nextBtn.setText("Next");
+                }
                 pager.setCurrentItem(pager.getCurrentItem() - 1, true);
             }
         });
@@ -224,13 +235,16 @@ public class CustomRecipeDialog extends DialogFragment {
             public void onClick(View v) {
                 if (pager.getCurrentItem() == 2) {
                     newRecipe.setKeywords(keywordsList);
-                    if (MODE.equals("edit") && existingItem.isUserAdded()) {
+                    if (MODE.equals("edit") && existingBoxItem.isUserAdded()) {
                         performUpdateOperations();
-                    } else {
+                    } else if (MODE.equals("edit") | MODE.equals("create")) {
                         performInsertOperations();
                     }
                     dismiss();
                 } else {
+                    if (pager.getCurrentItem() == 1) {
+                        nextBtn.setText("Save");
+                    }
                     pager.setCurrentItem(pager.getCurrentItem() + 1, true);
                 }
             }
@@ -247,24 +261,20 @@ public class CustomRecipeDialog extends DialogFragment {
                     UserRecipeItemJoinDao joinDao = db.getUserRecipeItemJoinDao();
                     UserRecipeBoxDao recipeBoxDao = db.getUserRecipeBoxDao();
 
-                    if (existingItem.isUserAdded()) {
+                    if (existingBoxItem.isUserAdded()) {
                         //editing an existing custom recipe
-                        newRecipe.set_ID(existingItem.getRecipeId());
+                        newRecipe.set_ID(existingBoxItem.getRecipeId());
                         dao.update(newRecipe);
-                        existingItem.setRecipeName(newRecipe.getName());
-                        existingItem.setCategory(newRecipe.getRecipeCategory());
-                        existingItem.setServings(newRecipe.getRecipeYield());
-                        recipeBoxDao.update(existingItem);
-
-                        Log.e("DEBUG_DEBUG", "...before the join block... existingItem.getRecipeId() = " + existingItem.getRecipeId());
+                        existingBoxItem.setRecipeName(newRecipe.getName());
+                        existingBoxItem.setCategory(newRecipe.getRecipeCategory());
+                        existingBoxItem.setServings(newRecipe.getRecipeYield());
+                        recipeBoxDao.update(existingBoxItem);
 
                         //delete old ingredient join items
-                        List<UserRecipeItemJoin> oldIngredients = joinDao.getJoinItemsInRecipe(existingItem.getRecipeId());
+                        List<UserRecipeItemJoin> oldIngredients = joinDao.getJoinItemsInRecipe(existingBoxItem.getRecipeId());
                         for (int i=0; i<oldIngredients.size(); i++) {
                             joinDao.delete(oldIngredients.get(i));
                         }
-
-                        Log.e("DEBUG_DEBUG", "...after the delete block... oldIngredients.size() = " + oldIngredients.size());
 
                         //add new ingredient join items
                         for (int i=0; i<ingredientsList.size(); i++) {
@@ -272,7 +282,7 @@ public class CustomRecipeDialog extends DialogFragment {
                                 ingredientsList.get(i).itemId = 0;
                             }
                             Log.e("DEBUG_DEBUG", "Item ID: " + ingredientsList.get(i).itemId);
-                            ingredientsList.get(i).recipeId = existingItem.getRecipeId();
+                            ingredientsList.get(i).recipeId = existingBoxItem.getRecipeId();
                             joinDao.insert(ingredientsList.get(i));
                         }
 
@@ -306,16 +316,24 @@ public class CustomRecipeDialog extends DialogFragment {
     }
 
     private void performInsertOperations(){
-        try {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
                     //insert UserRecipe
                     UserCustomDatabase db = UserCustomDatabase.getDatabase(getContext());
                     UserRecipeDao dao = db.getUserRecipeDao();
                     UserRecipeItemJoinDao itemsDao = db.getUserRecipeItemJoinDao();
                     UserRecipeBoxDao recipeBoxDao = db.getUserRecipeBoxDao();
-                    long[] id = dao.insert(newRecipe);
+                    Log.e("INSERT_DEBUG", "Old _ID: " + newRecipe.get_ID());
+                    long[] id = new long[1];
+                    try {
+                        id = dao.insert(newRecipe);
+                    } catch (Exception e){
+                        Log.e("Nope! Didn't work!", "Recipe _ID: " + newRecipe.get_ID() + " exists for Recipe: " + dao.getUserRecipeById(newRecipe.get_ID()).getName());
+                        newRecipe.set_ID(newRecipe.get_ID() + 1);
+                        id[0] = (long) newRecipe.get_ID();
+                    }
 
                     //insert UserRecipeBoxItem
                     UserRecipeBoxItem boxItem = new UserRecipeBoxItem();
@@ -329,7 +347,7 @@ public class CustomRecipeDialog extends DialogFragment {
                     Log.e("DEBUG_DEBUG", "Recipe ID: " + id[0]);
 
                     //add ingredients to join table
-                    for (int i=0; i<ingredientsList.size(); i++) {
+                    for (int i = 0; i < ingredientsList.size(); i++) {
                         if (ingredientsList.get(i).itemId == -1) {
                             ingredientsList.get(i).itemId = 0;
                         }
@@ -337,11 +355,11 @@ public class CustomRecipeDialog extends DialogFragment {
                         ingredientsList.get(i).recipeId = (int) id[0];
                         itemsDao.insert(ingredientsList.get(i));
                     }
+                } catch (Exception e) {
+                    Log.e("Database Error", e.toString());
                 }
-            }).start();
-        } catch (Exception e) {
-            Log.e("Database Error", e.toString());
-        }
+            }
+        }).start();
     }
 
     /*
@@ -358,14 +376,14 @@ public class CustomRecipeDialog extends DialogFragment {
         @Override
         public Fragment getItem(int position) {
             if (position == 0) {
-                nextBtn.setText("Next");
+                //nextBtn.setText("Next");
                 return new FirstPageFragment(parentMode);
             } else if (position == 1) {
-                nextBtn.setText("Next");
+                //nextBtn.setText("Next");
                 return new SecondPageFragment(parentMode);
             } else {
                 //defaults to third page
-                nextBtn.setText("Save");
+                //nextBtn.setText("Save");
                 return new ThirdPageFragment(parentMode);
             }
         }
@@ -431,7 +449,7 @@ public class CustomRecipeDialog extends DialogFragment {
                 //set image
                 getExistingKeywords(keywordChipGroup);
                 setEntryBoxValues(entryBoxes);
-                if ( ! existingItem.isUserAdded()) {
+                if ( ! existingBoxItem.isUserAdded()) {
                     //if editing read-only recipe, don't allow same name to be used (we're performing a pseudo save-as function!)
                     nameBox.setTextColor(Color.RED);
                 }
@@ -442,7 +460,7 @@ public class CustomRecipeDialog extends DialogFragment {
             //add categories to spinner
             final ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, getCategories());
             categorySpinner.setAdapter(categoryAdapter);
-            if (MODE.equals("edit")) { categorySpinner.setSelection(categoryAdapter.getPosition(existingItem.getCategory())); }
+            if (MODE.equals("edit")) { categorySpinner.setSelection(categoryAdapter.getPosition(existingBoxItem.getCategory())); }
             categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -461,7 +479,7 @@ public class CustomRecipeDialog extends DialogFragment {
             final ArrayAdapter<String> cuisineAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, getCuisines());
             cuisineSpinner.setAdapter(cuisineAdapter);
             if (MODE.equals("edit")) {
-                String cuisine = existingItem.isUserAdded() ? existingCustomRecipeItem.getRecipeCuisine() : readOnlyItem.getRecipeCuisine();
+                String cuisine = existingBoxItem.isUserAdded() ? existingCustomRecipeItem.getRecipeCuisine() : readOnlyItem.getRecipeCuisine();
                 cuisineSpinner.setSelection(cuisineAdapter.getPosition(cuisine));
             }
             cuisineSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -525,7 +543,7 @@ public class CustomRecipeDialog extends DialogFragment {
                 nameBox.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                     @Override
                     public void onFocusChange(View v, boolean hasFocus) {
-                        if (MODE.equals("edit") && ! existingItem.isUserAdded() && nameNotAllowed.equals(nameBox.getText().toString())) {
+                        if (MODE.equals("edit") && ! existingBoxItem.isUserAdded() && nameNotAllowed.equals(nameBox.getText().toString())) {
                             nameBox.setTextColor(Color.RED);
                         }
                         nameBox.setTextColor(getResources().getColor(R.color.editTextColor));
@@ -610,7 +628,7 @@ public class CustomRecipeDialog extends DialogFragment {
 
         private void setEntryBoxValues(List<EditText> entryBoxes) {
             List<String> values = new ArrayList<>();
-            if (existingItem.isUserAdded()) {
+            if (existingBoxItem.isUserAdded()) {
                 values.addAll(Arrays.asList(existingCustomRecipeItem.getName(), existingCustomRecipeItem.getAuthor(),
                         existingCustomRecipeItem.getDescription(), existingCustomRecipeItem.getTotalTime(), existingCustomRecipeItem.getRecipeYield()));
             } else {
@@ -618,19 +636,25 @@ public class CustomRecipeDialog extends DialogFragment {
                         readOnlyItem.getDescription(), readOnlyItem.getTotalTime(), readOnlyItem.getRecipeYield()));
             }
             for (int i=0; i<entryBoxes.size(); i++) {
-                entryBoxes.get(i).setText(values.get(i));
+                if (values.get(i) != null) {
+                    entryBoxes.get(i).setText(values.get(i));
+                }
             }
         }
 
         //pulls keywords from existing item and adds them to the chip group
         private void getExistingKeywords(ChipGroup entryChipGroup) {
-            if (existingItem.isUserAdded()) {
-                for (int i=0; i<existingCustomRecipeItem.getKeywords().size(); i++) {
-                    addChip(entryChipGroup, existingCustomRecipeItem.getKeywords().get(i));
+            if (existingBoxItem.isUserAdded()) {
+                if (existingCustomRecipeItem.getKeywords() != null) {
+                    for (int i=0; i<existingCustomRecipeItem.getKeywords().size(); i++) {
+                        addChip(entryChipGroup, existingCustomRecipeItem.getKeywords().get(i));
+                    }
                 }
             } else {
-                for (int i=0; i<readOnlyItem.getKeywords().size(); i++) {
-                    addChip(entryChipGroup, readOnlyItem.getKeywords().get(i));
+                if (readOnlyItem.getKeywords() != null) {
+                    for (int i=0; i<readOnlyItem.getKeywords().size(); i++) {
+                        addChip(entryChipGroup, readOnlyItem.getKeywords().get(i));
+                    }
                 }
             }
         }
@@ -639,7 +663,9 @@ public class CustomRecipeDialog extends DialogFragment {
         private List<String> getCategories() {
             List<String> categories = new ArrayList<>();
             if (MODE.equals("view")) {
-                categories.add(existingItem.getCategory());
+                if (existingBoxItem.getCategory() != null) {
+                    categories.add(existingBoxItem.getCategory());
+                }
             } else {
                 categories.add("Category");
                 CategoryDao dao = new CategoryDao(getContext());
@@ -652,10 +678,14 @@ public class CustomRecipeDialog extends DialogFragment {
         private List<String> getCuisines() {
             List<String> cuisines = new ArrayList<>();
             if (MODE.equals("view")) {
-                if (existingItem.isUserAdded()) {
-                    cuisines.add(existingCustomRecipeItem.getRecipeCuisine());
+                if (existingBoxItem.isUserAdded()) {
+                    if (existingCustomRecipeItem.getRecipeCuisine() != null) {
+                        cuisines.add(existingCustomRecipeItem.getRecipeCuisine());
+                    }
                 } else {
-                    cuisines.add(readOnlyItem.getRecipeCuisine());
+                    if (readOnlyItem.getRecipeCuisine() != null) {
+                        cuisines.add(readOnlyItem.getRecipeCuisine());
+                    }
                 }
             } else {
                 cuisines.add("Cuisine");
@@ -691,15 +721,17 @@ public class CustomRecipeDialog extends DialogFragment {
             final AutoCompleteTextView ingredientName = view.findViewById(R.id.customRecipeIngredientName);
             final EditText ingredientAmount = view.findViewById(R.id.customRecipeIngredientsAmount);
             final EditText ingredientDetail = view.findViewById(R.id.customRecipeIngredientsDetail);
+            ImageButton addBtn = view.findViewById(R.id.customRecipeIngredientsAddBtn);
 
             if (MODE.equals("create")) {
                 //initialize empty page
             } else if (MODE.equals("view")) {
                 //initialize disabled page filled with data
-                unitSpinner.setEnabled(false);
-                ingredientName.setEnabled(false);
-                ingredientAmount.setEnabled(false);
-                ingredientDetail.setEnabled(false);
+                unitSpinner.setVisibility(View.GONE);
+                ingredientName.setVisibility(View.GONE);
+                ingredientAmount.setVisibility(View.GONE);
+                ingredientDetail.setVisibility(View.GONE);
+                addBtn.setVisibility(View.GONE);
                 setIngredientsText(ingredientsText);
             } else if (MODE.equals("edit")) {
                 //best of both worlds! initialize editable page filled with data
@@ -717,7 +749,6 @@ public class CustomRecipeDialog extends DialogFragment {
             ingredientName.setAdapter(nameAdapter);
 
             //add functionality to add button
-            ImageButton addBtn = view.findViewById(R.id.customRecipeIngredientsAddBtn);
             addBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -752,7 +783,7 @@ public class CustomRecipeDialog extends DialogFragment {
             Thread t = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    if (existingItem.isUserAdded()) {
+                    if (existingBoxItem.isUserAdded()) {
                         UserCustomDatabase db = UserCustomDatabase.getDatabase(getContext());
                         UserRecipeItemJoinDao dao = db.getUserRecipeItemJoinDao();
                         List<UserRecipeItemJoin> joinItems = dao.getJoinItemsInRecipe(existingCustomRecipeItem.get_ID());
@@ -834,16 +865,26 @@ public class CustomRecipeDialog extends DialogFragment {
                 //set up empty page
             } else if (MODE.equals("view")) {
                 //filled page that you can't edit
-                instructions = existingItem.isUserAdded() ? existingCustomRecipeItem.getRecipeInstructions() : readOnlyItem.getRecipeInstructions();
-                steps = instructions.size();
-                setInstructionsText(instructionsBox);
-                instructionEntry.setEnabled(false);
-                addBtn.setEnabled(false);
+                instructions = existingBoxItem.isUserAdded() ? existingCustomRecipeItem.getRecipeInstructions() : readOnlyItem.getRecipeInstructions();
+                if (instructions != null) {
+                    //only set steps if there were actually instructions previously
+                    steps = instructions.size();
+                    setInstructionsText(instructionsBox);
+                } else {
+                    instructions = new ArrayList<>();
+                }
+                instructionEntry.setVisibility(View.GONE);
+                addBtn.setVisibility(View.GONE);
             } else if (MODE.equals("edit")) {
                 //have your data, and edit it, too!
-                instructions = existingItem.isUserAdded() ? existingCustomRecipeItem.getRecipeInstructions() : readOnlyItem.getRecipeInstructions();
-                steps = instructions.size(); //TODO: returning null???
-                setInstructionsText(instructionsBox);
+                instructions = existingBoxItem.isUserAdded() ? existingCustomRecipeItem.getRecipeInstructions() : readOnlyItem.getRecipeInstructions();
+                if (instructions != null) {
+                    //only set steps if there were actually instructions previously
+                    steps = instructions.size();
+                    setInstructionsText(instructionsBox);
+                } else {
+                    instructions = new ArrayList<>();
+                }
             } else {
                 Log.e("Recipe Dialog Error", "Invalid mode selected: " + MODE);
             }
@@ -865,7 +906,7 @@ public class CustomRecipeDialog extends DialogFragment {
 
         private void setInstructionsText(TextView box) {
             int count = 0;
-            if (existingItem.isUserAdded()) {
+            if (existingBoxItem.isUserAdded()) {
                 for (int i=0; i<existingCustomRecipeItem.getRecipeInstructions().size(); i++) {
                     count++;
                     box.append(String.valueOf(count) + ".) " + existingCustomRecipeItem.getRecipeInstructions().get(i) + "\n");

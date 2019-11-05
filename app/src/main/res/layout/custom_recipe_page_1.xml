@@ -29,6 +29,8 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:layout_toEndOf="@+id/customRecipeImage"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:hint="Recipe Name"
             />
 
@@ -39,6 +41,8 @@
             android:layout_margin="5dp"
             android:layout_below="@+id/customRecipeName"
             android:layout_toEndOf="@+id/customRecipeImage"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:hint="Author"
             />
 
@@ -71,6 +75,8 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:layout_below="@+id/customRecipeDescriptionLayout"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:hint="Total Time"
             />
 
@@ -81,6 +87,8 @@
             android:layout_margin="5dp"
             android:layout_below="@+id/customRecipeDescriptionLayout"
             android:layout_toEndOf="@+id/customRecipeTotalTime"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:hint="Yield"
             />
 
