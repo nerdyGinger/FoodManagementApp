@@ -33,9 +33,22 @@
             android:layout_width="match_parent"
             android:layout_height="150dp"
             android:gravity="top"
+            android:textColor="@color/custom_text_color"
             />
 
     </com.google.android.material.textfield.TextInputLayout>
+
+    <ImageButton
+        android:id="@+id/customRecipeInstructionsDeleteBtn"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="5dp"
+        android:layout_alignParentEnd="true"
+        android:layout_above="@+id/customRecipeInstructionsAddBtn"
+        android:src="@android:drawable/ic_menu_delete"
+        android:background="@android:color/holo_red_dark"
+        android:visibility="gone"
+        />
 
     <ImageButton
         android:id="@+id/customRecipeInstructionsAddBtn"

@@ -22,7 +22,6 @@ import android.widget.ImageButton;
 import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
@@ -76,6 +75,7 @@ public class CustomRecipeDialog extends DialogFragment {
     private static UserRecipe newRecipe = new UserRecipe();
     private static final ArrayList<UserRecipeItemJoin> ingredientsList = new ArrayList<>();
     private static final ArrayList<String> keywordsList = new ArrayList<>();
+    private static RecipeInstructionsAdapter instructionsAdapter = new RecipeInstructionsAdapter();
 
     //enable reuse for viewing/editing recipes
     //   "create"   ---   new custom recipe
@@ -241,6 +241,11 @@ public class CustomRecipeDialog extends DialogFragment {
             @Override
             public void onClick(View v) {
                 if (pager.getCurrentItem() == 2) {
+                    ArrayList<String> instructions = new ArrayList<>();
+                    for (int i = 0; i< instructionsAdapter.getItemCount(); i++) {
+                        instructions.add(instructionsAdapter.getItemAtPosition(i).getInstructionText());
+                    }
+                    newRecipe.setRecipeInstructions(instructions);
                     newRecipe.setKeywords(keywordsList);
                     if (MODE.equals("edit") && existingBoxItem.isUserAdded()) {
                         performUpdateOperations();
@@ -370,7 +375,7 @@ public class CustomRecipeDialog extends DialogFragment {
     }
 
     /*
-     * Inner adapter class for our lovely pager in the custom recipe dialog
+     * Inner instructionsAdapter class for our lovely pager in the custom recipe dialog
      */
     private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
         private String parentMode;
@@ -855,7 +860,6 @@ public class CustomRecipeDialog extends DialogFragment {
         private String MODE;
         private ArrayList<String> instructions = new ArrayList<>();
         private List<RecipeInstructionsViewModel> modelList = new ArrayList<>();
-        private RecipeInstructionsAdapter adapter;
 
         //TODO: add button for deletion
 
@@ -878,9 +882,9 @@ public class CustomRecipeDialog extends DialogFragment {
             rv.setHasFixedSize(true);
             LinearLayoutManager llm = new LinearLayoutManager(getContext());
             rv.setLayoutManager(llm);
-            adapter = new RecipeInstructionsAdapter();
-            rv.setAdapter(adapter);
-            adapter.updateData(modelList);
+            instructionsAdapter = new RecipeInstructionsAdapter();
+            rv.setAdapter(instructionsAdapter);
+            instructionsAdapter.updateData(modelList);
             //TODO: possibly create custom animation...
             ((SimpleItemAnimator) rv.getItemAnimator()).setSupportsChangeAnimations(false);
 
@@ -889,27 +893,27 @@ public class CustomRecipeDialog extends DialogFragment {
             switch (MODE) {
                 case "create":
                     //set up empty page
-                    adapter.isClickable = true;
+                    instructionsAdapter.isClickable = true;
                     modelList.add(new RecipeInstructionsViewModel("", true));
-                    adapter.updateData(modelList);
+                    instructionsAdapter.updateData(modelList);
                     break;
                 case "view":
                     //filled page that you can't edit
-                    adapter.isClickable = false;
+                    instructionsAdapter.isClickable = false;
                     instructions = existingBoxItem.isUserAdded() ? existingCustomRecipeItem.getRecipeInstructions() : readOnlyItem.getRecipeInstructions();
                     if (instructions != null) {
                         //only set steps if there were actually instructions previously
                         for (int i = 0; i < instructions.size(); i++) {
                             modelList.add(new RecipeInstructionsViewModel(instructions.get(i), false));
                         }
-                        adapter.updateData(modelList);
+                        instructionsAdapter.updateData(modelList);
                     } else {
                         instructions = new ArrayList<>();
                     }
                     break;
                 case "edit":
                     //have your data, and edit it, too!
-                    adapter.isClickable = true;
+                    instructionsAdapter.isClickable = true;
                     instructions = existingBoxItem.isUserAdded() ? existingCustomRecipeItem.getRecipeInstructions() : readOnlyItem.getRecipeInstructions();
                     if (instructions != null) {
                         //only set steps if there were actually instructions previously
@@ -920,7 +924,7 @@ public class CustomRecipeDialog extends DialogFragment {
                         instructions = new ArrayList<>();
                     }
                     modelList.add(new RecipeInstructionsViewModel("", true));
-                    adapter.updateData(modelList);
+                    instructionsAdapter.updateData(modelList);
                     break;
                 default:
                     Log.e("Recipe Dialog Error", "Invalid mode selected: " + MODE);
@@ -934,12 +938,12 @@ public class CustomRecipeDialog extends DialogFragment {
         // (vvv    'cause this isn't working    vvv)
         @Override
         public void onStop() {
+            super.onStop();
             instructions = new ArrayList<>();
-            for (int i=0; i<adapter.getItemCount(); i++) {
-                instructions.add(adapter.getItemAtPosition(i).getInstructionText());
+            for (int i = 0; i< instructionsAdapter.getItemCount(); i++) {
+                instructions.add(instructionsAdapter.getItemAtPosition(i).getInstructionText());
             }
             newRecipe.setRecipeInstructions(instructions);
-            super.onStop();
         }
 
     }

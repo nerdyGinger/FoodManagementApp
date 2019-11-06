@@ -37,6 +37,7 @@ public class RecipeInstructionsAdapter extends RecyclerView.Adapter<RecyclerView
         private EditText editStep;
         private TextInputLayout editLayoutHolder;
         private ImageButton addBtn;
+        private ImageButton deleteBtn;
         private View itemView;
 
         RecipeInstructionsViewHolder(View itemView) {
@@ -46,6 +47,7 @@ public class RecipeInstructionsAdapter extends RecyclerView.Adapter<RecyclerView
             editStep = itemView.findViewById(R.id.customRecipeInstructionsEntry);
             editLayoutHolder = itemView.findViewById(R.id.customRecipeInstructionsEntryLayout);
             addBtn = itemView.findViewById(R.id.customRecipeInstructionsAddBtn);
+            deleteBtn = itemView.findViewById(R.id.customRecipeInstructionsDeleteBtn);
             addBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -57,6 +59,12 @@ public class RecipeInstructionsAdapter extends RecyclerView.Adapter<RecyclerView
                         dataSet.add(new RecipeInstructionsViewModel("", true));
                         notifyDataSetChanged();
                     }
+                }
+            });
+            deleteBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    deleteItem(getAdapterPosition());
                 }
             });
             itemView.setOnClickListener(this);
@@ -101,10 +109,13 @@ public class RecipeInstructionsAdapter extends RecyclerView.Adapter<RecyclerView
         boolean expanded = item.isExpanded();
         holder.editStep.setVisibility(expanded ? View.VISIBLE : View.GONE);
         holder.editLayoutHolder.setVisibility(expanded ? View.VISIBLE : View.GONE);
-        holder.addBtn.setVisibility(expanded ? View.VISIBLE : View.GONE);
         holder.stepPreview.setVisibility(expanded ? View.GONE : View.VISIBLE);
         holder.stepPreview.setText(item.getInstructionText());
         holder.editStep.setText(item.getInstructionText());
+        if (isClickable) {
+            holder.addBtn.setVisibility(expanded ? View.VISIBLE : View.GONE);
+            holder.deleteBtn.setVisibility(expanded ? View.VISIBLE : View.GONE);
+        }
     }
 
     @NonNull
@@ -126,7 +137,11 @@ public class RecipeInstructionsAdapter extends RecyclerView.Adapter<RecyclerView
             @Override
             public void onClick(View v) {
                 item.setExpanded( ! item.isExpanded());
-                item.setInstructionText(holder.editStep.getText().toString());
+                if (isClickable) {
+                    item.setInstructionText(holder.editStep.getText().toString());
+                } else {
+                    holder.editStep.setEnabled(false);
+                }
                 notifyItemChanged(position);
                 for (int i=0; i<getItemCount(); i++) {
                     if (i != position) {
