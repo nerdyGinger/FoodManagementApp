@@ -1,4 +1,4 @@
-package apps.nerdyginger.cleanplateclub;
+package apps.nerdyginger.cleanplateclub.view_models;
 
 import android.app.Application;
 import android.os.AsyncTask;
@@ -9,6 +9,7 @@ import androidx.lifecycle.LiveData;
 
 import java.util.List;
 
+import apps.nerdyginger.cleanplateclub.UserCustomDatabase;
 import apps.nerdyginger.cleanplateclub.models.UserRecipeBoxItem;
 
 public class RecipeViewModel extends AndroidViewModel {

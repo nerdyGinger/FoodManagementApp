@@ -12,6 +12,16 @@
         android:text="Instructions"
         />
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/customRecipeInstructionsRecycler"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:layout_margin="5dp"
+        android:layout_below="@+id/customRecipeInstructionsTitle"
+        />
+
+    <!--
+
     <TextView
         android:id="@+id/customRecipeInstructions"
         android:layout_width="match_parent"
@@ -58,5 +68,6 @@
         android:background="@drawable/add_button"
         />
 
+    -->
 
 </RelativeLayout>

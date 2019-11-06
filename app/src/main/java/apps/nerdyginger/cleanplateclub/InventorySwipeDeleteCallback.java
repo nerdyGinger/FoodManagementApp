@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import apps.nerdyginger.cleanplateclub.adapters.InventoryListAdapter;
 import apps.nerdyginger.cleanplateclub.models.UserInventoryItem;
+import apps.nerdyginger.cleanplateclub.view_models.InventoryViewModel;
 
 /*
     Thanks where thanks is due -- I really appreciate the dev community!

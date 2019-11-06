@@ -37,6 +37,7 @@ import apps.nerdyginger.cleanplateclub.dao.ItemDao;
 import apps.nerdyginger.cleanplateclub.dao.UnitDao;
 import apps.nerdyginger.cleanplateclub.dao.UserInventoryItemDao;
 import apps.nerdyginger.cleanplateclub.models.UserInventoryItem;
+import apps.nerdyginger.cleanplateclub.view_models.InventoryViewModel;
 
 public class InventoryFragment extends Fragment {
     private UserCustomDatabase userDatabase;

@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -23,11 +22,16 @@ import android.widget.ImageButton;
 import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SimpleItemAnimator;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
@@ -42,7 +46,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
+import apps.nerdyginger.cleanplateclub.adapters.RecipeInstructionsAdapter;
 import apps.nerdyginger.cleanplateclub.dao.CategoryDao;
 import apps.nerdyginger.cleanplateclub.dao.CuisineDao;
 import apps.nerdyginger.cleanplateclub.dao.ItemDao;
@@ -57,6 +63,7 @@ import apps.nerdyginger.cleanplateclub.models.RecipeItemJoin;
 import apps.nerdyginger.cleanplateclub.models.UserRecipe;
 import apps.nerdyginger.cleanplateclub.models.UserRecipeBoxItem;
 import apps.nerdyginger.cleanplateclub.models.UserRecipeItemJoin;
+import apps.nerdyginger.cleanplateclub.view_models.RecipeInstructionsViewModel;
 
 /*
  * This is the dialog for custom recipe input. It must be beautiful, elegant, and absolutely dreamy.
@@ -565,7 +572,7 @@ public class CustomRecipeDialog extends DialogFragment {
                 descriptionBox.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                     @Override
                     public void onFocusChange(View v, boolean hasFocus) {
-                        newRecipe.setDescription(descriptionBox.getText().toString());
+                        newRecipe.setDescription(Objects.requireNonNull(descriptionBox.getText()).toString());
                     }
                 });
 
@@ -612,7 +619,7 @@ public class CustomRecipeDialog extends DialogFragment {
 
         // Adds a new to chip to the input chip group (recipe keywords)
         private void addChip(final ChipGroup entryChipGroup, String text) {
-            final Chip chip = new Chip(getContext());
+            final Chip chip = new Chip(Objects.requireNonNull(getContext()));
             chip.setChipDrawable(ChipDrawable.createFromResource(getContext(), R.xml.keyword_chip));
             int paddingDp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, getResources().getDisplayMetrics());
             chip.setPadding(paddingDp, paddingDp, paddingDp, paddingDp);
@@ -727,25 +734,30 @@ public class CustomRecipeDialog extends DialogFragment {
             final EditText ingredientDetail = view.findViewById(R.id.customRecipeIngredientsDetail);
             ImageButton addBtn = view.findViewById(R.id.customRecipeIngredientsAddBtn);
 
-            if (MODE.equals("create")) {
-                //initialize empty page
-            } else if (MODE.equals("view")) {
-                //initialize disabled page filled with data
-                unitSpinner.setVisibility(View.GONE);
-                ingredientName.setVisibility(View.GONE);
-                ingredientAmount.setVisibility(View.GONE);
-                ingredientDetail.setVisibility(View.GONE);
-                addBtn.setVisibility(View.GONE);
-                setIngredientsText(ingredientsText);
-            } else if (MODE.equals("edit")) {
-                //best of both worlds! initialize editable page filled with data
-                setIngredientsText(ingredientsText);
-            } else {
-                Log.e("Recipe Dialog Error", "Invalid mode selected: " + MODE);
+            switch (MODE) {
+                case "create":
+                    //initialize empty page
+                    break;
+                case "view":
+                    //initialize disabled page filled with data
+                    unitSpinner.setVisibility(View.GONE);
+                    ingredientName.setVisibility(View.GONE);
+                    ingredientAmount.setVisibility(View.GONE);
+                    ingredientDetail.setVisibility(View.GONE);
+                    addBtn.setVisibility(View.GONE);
+                    setIngredientsText(ingredientsText);
+                    break;
+                case "edit":
+                    //best of both worlds! initialize editable page filled with data
+                    setIngredientsText(ingredientsText);
+                    break;
+                default:
+                    Log.e("Recipe Dialog Error", "Invalid mode selected: " + MODE);
+                    break;
             }
 
             //add units to unit spinner
-            final ArrayAdapter<String> unitAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, getUnits());
+            final ArrayAdapter<String> unitAdapter = new ArrayAdapter<>(Objects.requireNonNull(getContext()), android.R.layout.simple_list_item_1, getUnits());
             unitSpinner.setAdapter(unitAdapter);
 
             //add names to ingredient name search
@@ -762,7 +774,7 @@ public class CustomRecipeDialog extends DialogFragment {
                     joinItem.itemId = getItemId(joinItem.itemName); //set to -1 if not in db
                     joinItem.quantity = ingredientAmount.getText().toString();
                     ingredientAmount.setText("");
-                    joinItem.unit = unitAdapter.getItem(unitSpinner.getSelectedItemPosition()).equals("Units") ? "" : unitAdapter.getItem(unitSpinner.getSelectedItemPosition());
+                    joinItem.unit = Objects.equals(unitAdapter.getItem(unitSpinner.getSelectedItemPosition()), "Units") ? "" : unitAdapter.getItem(unitSpinner.getSelectedItemPosition());
                     if (ingredientDetail.getText().toString().equals("")) {
                         joinItem.detail = "";
                     } else {
@@ -831,7 +843,7 @@ public class CustomRecipeDialog extends DialogFragment {
 
         private List<String> getUnits() {
             List<String> units = new ArrayList<>();
-            SharedPreferences userPreferences = getContext().getSharedPreferences(getContext().getPackageName() + "userPreferences", Context.MODE_PRIVATE);
+            SharedPreferences userPreferences = Objects.requireNonNull(getContext()).getSharedPreferences(getContext().getPackageName() + "userPreferences", Context.MODE_PRIVATE);
             UnitDao dao = new UnitDao(getContext());
             units.add("Units");
             units.addAll(dao.getAllUnitNamesBySystemId(userPreferences.getString("unitSystemId", "1")));
@@ -841,10 +853,11 @@ public class CustomRecipeDialog extends DialogFragment {
 
     public static class ThirdPageFragment extends Fragment {
         private String MODE;
-        private Integer steps = 0;
         private ArrayList<String> instructions = new ArrayList<>();
+        private List<RecipeInstructionsViewModel> modelList = new ArrayList<>();
+        private RecipeInstructionsAdapter adapter;
 
-        //TODO: need instructions custom ViewGroup to allow editing!
+        //TODO: add button for deletion
 
         ThirdPageFragment(String mode) {
             MODE = mode;
@@ -859,68 +872,75 @@ public class CustomRecipeDialog extends DialogFragment {
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View view = inflater.inflate(R.layout.custom_recipe_page_3, container, false);
 
-            //get views
-            final TextView instructionsBox = view.findViewById(R.id.customRecipeInstructions);
-            final TextInputEditText instructionEntry = view.findViewById(R.id.customRecipeInstructionsEntry);
-            ImageButton addBtn = view.findViewById(R.id.customRecipeInstructionsAddBtn);
+            //get views, set up recycler
+            RecyclerView rv = view.findViewById(R.id.customRecipeInstructionsRecycler);
+            rv.addItemDecoration(new DividerItemDecoration(Objects.requireNonNull(getContext()), LinearLayoutManager.VERTICAL));
+            rv.setHasFixedSize(true);
+            LinearLayoutManager llm = new LinearLayoutManager(getContext());
+            rv.setLayoutManager(llm);
+            adapter = new RecipeInstructionsAdapter();
+            rv.setAdapter(adapter);
+            adapter.updateData(modelList);
+            //TODO: possibly create custom animation...
+            ((SimpleItemAnimator) rv.getItemAnimator()).setSupportsChangeAnimations(false);
+
 
             //figure out mode
-            if (MODE.equals("create")) {
-                //set up empty page
-            } else if (MODE.equals("view")) {
-                //filled page that you can't edit
-                instructions = existingBoxItem.isUserAdded() ? existingCustomRecipeItem.getRecipeInstructions() : readOnlyItem.getRecipeInstructions();
-                if (instructions != null) {
-                    //only set steps if there were actually instructions previously
-                    steps = instructions.size();
-                    setInstructionsText(instructionsBox);
-                } else {
-                    instructions = new ArrayList<>();
-                }
-                instructionEntry.setVisibility(View.GONE);
-                addBtn.setVisibility(View.GONE);
-            } else if (MODE.equals("edit")) {
-                //have your data, and edit it, too!
-                instructions = existingBoxItem.isUserAdded() ? existingCustomRecipeItem.getRecipeInstructions() : readOnlyItem.getRecipeInstructions();
-                if (instructions != null) {
-                    //only set steps if there were actually instructions previously
-                    steps = instructions.size();
-                    setInstructionsText(instructionsBox);
-                } else {
-                    instructions = new ArrayList<>();
-                }
-            } else {
-                Log.e("Recipe Dialog Error", "Invalid mode selected: " + MODE);
+            switch (MODE) {
+                case "create":
+                    //set up empty page
+                    adapter.isClickable = true;
+                    modelList.add(new RecipeInstructionsViewModel("", true));
+                    adapter.updateData(modelList);
+                    break;
+                case "view":
+                    //filled page that you can't edit
+                    adapter.isClickable = false;
+                    instructions = existingBoxItem.isUserAdded() ? existingCustomRecipeItem.getRecipeInstructions() : readOnlyItem.getRecipeInstructions();
+                    if (instructions != null) {
+                        //only set steps if there were actually instructions previously
+                        for (int i = 0; i < instructions.size(); i++) {
+                            modelList.add(new RecipeInstructionsViewModel(instructions.get(i), false));
+                        }
+                        adapter.updateData(modelList);
+                    } else {
+                        instructions = new ArrayList<>();
+                    }
+                    break;
+                case "edit":
+                    //have your data, and edit it, too!
+                    adapter.isClickable = true;
+                    instructions = existingBoxItem.isUserAdded() ? existingCustomRecipeItem.getRecipeInstructions() : readOnlyItem.getRecipeInstructions();
+                    if (instructions != null) {
+                        //only set steps if there were actually instructions previously
+                        for (int i = 0; i < instructions.size(); i++) {
+                            modelList.add(new RecipeInstructionsViewModel(instructions.get(i), false));
+                        }
+                    } else {
+                        instructions = new ArrayList<>();
+                    }
+                    modelList.add(new RecipeInstructionsViewModel("", true));
+                    adapter.updateData(modelList);
+                    break;
+                default:
+                    Log.e("Recipe Dialog Error", "Invalid mode selected: " + MODE);
+                    break;
             }
-
-            instructionsBox.setMovementMethod(new ScrollingMovementMethod());
-            addBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    steps++;
-                    instructionsBox.append(steps.toString() + ".) " + instructionEntry.getText() + "\n");
-                    instructions.add(instructionEntry.getText().toString());
-                    instructionEntry.setText("");
-                    newRecipe.setRecipeInstructions(instructions);
-                }
-            });
 
             return view;
         }
 
-        private void setInstructionsText(TextView box) {
-            int count = 0;
-            if (existingBoxItem.isUserAdded()) {
-                for (int i=0; i<existingCustomRecipeItem.getRecipeInstructions().size(); i++) {
-                    count++;
-                    box.append(String.valueOf(count) + ".) " + existingCustomRecipeItem.getRecipeInstructions().get(i) + "\n");
-                }
-            } else {
-                for (int i=0; i<readOnlyItem.getRecipeInstructions().size(); i++) {
-                    count++;
-                    box.append(String.valueOf(count) + ".) " + readOnlyItem.getRecipeInstructions().get(i) + "\n");
-                }
+        //TODO: figure out how to actually save the edited instructions
+        // (vvv    'cause this isn't working    vvv)
+        @Override
+        public void onStop() {
+            instructions = new ArrayList<>();
+            for (int i=0; i<adapter.getItemCount(); i++) {
+                instructions.add(adapter.getItemAtPosition(i).getInstructionText());
             }
+            newRecipe.setRecipeInstructions(instructions);
+            super.onStop();
         }
+
     }
 }

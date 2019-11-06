@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import apps.nerdyginger.cleanplateclub.adapters.RecipesListAdapter;
 import apps.nerdyginger.cleanplateclub.models.UserRecipeBoxItem;
+import apps.nerdyginger.cleanplateclub.view_models.RecipeViewModel;
 
 //Custom callback class to handle swipe-to-delete operations for recipes.
 //NOTE: Will only delete from recipe box, custom (and read-only) recipes will remain in respective db tables.

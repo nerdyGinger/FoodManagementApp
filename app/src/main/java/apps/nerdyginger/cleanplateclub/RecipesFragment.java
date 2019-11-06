@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
@@ -21,15 +20,14 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
 
 import apps.nerdyginger.cleanplateclub.adapters.RecipesListAdapter;
-import apps.nerdyginger.cleanplateclub.models.Item;
 import apps.nerdyginger.cleanplateclub.models.UserRecipeBoxItem;
+import apps.nerdyginger.cleanplateclub.view_models.RecipeViewModel;
 
 
 public class RecipesFragment extends Fragment {
