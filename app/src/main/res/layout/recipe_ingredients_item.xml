@@ -60,6 +60,7 @@
             android:layout_width="260dp"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
+            android:textColor="@color/custom_text_color"
             android:hint="Ingredient Name"
             />
 
@@ -69,6 +70,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:layout_below="@+id/customRecipeIngredientName"
+            android:textColor="@color/custom_text_color"
             android:hint="Amount"
             android:inputType="datetime"
             />
@@ -80,6 +82,7 @@
             android:layout_margin="5dp"
             android:layout_below="@+id/customRecipeIngredientName"
             android:layout_toEndOf="@+id/customRecipeIngredientsAmount"
+            android:textColor="@color/custom_text_color"
             />
 
         <EditText
@@ -88,6 +91,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:layout_below="@+id/customRecipeIngredientsAmount"
+            android:textColor="@color/custom_text_color"
             android:hint="Detail (diced, separated)"
             />
 

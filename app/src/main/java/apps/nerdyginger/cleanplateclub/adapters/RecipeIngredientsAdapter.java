@@ -124,6 +124,14 @@ public class RecipeIngredientsAdapter extends RecyclerView.Adapter<RecyclerView.
         if (isClickable) {
             holder.addBtn.setVisibility(expanded ? View.VISIBLE : View.GONE);
             holder.deleteBtn.setVisibility(expanded ? View.VISIBLE : View.GONE);
+        } else {
+            holder.addBtn.setVisibility(View.GONE);
+            holder.deleteBtn.setVisibility(View.GONE);
+            holder.itemName.setEnabled(false);
+            holder.itemName.setFocusable(false);
+            holder.detail.setEnabled(false);
+            holder.amount.setEnabled(false);
+            holder.unit.setEnabled(false);
         }
         //set the text for labels and edit fields
         holder.nameLabel.setText(item.getItemName());
@@ -132,8 +140,8 @@ public class RecipeIngredientsAdapter extends RecyclerView.Adapter<RecyclerView.
         holder.detail.setText(item.getDetail());
         holder.amountLabel.setText(item.getAmount());
         holder.amount.setText(item.getAmount());
-        holder.unitLabel.setText(item.getUnit());
-        holder.unit.setSelection(unitAdapter.getPosition(item.getUnit()));
+        holder.unitLabel.setText(item.getUnit().equals("Unit") ? "" : item.getUnit());
+        holder.unit.setSelection(unitAdapter.getPosition(item.getUnit().equals("") ? "Unit" : item.getUnit()));
     }
 
     @NonNull

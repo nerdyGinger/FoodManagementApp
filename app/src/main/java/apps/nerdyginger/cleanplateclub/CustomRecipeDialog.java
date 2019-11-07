@@ -244,6 +244,17 @@ public class CustomRecipeDialog extends DialogFragment {
         return parentView;
     }
 
+    private int getItemId(String name) {
+        try {
+            ItemDao dao = new ItemDao(getContext());
+            String stringId =  dao.getItemId(name);
+            return Integer.parseInt(stringId);
+        } catch (Exception e) {
+            //item doesn't exist in db
+            return -1;
+        }
+    }
+
     private void addDialogBtnClicks(View view) {
         final Button backBtn = view.findViewById(R.id.customRecipeBackBtn);
         backBtn.setOnClickListener(new View.OnClickListener() {
@@ -276,7 +287,15 @@ public class CustomRecipeDialog extends DialogFragment {
                     //get ingredients
                     for (int i=0; i<ingredientsAdapter.getItemCount(); i++) {
                         if ( ! ingredientsAdapter.getItemAtPosition(i).getItemName().equals("")) {
-                            ingredientsList.add(new UserRecipeItemJoin()); //TODO: add substantive UserRecipeItemJoin constructor
+                            UserRecipeItemJoin tempItem = new UserRecipeItemJoin();
+                            tempItem.recipeId = existingBoxItem.isUserAdded() ? existingBoxItem.getRecipeId() : -1;
+                            tempItem.itemId = getItemId(ingredientsAdapter.getItemAtPosition(i).getItemName());
+                            tempItem.itemName = ingredientsAdapter.getItemAtPosition(i).getItemName();
+                            tempItem.detail = ingredientsAdapter.getItemAtPosition(i).getDetail();
+                            tempItem.quantity = ingredientsAdapter.getItemAtPosition(i).getAmount();
+                            tempItem.unit = ingredientsAdapter.getItemAtPosition(i).getUnit().equals("Unit") ? "" :
+                                    ingredientsAdapter.getItemAtPosition(i).getUnit();
+                            ingredientsList.add(tempItem);
                         }
                     }
                     newRecipe.setRecipeInstructions(instructions);
@@ -749,8 +768,6 @@ public class CustomRecipeDialog extends DialogFragment {
         private List<RecipeIngredientsViewModel> modelList = new ArrayList<>();
         private String MODE;
 
-        //TODO: add save operation for ingredients
-
         SecondPageFragment(String mode) {
             MODE = mode;
         }
@@ -766,7 +783,7 @@ public class CustomRecipeDialog extends DialogFragment {
 
             //set up recycler
             RecyclerView rv = view.findViewById(R.id.customRecipeIngredientsRecycler);
-            rv.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
+            rv.addItemDecoration(new DividerItemDecoration(Objects.requireNonNull(getContext()), LinearLayoutManager.VERTICAL));
             rv.setHasFixedSize(true);
             LinearLayoutManager llm = new LinearLayoutManager(getContext());
             rv.setLayoutManager(llm);

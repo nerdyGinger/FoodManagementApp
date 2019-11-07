@@ -115,6 +115,11 @@ public class RecipeInstructionsAdapter extends RecyclerView.Adapter<RecyclerView
         if (isClickable) {
             holder.addBtn.setVisibility(expanded ? View.VISIBLE : View.GONE);
             holder.deleteBtn.setVisibility(expanded ? View.VISIBLE : View.GONE);
+        } else {
+            holder.addBtn.setVisibility(View.GONE);
+            holder.deleteBtn.setVisibility(View.GONE);
+            holder.editStep.setEnabled(false);
+            holder.editStep.setFocusable(false);
         }
     }
 
