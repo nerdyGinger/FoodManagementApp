@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/customRecipeIngredientsLabels"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <TextView
+            android:id="@+id/customRecipeIngredientsNameLabel"
+            android:layout_width="85dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:ellipsize="end"
+            android:textColor="@color/custom_text_color"
+            />
+
+        <TextView
+            android:id="@+id/customRecipeIngredientsDetailLabel"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:ellipsize="end"
+            android:textColor="@color/custom_text_color"
+            />
+
+        <TextView
+            android:id="@+id/customRecipeIngredientsAmountLabel"
+            android:layout_width="35dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:ellipsize="end"
+            android:textColor="@color/custom_text_color"
+            />
+
+        <TextView
+            android:id="@+id/customRecipeIngredientsUnitLabel"
+            android:layout_width="25dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:textColor="@color/custom_text_color"
+            />
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/customRecipeIngredientsEntryBoxes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        >
+
+        <AutoCompleteTextView
+            android:id="@+id/customRecipeIngredientName"
+            android:layout_width="260dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:hint="Ingredient Name"
+            />
+
+        <EditText
+            android:id="@+id/customRecipeIngredientsAmount"
+            android:layout_width="85dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_below="@+id/customRecipeIngredientName"
+            android:hint="Amount"
+            android:inputType="datetime"
+            />
+
+        <Spinner
+            android:id="@+id/customRecipeIngredientsUnit"
+            android:layout_width="115dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_below="@+id/customRecipeIngredientName"
+            android:layout_toEndOf="@+id/customRecipeIngredientsAmount"
+            />
+
+        <EditText
+            android:id="@+id/customRecipeIngredientsDetail"
+            android:layout_width="210dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_below="@+id/customRecipeIngredientsAmount"
+            android:hint="Detail (diced, separated)"
+            />
+
+        <ImageButton
+            android:id="@+id/customRecipeIngredientsDeleteBtn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_margin="5dp"
+            android:layout_toEndOf="@+id/customRecipeIngredientsUnit"
+            android:layout_above="@+id/customRecipeIngredientsAddBtn"
+            android:src="@android:drawable/ic_menu_delete"
+            android:background="@android:color/holo_red_dark"
+            />
+
+        <ImageButton
+            android:id="@+id/customRecipeIngredientsAddBtn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_margin="5dp"
+            android:layout_alignBottom="@id/customRecipeIngredientsDetail"
+            android:layout_toEndOf="@+id/customRecipeIngredientsDetail"
+            android:src="@android:drawable/ic_menu_add"
+            android:background="@drawable/add_button"
+            />
+
+    </RelativeLayout>
+
+</RelativeLayout>

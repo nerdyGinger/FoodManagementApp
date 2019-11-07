@@ -12,6 +12,16 @@
         android:text="Ingredients"
         />
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/customRecipeIngredientsRecycler"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:layout_margin="5dp"
+        android:layout_below="@+id/customRecipeIngredientsTitle"
+        />
+
+    <!--
+
     <TextView
         android:id="@+id/customRecipeIngredients"
         android:layout_width="match_parent"
@@ -76,6 +86,9 @@
         android:background="@drawable/add_button"
         />
 
+    -->
+
     <!-- Add expandable nutrition info here? -->
+
 
 </RelativeLayout>

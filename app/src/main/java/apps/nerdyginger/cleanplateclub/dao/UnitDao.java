@@ -107,6 +107,27 @@ public class UnitDao {
         return units;
     }
 
+    public List<String> getAllUnitAbbrevsBySystemId(String systemId) {
+        SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
+        String sql = "Select * from Unit where systemId = ?";
+        Cursor cursor = db.rawQuery(sql, new String[] {systemId});
+        List<String> units = new ArrayList<>();
+        try {
+            cursor.moveToFirst();
+            while ( !cursor.isAfterLast()) {
+                String abbrev = cursor.getString(cursor.getColumnIndex("abbreviation"));
+                units.add(abbrev);
+                cursor.moveToNext();
+            }
+        } catch (Exception e) {
+            Log.e("Database Error", e.toString());
+        } finally {
+            cursor.close();
+            db.close();
+        }
+        return units;
+    }
+
     public String getUnitIdByNameAndSystem(String unitName, String systemId) {
         SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
         String sql = "Select _ID from Unit where fullName = ? and systemId = ?";
