@@ -24,6 +24,7 @@ import android.widget.TextView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
+import java.util.Objects;
 
 import apps.nerdyginger.cleanplateclub.adapters.RecipesListAdapter;
 import apps.nerdyginger.cleanplateclub.models.UserRecipeBoxItem;
@@ -130,7 +131,7 @@ public class RecipesFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 CustomRecipeDialog dialog = new CustomRecipeDialog();
-                dialog.show(getFragmentManager(), "input a recipe!");
+                dialog.show(Objects.requireNonNull(getFragmentManager()), "input a recipe!");
                 closeFab();
             }
         });
@@ -139,7 +140,7 @@ public class RecipesFragment extends Fragment {
         browseBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                FragmentTransaction transaction = Objects.requireNonNull(getFragmentManager()).beginTransaction();
                 transaction.replace(R.id.frame_container, new BrowseRecipeFragment());
                 transaction.addToBackStack(null);
                 closeFab();
