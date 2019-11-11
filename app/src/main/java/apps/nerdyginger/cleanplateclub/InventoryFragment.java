@@ -64,86 +64,6 @@ public class InventoryFragment extends Fragment {
 
     }
 
-    private List<String> getItems() {
-        List<String> names;
-        ItemDao dao = new ItemDao(getContext());
-        names = dao.getAllItemNames();
-        return names;
-    }
-
-    private List<String> getUnits() {
-        List<String> units;
-        UnitDao dao = new UnitDao(getContext());
-        units = dao.getAllUnitNamesBySystemId(userPreferences.getString("unitSystemId", "1"));
-        return units;
-    }
-
-    public void addItem(String itemName, int quantity, final String unitName, int stockLevel) {
-        if (userDatabase == null) {
-            userDatabase = Room.databaseBuilder(context, UserCustomDatabase.class, "userDatabase")
-                .fallbackToDestructiveMigration() //don't do this in production!!!
-                .build();
-            userPreferences = context.getSharedPreferences(context.getPackageName() + "userPreferences", Context.MODE_PRIVATE);
-        }
-        final UserInventoryItem item = new UserInventoryItem();
-        //Uncomment when deletion is also set up
-        item.setItemName(itemName);
-        if (quantity != 0) {
-            item.setQuantity(quantity);
-        }
-        item.setMaxQuantity(quantity * 100 / stockLevel);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                UserInventoryItemDao dao = userDatabase.getUserInventoryDao();
-                final UnitDao unitDao = new UnitDao(context);
-                item.setUnit(unitDao.getUnitIdByNameAndSystem(unitName, userPreferences.getString("unitSystemId", "1")));
-                dao.insert(item);
-            }
-        }).start();
-        data.add(item);
-        adapter.updateData(data);
-    }
-
-    public void addItemBtnClick(AlertDialog.Builder dialogBuilder, View addItemView) {
-        final AutoCompleteTextView search = addItemView.findViewById(R.id.addInventorySearch);
-        List<String> names = getItems();
-        ArrayAdapter<String> namesAdapter = new ArrayAdapter<>(Objects.requireNonNull(getContext()),
-                android.R.layout.simple_dropdown_item_1line, names);
-        search.setAdapter(namesAdapter);
-        final EditText quantityBox = addItemView.findViewById(R.id.addInventoryQuantity);
-        final Spinner unitSpinner = addItemView.findViewById(R.id.addInventoryUnit);
-        List<String> units = getUnits();
-        ArrayAdapter<String> unitsAdapter = new ArrayAdapter<>(Objects.requireNonNull(getContext()), android.R.layout.simple_dropdown_item_1line, units);
-        unitSpinner.setAdapter(unitsAdapter);
-        final SeekBar stockMeter = addItemView.findViewById(R.id.addInventoryStockMeter);
-
-        dialogBuilder.setView(addItemView);
-        dialogBuilder.setTitle("Add Item");
-        dialogBuilder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String name = search.getText().toString();
-                int quantity = Integer.parseInt((quantityBox.getText().toString().equals("") ? "0" : quantityBox.getText().toString()));
-                String unitName = unitSpinner.getSelectedItem().toString();
-                int stockLevel = stockMeter.getProgress();
-                if (!name.equals("")) {
-                    //TODO: Refine logic for inventory additions (set level but not unit)
-                    addItem(name, quantity, unitName, stockLevel);
-                }
-                adapter.updateData(data);
-            }
-        });
-        dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // don't do anything
-            }
-        });
-        AlertDialog dialog = dialogBuilder.create();
-        dialog.show();
-    }
-
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -156,9 +76,8 @@ public class InventoryFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 //TODO: figure out how to hide soft keyboard on focus change (cause that's really annoying)
-                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
-                final View addItemView = inflater.inflate(R.layout.dialog_add_inventory_item, null);
-                addItemBtnClick(dialogBuilder, addItemView);
+                CustomItemDialog dialog = new CustomItemDialog();
+                dialog.show(getFragmentManager(), "input a recipe!");
             }
         });
 
@@ -172,12 +91,14 @@ public class InventoryFragment extends Fragment {
         // Fill in the RecyclerView with inventory data
         RecyclerView rv = view.findViewById(R.id.inventoryRecycler);
         rv.addItemDecoration(new DividerItemDecoration(context, LinearLayoutManager.VERTICAL));
+        rv.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         rv.setLayoutManager(llm);
         RecyclerViewClickListener listener = new RecyclerViewClickListener() {
             @Override
             public void onClick(View view, int position) {
-                Toast.makeText(getContext(), adapter.getItemAtPosition(position).getItemName(), Toast.LENGTH_SHORT).show();
+                CustomItemDialog dialog = new CustomItemDialog(adapter.getItemAtPosition(position));
+                dialog.show(getFragmentManager(), "input a recipe!");
             }
 
             @Override
