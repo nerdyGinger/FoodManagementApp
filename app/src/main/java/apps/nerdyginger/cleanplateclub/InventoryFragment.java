@@ -41,19 +41,12 @@ import apps.nerdyginger.cleanplateclub.view_models.InventoryViewModel;
 
 public class InventoryFragment extends Fragment {
     private UserCustomDatabase userDatabase;
-    private OnFragmentInteractionListener mListener;
     private SharedPreferences userPreferences;
     private Context context;
-    private List<UserInventoryItem> data;
-    private InventoryViewModel inventoryViewModel;
-    private InventoryListAdapter adapter = new InventoryListAdapter();
+    private InventoryListAdapter adapter;// = new InventoryListAdapter();
 
     public InventoryFragment() {
         // Required empty public constructor
-    }
-
-    public InventoryListAdapter getAdapter() {
-        return adapter;
     }
 
     @Override
@@ -75,7 +68,6 @@ public class InventoryFragment extends Fragment {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: figure out how to hide soft keyboard on focus change (cause that's really annoying)
                 CustomItemDialog dialog = new CustomItemDialog();
                 dialog.show(getFragmentManager(), "input a recipe!");
             }
@@ -89,7 +81,7 @@ public class InventoryFragment extends Fragment {
         }
 
         // Fill in the RecyclerView with inventory data
-        RecyclerView rv = view.findViewById(R.id.inventoryRecycler);
+        final RecyclerView rv = view.findViewById(R.id.inventoryRecycler);
         rv.addItemDecoration(new DividerItemDecoration(context, LinearLayoutManager.VERTICAL));
         rv.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
@@ -98,7 +90,7 @@ public class InventoryFragment extends Fragment {
             @Override
             public void onClick(View view, int position) {
                 CustomItemDialog dialog = new CustomItemDialog(adapter.getItemAtPosition(position));
-                dialog.show(getFragmentManager(), "input a recipe!");
+                dialog.show(getFragmentManager(), "input an item!");
             }
 
             @Override
@@ -111,11 +103,10 @@ public class InventoryFragment extends Fragment {
         rv.setAdapter(adapter);
 
         // Get inventory data
-        inventoryViewModel = ViewModelProviders.of(this).get(InventoryViewModel.class);
+        InventoryViewModel inventoryViewModel = ViewModelProviders.of(this).get(InventoryViewModel.class);
         inventoryViewModel.getInventoryList().observe(this, new Observer<List<UserInventoryItem>>() {
             @Override
             public void onChanged(List<UserInventoryItem> userInventories) {
-                data = userInventories;
                 adapter.updateData(userInventories);
             }
         });
@@ -128,21 +119,10 @@ public class InventoryFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         this.context = context;
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
-    }
-
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
     }
 }

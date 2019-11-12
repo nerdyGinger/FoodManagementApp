@@ -73,7 +73,7 @@ import apps.nerdyginger.cleanplateclub.view_models.RecipeInstructionsViewModel;
  * ... Okay, so the _dialog_ has to be beautiful, elegant, and absolutely dreamy. Apparently I'm willing
  * to sacrifice the beauty of this class for that cause, because no 900+ LoC class can be called dreamy.
  *
- * Last Edited: 11/8/19
+ * Last Edited: 11/12/19
  */
 public class CustomRecipeDialog extends DialogFragment {
     private static final int pages = 3; // Slide-able pages for basic info, ingredients, and instructions
@@ -335,9 +335,7 @@ public class CustomRecipeDialog extends DialogFragment {
                             if (ingredientsList.get(i).itemId == -1) {
                                 ingredientsList.get(i).itemId = 0;
                             }
-                            Log.e("JOIN_DEBUG", "Item ID: " + ingredientsList.get(i).itemId);
                             ingredientsList.get(i).recipeId = existingBoxItem.getRecipeId();
-                            Log.e("JOIN_DEBUG", "Recipe ID: " + ingredientsList.get(i).recipeId);
                             joinDao.insert(ingredientsList.get(i));
                         }
 
@@ -358,7 +356,6 @@ public class CustomRecipeDialog extends DialogFragment {
                             if (ingredientsList.get(i).itemId == -1) {
                                 ingredientsList.get(i).itemId = 0;
                             }
-                            Log.e("DEBUG_DEBUG", "Item ID: " + ingredientsList.get(i).itemId);
                             ingredientsList.get(i).recipeId = (int) id[0];
                             joinDao.insert(ingredientsList.get(i));
                         }

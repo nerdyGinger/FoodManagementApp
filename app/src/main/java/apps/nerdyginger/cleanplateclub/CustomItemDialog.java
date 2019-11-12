@@ -2,11 +2,8 @@ package apps.nerdyginger.cleanplateclub;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.KeyEvent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,12 +21,15 @@ import androidx.fragment.app.DialogFragment;
 import androidx.room.Room;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import apps.nerdyginger.cleanplateclub.dao.ItemDao;
 import apps.nerdyginger.cleanplateclub.dao.UnitDao;
 import apps.nerdyginger.cleanplateclub.dao.UserInventoryItemDao;
+import apps.nerdyginger.cleanplateclub.models.Unit;
 import apps.nerdyginger.cleanplateclub.models.UserInventoryItem;
 
 public class CustomItemDialog extends DialogFragment {
@@ -42,6 +42,8 @@ public class CustomItemDialog extends DialogFragment {
     //for editing existing item
     private String MODE;
     private UserInventoryItem existingItem;
+    private List<String> names = new ArrayList<>();
+    private Map<String, String> unitAbbrevPairs = new HashMap<>();
 
     public CustomItemDialog() {
         //empty constructor
@@ -90,7 +92,7 @@ public class CustomItemDialog extends DialogFragment {
             if (existingItem.getQuantity() != 0) {
                 amount.setText(String.valueOf(existingItem.getQuantity()));
             }
-            unit.setSelection(unitsAdapter.getPosition(existingItem.getUnit()));
+            unit.setSelection(unitsAdapter.getPosition(unitAbbrevPairs.get(existingItem.getUnit())));
             if (existingItem.getMaxQuantity() != 0) {
                 stockMeter.setProgress(existingItem.getQuantity() * 100 / existingItem.getMaxQuantity());
             }
@@ -137,7 +139,7 @@ public class CustomItemDialog extends DialogFragment {
             @Override
             public void onClick(View v) {
                 if (MODE.equals("create")) {
-                    saveNewItem();
+                    valid = saveNewItem();
                 } else {
                     valid = editExistingItem();
                 }
@@ -160,10 +162,9 @@ public class CustomItemDialog extends DialogFragment {
         String newName = itemName.getText().toString();
         int newQuantity = Integer.parseInt((amount.getText().toString().equals("") ? "0" : amount.getText().toString()));
         String unitName = unit.getSelectedItem().toString();
-        int stockLevel = stockMeter.getProgress();
+        int stockLevel =  stockMeter.getProgress();
         if (!newName.equals("")) {
-            deleteItem(); //delete existingItem and add new item with edited data
-            addItem(newName, newQuantity, unitName, stockLevel);
+            updateItem(newName, newQuantity, unitName, stockLevel);
             return true;
         } else {
             Toast.makeText(getContext(), "Item name cannot be empty", Toast.LENGTH_SHORT).show();
@@ -171,30 +172,56 @@ public class CustomItemDialog extends DialogFragment {
         }
     }
 
-    private void saveNewItem() {
+    private void updateItem(String name, int quantity, final String unitName, int stockLevel) {
+        final UserCustomDatabase userDatabase = Room.databaseBuilder(getContext(), UserCustomDatabase.class, "userDatabase")
+                .fallbackToDestructiveMigration() //don't do this in production!!!
+                .build();
+        final UserInventoryItem item = new UserInventoryItem();
+        item.setItemName(name);
+        if (names.contains(name)) {
+            item.setUserAdded(true);
+        } else {
+            item.setUserAdded(false);
+        }
+        if (quantity != 0) {
+            item.setQuantity(quantity);
+        }
+        if (stockClicked || existingItem.getMaxQuantity() != 0) { item.setMaxQuantity(quantity * 100 / stockLevel); } // only set the stock level if it was click at least once
+        Thread t = new Thread(new Runnable() {                                                                        // (or if existing item had a max quantity)
+            @Override
+            public void run() {
+                try {
+                    UserInventoryItemDao dao = userDatabase.getUserInventoryDao();
+                    UnitDao unitDao = new UnitDao(getContext());
+                    item.setUnit(unitName.equals("(No Unit)") ? "" : unitDao.getUnitAbbrevByName(unitName));
+                    item.set_ID(existingItem.get_ID());
+                    dao.update(item);
+                } catch (Exception e) {
+                    Log.e("Database Error", e.toString());
+                }
+            }
+        });
+        t.start();
+        /*
+        try {
+            t.join();
+        }catch (Exception e) {
+            Log.e("Thread Exception", "Problem waiting for db thread: " + e.toString());
+        } */
+    }
+
+    private boolean saveNewItem() {
         String name = itemName.getText().toString();
         int quantity = Integer.parseInt((amount.getText().toString().equals("") ? "0" : amount.getText().toString()));
         String unitName = unit.getSelectedItem().toString();
         int stockLevel = stockMeter.getProgress();
         if (!name.equals("")) {
-            //TODO: Refine logic for inventory additions (set level but not unit)
             addItem(name, quantity, unitName, stockLevel);
+            return true;
         } else {
             Toast.makeText(getContext(), "Item name cannot be empty", Toast.LENGTH_SHORT).show();
+            return false;
         }
-    }
-
-    private void deleteItem() {
-        final UserCustomDatabase userDatabase = Room.databaseBuilder(getContext(), UserCustomDatabase.class, "userDatabase")
-                .fallbackToDestructiveMigration() //don't do this in production!!!
-                .build();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                UserInventoryItemDao dao = userDatabase.getUserInventoryDao();
-                dao.delete(existingItem);
-            }
-        }).start();
     }
 
     private void addItem(final String name, int quantity, final String unitName, int stockLevel) {
@@ -202,36 +229,58 @@ public class CustomItemDialog extends DialogFragment {
                 .fallbackToDestructiveMigration() //don't do this in production!!!
                 .build();
         final UserInventoryItem item = new UserInventoryItem();
-        //Uncomment when deletion is also set up
         item.setItemName(name);
+        if (names.contains(name)) {
+            item.setUserAdded(true);
+        } else {
+            item.setUserAdded(false);
+        }
         if (quantity != 0) {
             item.setQuantity(quantity);
         }
         if (stockClicked) { item.setMaxQuantity(quantity * 100 / stockLevel); } // only set the stock level if it was click at least once
-        new Thread(new Runnable() {
+        Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                UserInventoryItemDao dao = userDatabase.getUserInventoryDao();
-                final UnitDao unitDao = new UnitDao(getContext());
-                item.setUnit(unitDao.getUnitIdByNameAndSystem(unitName, userPreferences.getString("unitSystemId", "1")));
-                dao.insert(item);
+                try {
+                    UserInventoryItemDao dao = userDatabase.getUserInventoryDao();
+                    UnitDao unitDao = new UnitDao(getContext());
+                    item.setUnit(unitName.equals("(No Unit)") ? "" : unitDao.getUnitAbbrevByName(unitName));
+                    dao.insert(item);
+                } catch (Exception e) {
+                    Log.e("Database Error", e.toString());
+                }
             }
-        }).start();
+        });
+        t.start();
+        /*
+        try {
+            t.join();
+        }catch (Exception e) {
+            Log.e("Thread Exception", "Problem waiting for db thread: " + e.toString());
+        } */
     }
 
     private List<String> getItems() {
-        List<String> names;
         ItemDao dao = new ItemDao(getContext());
         names = dao.getAllItemNames();
         return names;
     }
 
     private List<String> getUnits() {
-        List<String> units = new ArrayList<>();
-        units.add("(No Unit)");
+        unitAbbrevPairs.put("", "(No Unit)");
         UnitDao dao = new UnitDao(getContext());
-        units.addAll(dao.getAllUnitNamesBySystemId(userPreferences.getString("unitSystemId", "1")));
-        return units;
+        List<String> unitAbbrevs = new ArrayList<>();
+        unitAbbrevs.add("(No Unit)");
+        unitAbbrevs.addAll(dao.getAllUnitNamesBySystemId(userPreferences.getString("unitSystemId", "1")));
+        List<Unit> units = new ArrayList<>(dao.getAllUnits());
+        String systemId = userPreferences.getString("unitSystemId", "1");
+        for (int i=0; i<units.size(); i++) {
+            if (String.valueOf(units.get(i).getSystemId()).equals(systemId)) {
+                unitAbbrevPairs.put(units.get(i).getAbbreviation(), units.get(i).getFullName());
+            }
+        }
+        return unitAbbrevs;
     }
 
 }

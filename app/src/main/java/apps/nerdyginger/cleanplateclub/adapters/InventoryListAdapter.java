@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,6 +83,7 @@ public class InventoryListAdapter extends RecyclerView.Adapter<RecyclerView.View
         return deletedItem;
     }
 
+    @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
@@ -106,7 +108,7 @@ public class InventoryListAdapter extends RecyclerView.Adapter<RecyclerView.View
             name.setText(item.getItemName());
             TextView quantity = simpleHolder.itemQuantity;
             if (item.isQuantify()) {    //check if item is quantified
-                quantity.setText(item.getQuantity() + " "); //TODO: add unit tracking
+                quantity.setText(item.getQuantity() + " " + item.getUnit());
             } else {
                 quantity.setText("");
             }
@@ -115,7 +117,7 @@ public class InventoryListAdapter extends RecyclerView.Adapter<RecyclerView.View
             TextView name = detailHolder.itemName;
             name.setText(item.getItemName());
             TextView quantity = detailHolder.itemQuantity;
-            quantity.setText(item.getQuantity() + " "); //TODO: add unit tracking
+            quantity.setText(item.getQuantity() + " " + item.getUnit());
             ProgressBar lifeBar = detailHolder.lifeBar;
             lifeBar.setMax(item.getMaxQuantity());
             lifeBar.setProgress(item.getQuantity());

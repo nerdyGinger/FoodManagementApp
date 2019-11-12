@@ -32,10 +32,7 @@ import apps.nerdyginger.cleanplateclub.view_models.RecipeViewModel;
 
 
 public class RecipesFragment extends Fragment {
-
-    private OnFragmentInteractionListener mListener;
     private UserCustomDatabase userDatabase;
-    private List<UserRecipeBoxItem> data;
     private Context context;
     private TextView customLabel, browseLabel;
     private FloatingActionButton addBtn, customBtn, browseBtn;
@@ -96,7 +93,6 @@ public class RecipesFragment extends Fragment {
         recipeViewModel.getRecipeList().observe(this, new Observer<List<UserRecipeBoxItem>>() {
             @Override
             public void onChanged(List<UserRecipeBoxItem> userRecipeBoxItems) {
-                data = userRecipeBoxItems;
                 adapter.updateData(userRecipeBoxItems);
             }
         });
@@ -110,18 +106,11 @@ public class RecipesFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         this.context = context;
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
     }
 
     private void setupFabMenu(View parentView) {
@@ -186,9 +175,5 @@ public class RecipesFragment extends Fragment {
         customBtn.setClickable(false);
         browseBtn.setClickable(false);
         fabMenuIsOpen = false;
-    }
-
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
     }
 }

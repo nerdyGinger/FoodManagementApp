@@ -10,7 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-
+// Possibly switch to calendar fragment??? vvv custom calendar library vvv
+// https://medium.com/@Patel_Prashant_/android-custom-calendar-with-events-fa48dfca8257
+//
+// Last edited: 11/12/19
 public class TipsFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;

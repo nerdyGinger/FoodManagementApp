@@ -41,6 +41,26 @@ public class UnitDao {
         return new Unit(Integer.parseInt(id), fullName, abbrev, systemId, type);
     }
 
+    public String getUnitAbbrevByName(String unitName) {
+        SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
+        String sql = "Select abbreviation from Unit where fullName = ?";
+        Cursor cursor = db.rawQuery(sql, new String[] {unitName});
+        String abbrev = "";
+        try {
+            cursor.moveToFirst();
+            while ( !cursor.isAfterLast()) {
+                abbrev = (cursor.getString(cursor.getColumnIndex("abbreviation")));
+                cursor.moveToNext();
+            }
+        } catch (Exception e) {
+            Log.e("Database Error", e.toString());
+        } finally {
+            cursor.close();
+            db.close();
+        }
+        return abbrev;
+    }
+
     public List<String> getAllUnitNames() {
         SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
         String sql = "Select fullName from Unit";
