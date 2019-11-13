@@ -1,14 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".HomeFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+
+
+    <Button
+        android:id="@+id/homePickRecipeBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:layout_centerInParent="true"
+        android:text="Submit Recipe"
+        />
+
+    <TabHost
+        android:layout_width="500dp"
+        android:layout_height="500dp"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/homeCompletedRecipeRecycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="This is the home page" />
+        android:layout_margin="5dp"
+        android:layout_below="@+id/homePickRecipeBtn"
+        />
 
-</FrameLayout>
+</RelativeLayout>

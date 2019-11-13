@@ -26,7 +26,7 @@ import apps.nerdyginger.cleanplateclub.view_models.RecipeInstructionsViewModel;
 // Some help on RecyclerView expansion from this article, thanks!
 // https://medium.com/@nikola.jakshic/how-to-expand-collapse-items-in-recyclerview-49a648a403a6
 //
-// Last edited: 11/6/19
+// Last edited: 11/7/19
 public class RecipeInstructionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<RecipeInstructionsViewModel> dataSet = new ArrayList<>();
     private RecyclerViewClickListener mListener;
