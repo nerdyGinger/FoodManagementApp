@@ -7,10 +7,10 @@
     tools:context=".HomeFragment">
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/homeScheduledRecipes"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         />
-
 
     <Button
         android:id="@+id/homePickRecipeBtn"
@@ -22,16 +22,66 @@
         />
 
     <TabHost
-        android:layout_width="500dp"
-        android:layout_height="500dp"
-        />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/homeCompletedRecipeRecycler"
+        android:id="@+id/homeTabHost"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="5dp"
         android:layout_below="@+id/homePickRecipeBtn"
-        />
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            >
+
+            <TabWidget
+                android:id="@android:id/tabs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+            <FrameLayout
+                android:id="@android:id/tabcontent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                >
+                <LinearLayout
+                    android:id="@+id/homeTodayTab"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    >
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/homeCompletedTodayRecipeRecycler"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="5dp"
+                        />
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/homeThistWeekTab"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    >
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/homeCompletedThisWeekRecipeRecycler"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="5dp"
+                        />
+                </LinearLayout>
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+
+
+
+
+    </TabHost>
+
+
 
 </RelativeLayout>

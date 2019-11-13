@@ -12,8 +12,7 @@ import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class MainActivity extends AppCompatActivity implements HomeFragment.OnFragmentInteractionListener,
-                                                               ListsFragment.OnFragmentInteractionListener,
+public class MainActivity extends AppCompatActivity implements ListsFragment.OnFragmentInteractionListener,
                                                                TipsFragment.OnFragmentInteractionListener {
     private String fragmentTag;
     private Fragment currentFragment;
