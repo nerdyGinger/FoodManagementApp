@@ -6,26 +6,57 @@
     android:layout_height="match_parent"
     tools:context=".HomeFragment">
 
+    <TextView
+        android:id="@+id/homeTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:text="Welcome!"
+        />
+
+    <TextView
+        android:id="@+id/homeScheduledRecipesTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:layout_below="@+id/homeTitle"
+        android:text="Recipes scheduled for this week:"
+        />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/homeScheduledRecipes"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/homeScheduledRecipesTitle"
         />
 
     <Button
-        android:id="@+id/homePickRecipeBtn"
+        android:id="@+id/homePastWeeksBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
-        android:layout_centerInParent="true"
-        android:text="Submit Recipe"
+        android:layout_below="@+id/homeScheduledRecipes"
+        android:layout_alignParentStart="true"
+        android:text="View Past Weeks"
+        />
+
+    <Button
+        android:id="@+id/homeScheduleNextWeekBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:layout_below="@+id/homeScheduledRecipes"
+        android:layout_alignParentEnd="true"
+        android:text="Schedule Next Week"
         />
 
     <TabHost
         android:id="@+id/homeTabHost"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/homePickRecipeBtn"
+        android:layout_below="@+id/homePastWeeksBtn"
         >
 
         <LinearLayout

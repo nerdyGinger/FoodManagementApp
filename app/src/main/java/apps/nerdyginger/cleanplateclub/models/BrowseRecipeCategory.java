@@ -4,13 +4,13 @@ import java.util.List;
 
 public class BrowseRecipeCategory {
     private String categoryName;
-    private List<BrowseRecipeItem> recipeCards;
+    private List<UserRecipeBoxItem> recipeCards;
 
     public BrowseRecipeCategory() {
         //empty constructor
     }
 
-    public BrowseRecipeCategory(String name, List<BrowseRecipeItem> children) {
+    public BrowseRecipeCategory(String name, List<UserRecipeBoxItem> children) {
         this.categoryName = name;
         this.recipeCards = children;
     }
@@ -23,11 +23,11 @@ public class BrowseRecipeCategory {
         this.categoryName = categoryName;
     }
 
-    public List<BrowseRecipeItem> getRecipeCards() {
+    public List<UserRecipeBoxItem> getRecipeCards() {
         return recipeCards;
     }
 
-    public void setRecipeCards(List<BrowseRecipeItem> recipeCards) {
+    public void setRecipeCards(List<UserRecipeBoxItem> recipeCards) {
         this.recipeCards = recipeCards;
     }
 }

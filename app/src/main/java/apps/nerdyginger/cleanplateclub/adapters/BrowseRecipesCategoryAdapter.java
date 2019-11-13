@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import apps.nerdyginger.cleanplateclub.R;
+import apps.nerdyginger.cleanplateclub.RecyclerViewClickListener;
 import apps.nerdyginger.cleanplateclub.models.BrowseRecipeCategory;
 
 public class BrowseRecipesCategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -61,7 +62,17 @@ public class BrowseRecipesCategoryAdapter extends RecyclerView.Adapter<RecyclerV
         LinearLayoutManager childLlm = new LinearLayoutManager(holder.childRv.getContext(), LinearLayoutManager.HORIZONTAL, false);
         childLlm.setInitialPrefetchItemCount(4);
         holder.childRv.setLayoutManager(childLlm);
-        holder.childRv.setAdapter(new BrowseRecipesItemAdapter(item.getRecipeCards()));
+        holder.childRv.setAdapter(new BrowseRecipesItemAdapter(item.getRecipeCards(), "browse", new RecyclerViewClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                //do something
+            }
+
+            @Override
+            public boolean onLongClick(View view, int position) {
+                return false;
+            }
+        }));
         holder.childRv.setRecycledViewPool(viewPool);
     }
 

@@ -17,8 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import apps.nerdyginger.cleanplateclub.adapters.BrowseRecipesCategoryAdapter;
-import apps.nerdyginger.cleanplateclub.models.BrowseRecipeCategory;
-import apps.nerdyginger.cleanplateclub.models.BrowseRecipeItem;
 
 
 public class BrowseRecipeFragment extends Fragment {
@@ -43,12 +41,13 @@ public class BrowseRecipeFragment extends Fragment {
         categoriesRv.addItemDecoration(new DividerItemDecoration(context, LinearLayoutManager.VERTICAL));
         LinearLayoutManager llm = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         categoriesRv.setLayoutManager(llm);
-        categoriesRv.setAdapter(new BrowseRecipesCategoryAdapter(generateRecipeCategories()));
+        categoriesRv.setAdapter(new BrowseRecipesCategoryAdapter());//generateRecipeCategories()));
 
 
         return view;
     }
 
+    /*
     //TODO: Remove method when adding implementation is... added
     private List<BrowseRecipeCategory> generateRecipeCategories() {
         List<BrowseRecipeItem> collegeFare = new ArrayList<>();
@@ -71,6 +70,7 @@ public class BrowseRecipeFragment extends Fragment {
         parents.add(new BrowseRecipeCategory("Snacks", snacks));
         return parents;
     }
+    */
 
     @Override
     public void onAttach(Context context) {
