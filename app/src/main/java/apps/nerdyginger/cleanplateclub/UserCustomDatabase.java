@@ -11,15 +11,17 @@ import apps.nerdyginger.cleanplateclub.dao.UserNutritionDao;
 import apps.nerdyginger.cleanplateclub.dao.UserRecipeBoxDao;
 import apps.nerdyginger.cleanplateclub.dao.UserRecipeDao;
 import apps.nerdyginger.cleanplateclub.dao.UserRecipeItemJoinDao;
+import apps.nerdyginger.cleanplateclub.dao.UserScheduleDao;
 import apps.nerdyginger.cleanplateclub.models.UserInventoryItem;
 import apps.nerdyginger.cleanplateclub.models.UserItem;
 import apps.nerdyginger.cleanplateclub.models.UserNutrition;
 import apps.nerdyginger.cleanplateclub.models.UserRecipe;
 import apps.nerdyginger.cleanplateclub.models.UserRecipeBoxItem;
 import apps.nerdyginger.cleanplateclub.models.UserRecipeItemJoin;
+import apps.nerdyginger.cleanplateclub.models.UserSchedule;
 
 @Database(entities = {UserItem.class, UserRecipe.class, UserNutrition.class, UserInventoryItem.class, UserRecipeItemJoin.class,
-                        UserRecipeBoxItem.class }, version = 8)
+                        UserRecipeBoxItem.class, UserSchedule.class }, version = 9)
 @TypeConverters({Converters.class})
 public abstract class UserCustomDatabase extends RoomDatabase {
     public abstract UserItemDao getUserItemDao();
@@ -28,6 +30,7 @@ public abstract class UserCustomDatabase extends RoomDatabase {
     public abstract UserInventoryItemDao getUserInventoryDao();
     public abstract UserRecipeItemJoinDao getUserRecipeItemJoinDao();
     public abstract UserRecipeBoxDao getUserRecipeBoxDao();
+    public abstract UserScheduleDao getUserScheduleDao();
     //public abstract UserList getUserLists();
     private static UserCustomDatabase INSTANCE;
 
