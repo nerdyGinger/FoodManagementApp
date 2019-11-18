@@ -39,13 +39,13 @@ public class InventorySwipeDeleteCallback extends ItemTouchHelper.SimpleCallback
     public void onSwiped(@NonNull RecyclerView.ViewHolder holder, int direction) {
         int position = holder.getAdapterPosition();
         final UserInventoryItem deletedItem = mAdapter.deleteItem(position);
-        new Thread(new Runnable() {
+        /*new Thread(new Runnable() {
             @Override
             public void run() {
                 UserCustomDatabase db = UserCustomDatabase.getDatabase(mContext);
                 db.getUserInventoryDao().delete(deletedItem);
             }
-        }).start();
+        }).start();*/
         mModel.deleteItem(deletedItem);
     }
 

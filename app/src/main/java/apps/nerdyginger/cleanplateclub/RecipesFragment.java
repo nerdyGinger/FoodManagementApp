@@ -90,7 +90,7 @@ public class RecipesFragment extends Fragment {
 
         // Get recipes data
         RecipeViewModel recipeViewModel = ViewModelProviders.of(this).get(RecipeViewModel.class);
-        recipeViewModel.getRecipeList().observe(this, new Observer<List<UserRecipeBoxItem>>() {
+        recipeViewModel.getRecipeList().observe(getViewLifecycleOwner(), new Observer<List<UserRecipeBoxItem>>() {
             @Override
             public void onChanged(List<UserRecipeBoxItem> userRecipeBoxItems) {
                 adapter.updateData(userRecipeBoxItems);

@@ -75,6 +75,16 @@ public class BrowseRecipesItemAdapter extends RecyclerView.Adapter<RecyclerView.
         return dataSet.get(position);
     }
 
+    public UserRecipeBoxItem deleteItem(int position) {
+        UserRecipeBoxItem deletedItem = dataSet.get(position);
+        int deletedPosition = position;
+        dataSet.remove(position);
+        notifyItemRemoved(position);
+        //notifyItemRangeChanged(position, getItemCount());
+        //showUndoSnackBar(); ??????
+        return deletedItem;
+    }
+
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();

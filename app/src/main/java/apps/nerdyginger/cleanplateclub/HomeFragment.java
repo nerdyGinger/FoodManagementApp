@@ -7,6 +7,8 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,16 +25,20 @@ import java.util.List;
 
 import apps.nerdyginger.cleanplateclub.adapters.BrowseRecipesItemAdapter;
 import apps.nerdyginger.cleanplateclub.dao.UserRecipeBoxDao;
+import apps.nerdyginger.cleanplateclub.dao.UserScheduleDao;
 import apps.nerdyginger.cleanplateclub.models.UserRecipeBoxItem;
+import apps.nerdyginger.cleanplateclub.models.UserSchedule;
+import apps.nerdyginger.cleanplateclub.view_models.ScheduleViewModel;
 
 
 public class HomeFragment extends Fragment {
     private BrowseRecipesItemAdapter adapter;
+    private ScheduleViewModel viewModel;
+    private List<UserSchedule> currentList;
 
     public HomeFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -56,7 +62,12 @@ public class HomeFragment extends Fragment {
         recipeSelection.setLayoutManager(llm);
         RecyclerViewClickListener listener = new RecyclerViewClickListener() {
             @Override
-            public void onClick(View view, int position) {
+            public void onClick(View view, final int position) {
+                if (adapter.getItemViewType(position) == 2) {
+                    //add button click
+                    SchedulerDialog dialog = new SchedulerDialog();
+                    dialog.show(getFragmentManager(), "open scheduler");
+                }
                 //Toast.makeText(getContext(), adapter.getItemAtPosition(position).getRecipeName(), Toast.LENGTH_SHORT).show();
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
                 dialogBuilder.setTitle("Mark as Complete");
@@ -66,6 +77,9 @@ public class HomeFragment extends Fragment {
                     public void onClick(DialogInterface dialog, int which) {
                         // do the mathy stuff
                         // add to the today tab
+                        // remove from scheduled list (or grey out?)
+                        viewModel.deleteItem(currentList.get(position));
+                        adapter.deleteItem(position);
                     }
                 });
                 dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -85,7 +99,15 @@ public class HomeFragment extends Fragment {
         };
         adapter = new BrowseRecipesItemAdapter("home", listener);
         recipeSelection.setAdapter(adapter);
-        adapter.updateData(generateRecipes());
+        viewModel = ViewModelProviders.of(this).get(ScheduleViewModel.class);
+        viewModel.getScheduleList().observe(getViewLifecycleOwner(), new Observer<List<UserSchedule>>() {
+            @Override
+            public void onChanged(List<UserSchedule> userSchedules) {
+                currentList = userSchedules;
+                adapter.updateData(generateRecipes(userSchedules));
+            }
+        });
+        //adapter.updateData(generateRecipes(viewModel.getScheduleList().getValue()));
 
         // Set up tabs
         tabHost.setup();
@@ -110,22 +132,26 @@ public class HomeFragment extends Fragment {
         scheduleBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getContext(), "Unable to access scheduler (not built yet)", Toast.LENGTH_SHORT).show();
+                SchedulerDialog dialog = new SchedulerDialog();
+                dialog.show(getFragmentManager(), "open scheduler");
+                //Toast.makeText(getContext(), "Unable to access scheduler (not built yet)", Toast.LENGTH_SHORT).show();
             }
         });
 
         return view;
     }
 
-    private List<UserRecipeBoxItem> generateRecipes() {
-        final List<UserRecipeBoxItem> items = new ArrayList<>();
+    private List<UserRecipeBoxItem> generateRecipes(final List<UserSchedule> scheduleItems) {
+        final List<UserRecipeBoxItem> boxItems = new ArrayList<>();
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
                 //TODO: change to query schedule db table
                 UserCustomDatabase db = UserCustomDatabase.getDatabase(getContext());
-                UserRecipeBoxDao dao = db.getUserRecipeBoxDao();
-                items.addAll(dao.getAllRecipes());
+                UserRecipeBoxDao boxDao = db.getUserRecipeBoxDao();
+                for (int i=0; i<scheduleItems.size(); i++) {
+                    boxItems.add(boxDao.getRecipeById(Integer.parseInt(scheduleItems.get(i).getRecipeBoxItemId())));
+                }
             }
         });
         t.start();
@@ -134,7 +160,7 @@ public class HomeFragment extends Fragment {
         } catch (Exception e) {
             Log.e("Database Error", "Problem waiting for db thread to complete");
         }
-        return items;
+        return boxItems;
     }
 
     @Override

@@ -104,7 +104,7 @@ public class InventoryFragment extends Fragment {
 
         // Get inventory data
         InventoryViewModel inventoryViewModel = ViewModelProviders.of(this).get(InventoryViewModel.class);
-        inventoryViewModel.getInventoryList().observe(this, new Observer<List<UserInventoryItem>>() {
+        inventoryViewModel.getInventoryList().observe(getViewLifecycleOwner(), new Observer<List<UserInventoryItem>>() {
             @Override
             public void onChanged(List<UserInventoryItem> userInventories) {
                 adapter.updateData(userInventories);

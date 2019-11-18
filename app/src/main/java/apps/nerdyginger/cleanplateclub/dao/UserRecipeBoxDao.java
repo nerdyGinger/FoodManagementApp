@@ -22,6 +22,9 @@ public interface UserRecipeBoxDao {
     @Delete
     void delete(UserRecipeBoxItem recipe);
 
+    @Query("Select recipeName from recipeBox")
+    List<String> getAllRecipeNames();
+
     @Query("Select * from recipeBox")
     List<UserRecipeBoxItem> getAllRecipes();
 
@@ -30,4 +33,7 @@ public interface UserRecipeBoxDao {
 
     @Query("Select * from recipeBox where _ID = :id")
     UserRecipeBoxItem getRecipeById(int id);
+
+    @Query("Select _ID from recipeBox where recipeName = :name")
+    int getRecipeIdByName(String name);
 }
