@@ -44,7 +44,10 @@
             android:layout_alignParentTop="true"
             android:textSize="16sp"
             android:layout_margin="5dp"
+            android:inputType="number"
             />
+
+        <!-- Not allowing fractions yet! TODO: make fraction package -->
 
         <Spinner
             android:id="@+id/addInventoryUnit"

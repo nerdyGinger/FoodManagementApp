@@ -118,8 +118,8 @@ public class InventoryListAdapter extends RecyclerView.Adapter<RecyclerView.View
             TextView quantity = detailHolder.itemQuantity;
             quantity.setText(item.getQuantity() + " " + item.getUnit());
             ProgressBar lifeBar = detailHolder.lifeBar;
-            lifeBar.setMax(item.getMaxQuantity());
-            lifeBar.setProgress(item.getQuantity());
+            lifeBar.setMax(Integer.parseInt(item.getMaxQuantity()));
+            lifeBar.setProgress(Integer.parseInt(item.getQuantity()));
         }
     }
 

@@ -89,12 +89,12 @@ public class CustomItemDialog extends DialogFragment {
             itemName.setText(existingItem.getItemName());
             itemName.setThreshold(1);
             //set other values
-            if (existingItem.getQuantity() != 0) {
+            if (!existingItem.getQuantity().equals("")) {
                 amount.setText(String.valueOf(existingItem.getQuantity()));
             }
             unit.setSelection(unitsAdapter.getPosition(unitAbbrevPairs.get(existingItem.getUnit())));
-            if (existingItem.getMaxQuantity() != 0) {
-                stockMeter.setProgress(existingItem.getQuantity() * 100 / existingItem.getMaxQuantity());
+            if (!existingItem.getMaxQuantity().equals("")) {
+                stockMeter.setProgress(Integer.parseInt(existingItem.getQuantity()) * 100 / Integer.parseInt(existingItem.getMaxQuantity()));
             }
         }
 
@@ -160,7 +160,7 @@ public class CustomItemDialog extends DialogFragment {
 
     private boolean editExistingItem() {
         String newName = itemName.getText().toString();
-        int newQuantity = Integer.parseInt((amount.getText().toString().equals("") ? "0" : amount.getText().toString()));
+        String newQuantity = amount.getText().toString();
         String unitName = unit.getSelectedItem().toString();
         int stockLevel =  stockMeter.getProgress();
         if (!newName.equals("")) {
@@ -172,7 +172,7 @@ public class CustomItemDialog extends DialogFragment {
         }
     }
 
-    private void updateItem(String name, int quantity, final String unitName, int stockLevel) {
+    private void updateItem(String name, String quantity, final String unitName, int stockLevel) {
         final UserCustomDatabase userDatabase = Room.databaseBuilder(getContext(), UserCustomDatabase.class, "userDatabase")
                 .fallbackToDestructiveMigration() //don't do this in production!!!
                 .build();
@@ -183,10 +183,9 @@ public class CustomItemDialog extends DialogFragment {
         } else {
             item.setUserAdded(false);
         }
-        if (quantity != 0) {
-            item.setQuantity(quantity);
-        }
-        if (stockClicked || existingItem.getMaxQuantity() != 0) { item.setMaxQuantity(quantity * 100 / stockLevel); } // only set the stock level if it was click at least once
+        item.setQuantity(quantity);
+        // only set the stock level if it was click at least once
+        if (stockClicked || !existingItem.getMaxQuantity().equals("")) { item.setMaxQuantity(String.valueOf(Integer.parseInt(quantity) * 100 / stockLevel)); }
         Thread t = new Thread(new Runnable() {                                                                        // (or if existing item had a max quantity)
             @Override
             public void run() {
@@ -212,7 +211,7 @@ public class CustomItemDialog extends DialogFragment {
 
     private boolean saveNewItem() {
         String name = itemName.getText().toString();
-        int quantity = Integer.parseInt((amount.getText().toString().equals("") ? "0" : amount.getText().toString()));
+        String quantity = amount.getText().toString();
         String unitName = unit.getSelectedItem().toString();
         int stockLevel = stockMeter.getProgress();
         if (!name.equals("")) {
@@ -224,7 +223,7 @@ public class CustomItemDialog extends DialogFragment {
         }
     }
 
-    private void addItem(final String name, int quantity, final String unitName, int stockLevel) {
+    private void addItem(final String name, String quantity, final String unitName, int stockLevel) {
         final UserCustomDatabase userDatabase = Room.databaseBuilder(getContext(), UserCustomDatabase.class, "userDatabase")
                 .fallbackToDestructiveMigration() //don't do this in production!!!
                 .build();
@@ -235,10 +234,13 @@ public class CustomItemDialog extends DialogFragment {
         } else {
             item.setUserAdded(false);
         }
-        if (quantity != 0) {
-            item.setQuantity(quantity);
+        item.setQuantity(quantity);
+        // only set the stock level if it was click at least once
+        if (stockClicked) {
+            item.setMaxQuantity(String.valueOf(Integer.parseInt(quantity) * 100 / stockLevel));
+        } else {
+            item.setMaxQuantity("");
         }
-        if (stockClicked) { item.setMaxQuantity(quantity * 100 / stockLevel); } // only set the stock level if it was click at least once
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {

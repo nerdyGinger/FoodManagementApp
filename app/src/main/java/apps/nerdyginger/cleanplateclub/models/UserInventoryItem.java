@@ -20,14 +20,14 @@ public class UserInventoryItem {
     @NonNull
     private boolean quantify;
 
-    private int quantity;
+    private String quantity;
 
     private String unit;
 
     @NonNull
     private boolean multiUnit;
 
-    private int maxQuantity;
+    private String maxQuantity;
 
     public int get_ID() {
         return _ID;
@@ -63,18 +63,18 @@ public class UserInventoryItem {
     }
 
     public boolean isQuantify() {
-        return (quantity != 0);
+        return (!quantity.equals(""));
     }
 
     public void setQuantify(boolean quantify) {
         this.quantify = quantify;
     }
 
-    public int getQuantity() {
+    public String getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(String quantity) {
         this.quantity = quantity;
     }
 
@@ -90,18 +90,18 @@ public class UserInventoryItem {
     }
 
     public boolean isMultiUnit() {
-        return (maxQuantity != 0);
+        return (!maxQuantity.equals(""));
     }
 
     public void setMultiUnit(boolean multiUnit) {
         this.multiUnit = multiUnit;
     }
 
-    public int getMaxQuantity() {
+    public String getMaxQuantity() {
         return maxQuantity;
     }
 
-    public void setMaxQuantity(int maxQuantity) {
+    public void setMaxQuantity(String maxQuantity) {
         this.maxQuantity = maxQuantity;
     }
 }

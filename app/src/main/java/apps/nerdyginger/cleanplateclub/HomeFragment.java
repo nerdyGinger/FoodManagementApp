@@ -124,11 +124,17 @@ public class HomeFragment extends Fragment {
                 UserCustomDatabase db = UserCustomDatabase.getDatabase(getContext());
                 UserRecipeItemJoinDao joinDao = db.getUserRecipeItemJoinDao();
                 UserInventoryItemDao inventoryDao = db.getUserInventoryDao();
-                List<UserInventoryItem> joinInventoryItems = joinDao.getItemsInRecipe(recipeId);
+                List<UserRecipeItemJoin> joinInventoryItems = joinDao.getJoinItemsInRecipe(recipeId);
                 for (int i=0; i<joinInventoryItems.size(); i++) {
-                    UserInventoryItem tempItem = inventoryDao.getInventoryItemById(joinInventoryItems.get(i).get_ID());
-                    tempItem.setQuantity(tempItem.getQuantity()); // minus amount used (***multiply by servings***)
-                    inventoryDao.update(tempItem);
+                    if (joinInventoryItems.get(i).inInventory) {
+                        UserInventoryItem tempItem = inventoryDao.getInventoryItemById(joinInventoryItems.get(i).get_ID());
+                        //TODO: check and convert units if necessary!
+                        int used = Integer.parseInt(joinInventoryItems.get(i).quantity); //TODO: need to convert from possible fraction! (check preferences?)(***multiply by servings***)
+                        int newAmount = Integer.parseInt(tempItem.getQuantity()) - used;
+                        tempItem.setQuantity(String.valueOf(newAmount));
+                        inventoryDao.update(tempItem);
+                    }
+                    Log.e("INVENTORY_DEBUG", "Not in inventory!");
                 }
             }
         });
@@ -143,8 +149,7 @@ public class HomeFragment extends Fragment {
         dialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                // do the mathy stuff
-                // remove from scheduled list (or grey out?)
+                subtractInventory(adapter.getItemAtPosition(position).getRecipeId());
                 //adapter.deleteItem(position);
                 viewModel.deleteItem(currentList.get(position));
                 // add to the today tab

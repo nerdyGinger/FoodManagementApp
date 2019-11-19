@@ -56,11 +56,13 @@ import apps.nerdyginger.cleanplateclub.dao.ItemDao;
 import apps.nerdyginger.cleanplateclub.dao.RecipeDao;
 import apps.nerdyginger.cleanplateclub.dao.RecipeItemJoinDao;
 import apps.nerdyginger.cleanplateclub.dao.UnitDao;
+import apps.nerdyginger.cleanplateclub.dao.UserInventoryItemDao;
 import apps.nerdyginger.cleanplateclub.dao.UserRecipeBoxDao;
 import apps.nerdyginger.cleanplateclub.dao.UserRecipeDao;
 import apps.nerdyginger.cleanplateclub.dao.UserRecipeItemJoinDao;
 import apps.nerdyginger.cleanplateclub.models.Recipe;
 import apps.nerdyginger.cleanplateclub.models.RecipeItemJoin;
+import apps.nerdyginger.cleanplateclub.models.UserInventoryItem;
 import apps.nerdyginger.cleanplateclub.models.UserRecipe;
 import apps.nerdyginger.cleanplateclub.models.UserRecipeBoxItem;
 import apps.nerdyginger.cleanplateclub.models.UserRecipeItemJoin;
@@ -235,15 +237,72 @@ public class CustomRecipeDialog extends DialogFragment {
         return parentView;
     }
 
-    private int getItemId(String name) {
+    private int getItemId(final String name) {
+        final int[] id = new int[1];
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    UserCustomDatabase db = UserCustomDatabase.getDatabase(getContext());
+                    UserInventoryItemDao dao = db.getUserInventoryDao();
+                    id[0] = dao.getInventoryItemIdByName(name);
+                    if (id[0] == 0) {
+                        //not in inventory, check read-only db
+                        Log.e("INVENTORY", "'" + name + "' was not found in inventory, searching read-only db");
+                        try {
+                            ItemDao itemDao = new ItemDao(getContext());
+                            String stringId =  itemDao.getItemId(name);
+                            id[0] = Integer.parseInt(stringId);
+                        } catch (Exception e2) {
+                            //item doesn't exist in either db, set id to -1
+                            Log.e("INVENTORY", "'" + name + "' was not found in read-only db, setting item id to -1");
+                            id[0] = -1;
+                        }
+                    } else {
+                        Log.e("INVENTORY", "'" + name + "' was found in inventory! Item id = " + id[0]);
+                    }
+                } catch (Exception e) {
+                    Log.e("Database error", e.toString());
+                }
+            }
+        });
+        t.start();
         try {
-            ItemDao dao = new ItemDao(getContext());
-            String stringId =  dao.getItemId(name);
-            return Integer.parseInt(stringId);
+            t.join();
         } catch (Exception e) {
-            //item doesn't exist in db
-            return -1;
+            Log.e("Thread Exception", "Problem waiting for db thread: " + e.toString());
         }
+        return id[0];
+    }
+
+    private boolean inInventory(final String name) {
+        final boolean[] inInventory = {false};
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    UserCustomDatabase db = UserCustomDatabase.getDatabase(getContext());
+                    UserInventoryItemDao dao = db.getUserInventoryDao();
+                    int id = dao.getInventoryItemIdByName(name);
+                    if (id == 0) {
+                        Log.e("INVENTORY_DEBUG", "Setting '" + name + "' to not in inventory!");
+                        inInventory[0] = false;
+                    }
+                    inInventory[0] = true;
+                } catch (Exception e) {
+                    //item not found
+                    Log.e("Database Error", e.toString());
+                    inInventory[0] = false;
+                }
+            }
+        });
+        t.start();
+        try {
+            t.join();
+        } catch (Exception e) {
+            Log.e("Thread Exception", "Problem waiting for db thread: " + e.toString());
+        }
+        return inInventory[0];
     }
 
     private void addDialogBtnClicks(View view) {
@@ -282,6 +341,7 @@ public class CustomRecipeDialog extends DialogFragment {
                             UserRecipeItemJoin tempItem = new UserRecipeItemJoin();
                             tempItem.recipeId = ! MODE.equals("create") && existingBoxItem.isUserAdded() ? existingBoxItem.getRecipeId() : -1;
                             tempItem.itemId = getItemId(ingredientsAdapter.getItemAtPosition(i).getItemName());
+                            tempItem.inInventory = inInventory(ingredientsAdapter.getItemAtPosition(i).getItemName());
                             tempItem.itemName = ingredientsAdapter.getItemAtPosition(i).getItemName();
                             tempItem.detail = ingredientsAdapter.getItemAtPosition(i).getDetail();
                             tempItem.quantity = ingredientsAdapter.getItemAtPosition(i).getAmount();
@@ -306,6 +366,41 @@ public class CustomRecipeDialog extends DialogFragment {
     }
 
     private void performUpdateOperations() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                UserCustomDatabase db = UserCustomDatabase.getDatabase(getContext());
+                UserRecipeDao dao = db.getUserRecipeDao();
+                UserRecipeItemJoinDao joinDao = db.getUserRecipeItemJoinDao();
+                UserRecipeBoxDao recipeBoxDao = db.getUserRecipeBoxDao();
+
+                if (existingBoxItem.isUserAdded()) {
+                    //double check that we're editing an existing custom recipe
+                    newRecipe.set_ID(existingBoxItem.getRecipeId());
+                    dao.update(newRecipe);
+                    existingBoxItem.setRecipeName(newRecipe.getName());
+                    existingBoxItem.setCategory(newRecipe.getRecipeCategory());
+                    existingBoxItem.setServings(newRecipe.getRecipeYield());
+                    recipeBoxDao.update(existingBoxItem);
+
+                    //delete old ingredient join items
+                    List<UserRecipeItemJoin> oldIngredients = joinDao.getJoinItemsInRecipe(existingBoxItem.getRecipeId());
+                    for (int i=0; i<oldIngredients.size(); i++) {
+                        joinDao.delete(oldIngredients.get(i));
+                    }
+
+                    //add new ingredient join items
+                    for (int i=0; i<ingredientsList.size(); i++) {
+                        if (ingredientsList.get(i).itemId == -1) {
+                            ingredientsList.get(i).itemId = 0;
+                        }
+                        ingredientsList.get(i).recipeId = existingBoxItem.getRecipeId();
+                        joinDao.insert(ingredientsList.get(i));
+                    }
+                }
+            }
+        }).start();
+        /*
         try {
             new Thread(new Runnable() {
                 @Override
@@ -316,7 +411,7 @@ public class CustomRecipeDialog extends DialogFragment {
                     UserRecipeBoxDao recipeBoxDao = db.getUserRecipeBoxDao();
 
                     if (existingBoxItem.isUserAdded()) {
-                        //editing an existing custom recipe
+                        //double check that we're editing an existing custom recipe
                         newRecipe.set_ID(existingBoxItem.getRecipeId());
                         dao.update(newRecipe);
                         existingBoxItem.setRecipeName(newRecipe.getName());
@@ -338,33 +433,12 @@ public class CustomRecipeDialog extends DialogFragment {
                             ingredientsList.get(i).recipeId = existingBoxItem.getRecipeId();
                             joinDao.insert(ingredientsList.get(i));
                         }
-
-                    } else {
-                        //performing "Save As" on a read-only recipe
-                        long[] id = dao.insert(newRecipe);
-
-                        UserRecipeBoxItem boxItem = new UserRecipeBoxItem();
-                        boxItem.setUserAdded(true);
-                        boxItem.setRecipeId((int) id[0]);
-                        boxItem.setRecipeName(newRecipe.getName());
-                        boxItem.setCategory(newRecipe.getRecipeCategory());
-                        boxItem.setServings(newRecipe.getRecipeYield());
-                        recipeBoxDao.insert(boxItem);
-
-                        //add ingredients to join table
-                        for (int i=0; i<ingredientsList.size(); i++) {
-                            if (ingredientsList.get(i).itemId == -1) {
-                                ingredientsList.get(i).itemId = 0;
-                            }
-                            ingredientsList.get(i).recipeId = (int) id[0];
-                            joinDao.insert(ingredientsList.get(i));
-                        }
                     }
                 }
             }).start();
         } catch (Exception e) {
             Log.e("Database Error", e.toString());
-        }
+        }*/
     }
 
     private void performInsertOperations(){

@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
@@ -67,6 +68,17 @@ public class RecipeIngredientsAdapter extends RecyclerView.Adapter<RecyclerView.
             unit = itemView.findViewById(R.id.customRecipeIngredientsUnit);
             addBtn = itemView.findViewById(R.id.customRecipeIngredientsAddBtn);
             deleteBtn = itemView.findViewById(R.id.customRecipeIngredientsDeleteBtn);
+            unit.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    getItemAtPosition(getAdapterPosition()).setUnit(unit.getSelectedItem().toString());
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                    //do nothing
+                }
+            });
             addBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

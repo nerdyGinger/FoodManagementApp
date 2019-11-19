@@ -10,7 +10,8 @@ public class UserRecipeItemJoin {
     private int _ID;
 
     public int recipeId; //unofficial foreign keys (from recipeBox)
-    public int itemId;   //        '' ''           (from inventory)
+    public int itemId;   //        '' ''           (from inventory or read-only db)
+    public boolean inInventory;
     public String quantity;
     public String unit;
     public String detail;

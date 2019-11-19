@@ -72,7 +72,7 @@
             android:layout_below="@+id/customRecipeIngredientName"
             android:textColor="@color/custom_text_color"
             android:hint="Amount"
-            android:inputType="datetime"
+            android:inputType="number"
             />
 
         <Spinner
