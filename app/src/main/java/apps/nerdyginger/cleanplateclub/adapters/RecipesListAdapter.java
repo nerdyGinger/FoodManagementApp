@@ -67,8 +67,7 @@ public class RecipesListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             Log.e("-PRO TIPS!(and errors)-", "InventoryListAdapter data set was null");
             return;
         }
-        dataSet.clear();
-        dataSet.addAll(data);
+        dataSet = data;
         notifyDataSetChanged();
     }
 

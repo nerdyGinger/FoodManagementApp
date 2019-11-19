@@ -24,9 +24,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import apps.nerdyginger.cleanplateclub.adapters.BrowseRecipesItemAdapter;
+import apps.nerdyginger.cleanplateclub.dao.UserInventoryItemDao;
 import apps.nerdyginger.cleanplateclub.dao.UserRecipeBoxDao;
+import apps.nerdyginger.cleanplateclub.dao.UserRecipeItemJoinDao;
 import apps.nerdyginger.cleanplateclub.dao.UserScheduleDao;
+import apps.nerdyginger.cleanplateclub.models.UserInventoryItem;
 import apps.nerdyginger.cleanplateclub.models.UserRecipeBoxItem;
+import apps.nerdyginger.cleanplateclub.models.UserRecipeItemJoin;
 import apps.nerdyginger.cleanplateclub.models.UserSchedule;
 import apps.nerdyginger.cleanplateclub.view_models.ScheduleViewModel;
 
@@ -35,6 +39,7 @@ public class HomeFragment extends Fragment {
     private BrowseRecipesItemAdapter adapter;
     private ScheduleViewModel viewModel;
     private List<UserSchedule> currentList;
+    private List<UserRecipeBoxItem> currentRecipeBoxList;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -57,39 +62,19 @@ public class HomeFragment extends Fragment {
         Button historyBtn = view.findViewById(R.id.homePastWeeksBtn);
         Button scheduleBtn = view.findViewById(R.id.homeScheduleNextWeekBtn);
 
-        // Scheduled recipes horizontal RecyclerView
+        // Scheduled recipes horizontal RecyclerView, add confirmation dialog to onClick
         LinearLayoutManager llm = new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false);
         recipeSelection.setLayoutManager(llm);
         RecyclerViewClickListener listener = new RecyclerViewClickListener() {
             @Override
             public void onClick(View view, final int position) {
-                if (adapter.getItemViewType(position) == 2) {
+                if (position == adapter.getItemCount() - 1) {
                     //add button click
                     SchedulerDialog dialog = new SchedulerDialog();
                     dialog.show(getFragmentManager(), "open scheduler");
+                } else {
+                    buildConfirmationDialog(position).show();
                 }
-                //Toast.makeText(getContext(), adapter.getItemAtPosition(position).getRecipeName(), Toast.LENGTH_SHORT).show();
-                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
-                dialogBuilder.setTitle("Mark as Complete");
-                dialogBuilder.setMessage("Mark the recipe '"+adapter.getItemAtPosition(position).getRecipeName()+"' as complete and remove the items from inventory?");
-                dialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // do the mathy stuff
-                        // add to the today tab
-                        // remove from scheduled list (or grey out?)
-                        viewModel.deleteItem(currentList.get(position));
-                        adapter.deleteItem(position);
-                    }
-                });
-                dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // don't do anything
-                    }
-                });
-                AlertDialog dialog = dialogBuilder.create();
-                dialog.show();
             }
 
             @Override
@@ -104,23 +89,14 @@ public class HomeFragment extends Fragment {
             @Override
             public void onChanged(List<UserSchedule> userSchedules) {
                 currentList = userSchedules;
-                adapter.updateData(generateRecipes(userSchedules));
+                currentRecipeBoxList = generateRecipes(userSchedules);
+                adapter.updateData(currentRecipeBoxList);
             }
         });
         //adapter.updateData(generateRecipes(viewModel.getScheduleList().getValue()));
 
         // Set up tabs
-        tabHost.setup();
-        // Today's recipes tab
-        TabHost.TabSpec spec = tabHost.newTabSpec("today");
-        spec.setContent(R.id.homeTodayTab);
-        spec.setIndicator("Today");
-        tabHost.addTab(spec);
-        // This week's recipes tab
-        spec = tabHost.newTabSpec("this week");
-        spec.setContent(R.id.homeThistWeekTab);
-        spec.setIndicator("This Week");
-        tabHost.addTab(spec);
+        setUpTabs(tabHost);
 
         // Add button clicks
         historyBtn.setOnClickListener(new View.OnClickListener() {
@@ -139,6 +115,63 @@ public class HomeFragment extends Fragment {
         });
 
         return view;
+    }
+
+    private void subtractInventory(final int recipeId) {
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                UserCustomDatabase db = UserCustomDatabase.getDatabase(getContext());
+                UserRecipeItemJoinDao joinDao = db.getUserRecipeItemJoinDao();
+                UserInventoryItemDao inventoryDao = db.getUserInventoryDao();
+                List<UserInventoryItem> joinInventoryItems = joinDao.getItemsInRecipe(recipeId);
+                for (int i=0; i<joinInventoryItems.size(); i++) {
+                    UserInventoryItem tempItem = inventoryDao.getInventoryItemById(joinInventoryItems.get(i).get_ID());
+                    tempItem.setQuantity(tempItem.getQuantity()); // minus amount used (***multiply by servings***)
+                    inventoryDao.update(tempItem);
+                }
+            }
+        });
+        t.start();
+        //join?
+    }
+
+    private AlertDialog buildConfirmationDialog(final int position) {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
+        dialogBuilder.setTitle("Mark as Complete");
+        dialogBuilder.setMessage("Mark the recipe '"+adapter.getItemAtPosition(position).getRecipeName()+"' as complete and remove the items from inventory?");
+        dialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // do the mathy stuff
+                // remove from scheduled list (or grey out?)
+                //adapter.deleteItem(position);
+                viewModel.deleteItem(currentList.get(position));
+                // add to the today tab
+            }
+        });
+        dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // don't do anything
+            }
+        });
+        return  dialogBuilder.create();
+    }
+
+    private void setUpTabs(TabHost tabHost) {
+        // Set up tabs
+        tabHost.setup();
+        // Today's recipes tab
+        TabHost.TabSpec spec = tabHost.newTabSpec("today");
+        spec.setContent(R.id.homeTodayTab);
+        spec.setIndicator("Today");
+        tabHost.addTab(spec);
+        // This week's recipes tab
+        spec = tabHost.newTabSpec("this week");
+        spec.setContent(R.id.homeThistWeekTab);
+        spec.setIndicator("This Week");
+        tabHost.addTab(spec);
     }
 
     private List<UserRecipeBoxItem> generateRecipes(final List<UserSchedule> scheduleItems) {

@@ -48,7 +48,7 @@ public class BrowseRecipesItemAdapter extends RecyclerView.Adapter<RecyclerView.
         RecipeCardButtonViewHolder(View view) {
             super(view);
             btn = view.findViewById(R.id.recipeCardBtn);
-            //view.setOnClickListener(this);
+            btn.setOnClickListener(this);
         }
         @Override
         public void onClick(View view) {
@@ -69,6 +69,7 @@ public class BrowseRecipesItemAdapter extends RecyclerView.Adapter<RecyclerView.
 
     public void updateData(List<UserRecipeBoxItem> data) {
         dataSet = data;
+        notifyDataSetChanged();
     }
 
     public UserRecipeBoxItem getItemAtPosition(int position) {

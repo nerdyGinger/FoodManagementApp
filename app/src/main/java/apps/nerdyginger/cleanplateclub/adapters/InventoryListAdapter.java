@@ -64,8 +64,7 @@ public class InventoryListAdapter extends RecyclerView.Adapter<RecyclerView.View
             Log.e("-PRO TIPS!(and errors)-", "InventoryListAdapter data set was null");
             return;
         }
-        dataSet.clear();
-        dataSet.addAll(data);
+        dataSet = data;
         notifyDataSetChanged();
     }
 

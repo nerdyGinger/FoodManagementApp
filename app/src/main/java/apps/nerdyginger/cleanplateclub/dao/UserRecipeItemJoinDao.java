@@ -7,6 +7,7 @@ import androidx.room.Query;
 
 import java.util.List;
 
+import apps.nerdyginger.cleanplateclub.models.UserInventoryItem;
 import apps.nerdyginger.cleanplateclub.models.UserItem;
 import apps.nerdyginger.cleanplateclub.models.UserRecipe;
 import apps.nerdyginger.cleanplateclub.models.UserRecipeItemJoin;
@@ -25,11 +26,11 @@ public interface UserRecipeItemJoinDao {
             "WHERE userRecipeItemJoin.itemId=:itemId")
     List<UserRecipe> getRecipesByItem(int itemId);
 
-    @Query("SELECT * FROM userItems " +
+    @Query("SELECT * FROM inventory " +
             "INNER JOIN userRecipeItemJoin " +
-            "ON userItems._ID=userRecipeItemJoin.itemId " +
+            "ON inventory.itemId=userRecipeItemJoin.itemId " +
             "WHERE userRecipeItemJoin.recipeId=:recipeId")
-    List<UserItem> getItemsInRecipe(int recipeId);
+    List<UserInventoryItem> getItemsInRecipe(int recipeId);
 
     @Query("SELECT * FROM userRecipeItemJoin " +
            "WHERE recipeId=:recipeId")
