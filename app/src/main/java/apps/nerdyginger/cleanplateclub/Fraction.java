@@ -14,12 +14,12 @@ public class Fraction {
     }
 
     public Fraction(int wholeNum, int numerator, int denominator) {
-        if (denominator == 0) {
-            //throw new Exception("Cannot set fraction denominator to zero");
-        }
         this.wholeNum = wholeNum;
         this.numerator = numerator;
         this.denominator = denominator;
+        if (denominator == 0) {
+            this.denominator = 1;
+        }
     }
 
     public int getWholeNum() {
@@ -43,7 +43,11 @@ public class Fraction {
     }
 
     public void setDenominator(int denominator) {
-        this.denominator = denominator;
+        if (denominator == 0) {
+            this.denominator = 1;
+        } else {
+            this.denominator = denominator;
+        }
     }
 
     public boolean isMixed() {
@@ -54,7 +58,7 @@ public class Fraction {
     // [x] OR [y]/[z] is optional and x, y, z are integers
     // VALID: "3", "3 1/4", "1/4"
     // INVALID: "3/", "3 1", "1/0", "3 /3", "2.5"
-    public void fromString(String string) {
+    public Fraction fromString(String string) {
         try {
             if (string.contains("/")) {
                 String[] slashSplit = string.split("/");
@@ -78,13 +82,19 @@ public class Fraction {
             Log.e("FRACTION_ERROR", "Unable to parse fraction string: " + string);
             Log.e("FRACTION_ERROR", e.toString());
         }
+        return this;
     }
 
     public boolean isValidString(String string) {
-        if (string.matches("^(-?)*(?:(\\d+)\\s)?(\\d+)/(\\d+)$")) { //regex for mixed fraction
+        try {
+            Integer.parseInt(string);
             return true;
+        } catch (Exception e) {
+            if (string.matches("^(-?)*(?:(\\d+)\\s)?(\\d+)/(\\d+)$")) { //regex for mixed fraction
+                return true;
+            }
+            return string.matches("/(?:[1-9][0-9]*|0)(?:/[1-9][0-9]*)?/g");    //regex for integers and fractions
         }
-        return string.matches("/(?:[1-9][0-9]*|0)(?:/[1-9][0-9]*)?/g");    //regex for integers and fractions
     }
 
     @NonNull
@@ -176,6 +186,11 @@ public class Fraction {
     }
 
     public void simplify() {
+        if (denominator == 0) {
+            setNumerator(0);
+            setDenominator(1);
+            return;
+        }
         int intDivResult = numerator / denominator;
         setWholeNum(wholeNum + intDivResult);
         setNumerator( numerator % denominator);

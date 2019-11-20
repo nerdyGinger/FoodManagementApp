@@ -63,6 +63,11 @@ public class FractionTest {
         Fraction f4 = new Fraction(0, 2, 5);
         Fraction d2 = f3.subtract(f4);
         assertEquals("4 4/5", d2.toString());
+
+        Fraction f5 = new Fraction(65, 0, 0);
+        Fraction f6 = new Fraction(2, 1, 2);
+        Fraction d3 = f5.subtract(f6);
+        assertEquals("62 1/2", d3.toString());
     }
 
     @Test

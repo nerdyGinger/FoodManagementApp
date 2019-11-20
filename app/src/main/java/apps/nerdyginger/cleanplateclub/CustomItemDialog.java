@@ -162,6 +162,10 @@ public class CustomItemDialog extends DialogFragment {
         String unitName = unit.getSelectedItem().toString();
         int stockLevel =  stockMeter.getProgress();
         if (!newName.equals("")) {
+            if ((stockClicked || !existingItem.getMaxQuantity().equals("")) && stockLevel == 0) { //preventing divide by zero
+                Toast.makeText(getContext(), "Don't forget to set your stock level!", Toast.LENGTH_SHORT).show();
+                return false;
+            }
             updateItem(newName, newQuantity, unitName, stockLevel);
             return true;
         } else {
@@ -183,7 +187,13 @@ public class CustomItemDialog extends DialogFragment {
         }
         item.setQuantity(quantity);
         // only set the stock level if it was click at least once
-        if (stockClicked || !existingItem.getMaxQuantity().equals("")) { item.setMaxQuantity(String.valueOf(Integer.parseInt(quantity) * 100 / stockLevel)); }
+        if (stockClicked || !existingItem.getMaxQuantity().equals("")) {
+            if (stockLevel == 0) {
+                Toast.makeText(getContext(), "Don't forget to set your stock level!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            item.setMaxQuantity(String.valueOf(Integer.parseInt(quantity) * 100 / stockLevel));
+        }
         Thread t = new Thread(new Runnable() {                                                                        // (or if existing item had a max quantity)
             @Override
             public void run() {

@@ -339,16 +339,22 @@ public class CustomRecipeDialog extends DialogFragment {
                     //get ingredients
                     ingredientsList.clear(); //make sure this list is empty
                     for (int i=0; i<ingredientsAdapter.getItemCount(); i++) {
-                        if ( ! ingredientsAdapter.getItemAtPosition(i).getItemName().equals("")) {
+                        RecipeIngredientsViewModel viewModelItem = ingredientsAdapter.getItemAtPosition(i);
+                        if ( ! viewModelItem.getItemName().equals("")) {
                             UserRecipeItemJoin tempItem = new UserRecipeItemJoin();
                             tempItem.recipeId = ! MODE.equals("create") && existingBoxItem.isUserAdded() ? existingBoxItem.getRecipeId() : -1;
-                            tempItem.itemId = getItemId(ingredientsAdapter.getItemAtPosition(i).getItemName());
-                            tempItem.inInventory = inInventory(ingredientsAdapter.getItemAtPosition(i).getItemName());
-                            tempItem.itemName = ingredientsAdapter.getItemAtPosition(i).getItemName();
-                            tempItem.detail = ingredientsAdapter.getItemAtPosition(i).getDetail();
-                            tempItem.quantity = ingredientsAdapter.getItemAtPosition(i).getAmount(); // TODO: fraction input validation
-                            tempItem.unit = ingredientsAdapter.getItemAtPosition(i).getUnit().equals("Unit") ? "" :
-                                    ingredientsAdapter.getItemAtPosition(i).getUnit();
+                            tempItem.itemId = getItemId(viewModelItem.getItemName());
+                            tempItem.inInventory = inInventory(viewModelItem.getItemName());
+                            tempItem.itemName = viewModelItem.getItemName();
+                            tempItem.detail = viewModelItem.getDetail();
+                            Fraction quantityFrac = new Fraction();
+                            if ( ! quantityFrac.isValidString(viewModelItem.getAmount())) {
+                                Toast.makeText(getContext(), "Invalid ingredient amount: " + viewModelItem.getAmount() +
+                                        tempItem.itemName, Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            tempItem.quantity = quantityFrac.fromString(viewModelItem.getAmount()).toString();
+                            tempItem.unit = viewModelItem.getUnit().equals("Unit") ? "" : viewModelItem.getUnit();
                             ingredientsList.add(tempItem);
                         }
                     }

@@ -8,6 +8,7 @@ import android.util.Log;
 import java.util.List;
 
 import apps.nerdyginger.cleanplateclub.DatabaseHelper;
+import apps.nerdyginger.cleanplateclub.Fraction;
 import apps.nerdyginger.cleanplateclub.models.Unit;
 
 /*
@@ -21,28 +22,31 @@ public class UnitConversionDao {
         this.context = context;
     }
 
-    public int convertUnitQuantity(int quantity, String unitFromId, String unitToId) {
+    public Fraction convertUnitQuantity(Fraction quantity, String unitFromId, String unitToId) {
         SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
         UnitDao unitDao = new UnitDao(context);
         Unit fromUnit = unitDao.getUnitById(unitFromId);
         Unit toUnit = unitDao.getUnitById(unitToId);
         String sql = "Select * from UnitConversion where fromUnit=? and toUnit=?";
-        int fromOffset = 0, multiplicand = 1, denominator = 1, toOffset = 0;
+        Fraction fromOffset = new Fraction(0, 0, 0);
+        Fraction multiplicand = new Fraction(1, 0, 0);
+        Fraction denominator = new Fraction(1, 0, 0);
+        Fraction toOffset = new Fraction(0, 0, 0);
         Cursor cursor = db.rawQuery(sql, new String[] {unitFromId, unitToId});
         try {
             if (cursor.getCount() > 0) {
                 cursor.moveToFirst();
             }
-            fromOffset = cursor.getInt(cursor.getColumnIndex("fromOffset"));
-            multiplicand = cursor.getInt(cursor.getColumnIndex("multiplicand"));
-            denominator = cursor.getInt(cursor.getColumnIndex("denominator"));
-            toOffset = cursor.getInt(cursor.getColumnIndex("toOffset"));
+            fromOffset.setWholeNum(cursor.getInt(cursor.getColumnIndex("fromOffset")));
+            multiplicand.setWholeNum(cursor.getInt(cursor.getColumnIndex("multiplicand")));
+            denominator.setWholeNum(cursor.getInt(cursor.getColumnIndex("denominator")));
+            toOffset.setWholeNum(cursor.getInt(cursor.getColumnIndex("toOffset")));
         } catch (Exception e) {
             Log.e("Database Error", e.toString());
         } finally {
             cursor.close();
             db.close();
         }
-        return ((quantity + fromOffset) * multiplicand / denominator) + toOffset;
+        return ( ( (quantity.add(fromOffset) ).multiply(multiplicand) ).divide(denominator) ).add(toOffset);
     }
 }
