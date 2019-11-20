@@ -90,7 +90,7 @@ public class UserInventoryItem {
     }
 
     public boolean isMultiUnit() {
-        return (!maxQuantity.equals(""));
+        return ! (maxQuantity==null || maxQuantity.equals(""));
     }
 
     public void setMultiUnit(boolean multiUnit) {

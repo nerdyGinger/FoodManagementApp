@@ -89,11 +89,9 @@ public class CustomItemDialog extends DialogFragment {
             itemName.setText(existingItem.getItemName());
             itemName.setThreshold(1);
             //set other values
-            if (!existingItem.getQuantity().equals("")) {
-                amount.setText(String.valueOf(existingItem.getQuantity()));
-            }
+            amount.setText(existingItem.getQuantity());
             unit.setSelection(unitsAdapter.getPosition(unitAbbrevPairs.get(existingItem.getUnit())));
-            if (!existingItem.getMaxQuantity().equals("")) {
+            if (existingItem.isMultiUnit()) {
                 stockMeter.setProgress(Integer.parseInt(existingItem.getQuantity()) * 100 / Integer.parseInt(existingItem.getMaxQuantity()));
             }
         }
@@ -196,6 +194,7 @@ public class CustomItemDialog extends DialogFragment {
                     item.set_ID(existingItem.get_ID());
                     dao.update(item);
                 } catch (Exception e) {
+                    Toast.makeText(getContext(), "An error occurred - data may not have been saved", Toast.LENGTH_SHORT).show();
                     Log.e("Database Error", e.toString());
                 }
             }
@@ -250,6 +249,7 @@ public class CustomItemDialog extends DialogFragment {
                     item.setUnit(unitName.equals("(No Unit)") ? "" : unitDao.getUnitAbbrevByName(unitName));
                     dao.insert(item);
                 } catch (Exception e) {
+                    Toast.makeText(getContext(), "An error occurred - data may not have been saved", Toast.LENGTH_SHORT).show();
                     Log.e("Database Error", e.toString());
                 }
             }

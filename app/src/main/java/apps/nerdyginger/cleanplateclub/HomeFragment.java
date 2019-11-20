@@ -24,10 +24,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import apps.nerdyginger.cleanplateclub.adapters.BrowseRecipesItemAdapter;
+import apps.nerdyginger.cleanplateclub.dao.UnitConversionDao;
+import apps.nerdyginger.cleanplateclub.dao.UnitDao;
 import apps.nerdyginger.cleanplateclub.dao.UserInventoryItemDao;
 import apps.nerdyginger.cleanplateclub.dao.UserRecipeBoxDao;
 import apps.nerdyginger.cleanplateclub.dao.UserRecipeItemJoinDao;
 import apps.nerdyginger.cleanplateclub.dao.UserScheduleDao;
+import apps.nerdyginger.cleanplateclub.models.Unit;
 import apps.nerdyginger.cleanplateclub.models.UserInventoryItem;
 import apps.nerdyginger.cleanplateclub.models.UserRecipeBoxItem;
 import apps.nerdyginger.cleanplateclub.models.UserRecipeItemJoin;
@@ -124,17 +127,41 @@ public class HomeFragment extends Fragment {
                 UserCustomDatabase db = UserCustomDatabase.getDatabase(getContext());
                 UserRecipeItemJoinDao joinDao = db.getUserRecipeItemJoinDao();
                 UserInventoryItemDao inventoryDao = db.getUserInventoryDao();
+                UnitDao unitDao = new UnitDao(getContext());
                 List<UserRecipeItemJoin> joinInventoryItems = joinDao.getJoinItemsInRecipe(recipeId);
                 for (int i=0; i<joinInventoryItems.size(); i++) {
                     if (joinInventoryItems.get(i).inInventory) {
-                        UserInventoryItem tempItem = inventoryDao.getInventoryItemById(joinInventoryItems.get(i).get_ID());
-                        //TODO: check and convert units if necessary!
-                        int used = Integer.parseInt(joinInventoryItems.get(i).quantity); //TODO: need to convert from possible fraction! (check preferences?)(***multiply by servings***)
-                        int newAmount = Integer.parseInt(tempItem.getQuantity()) - used;
-                        tempItem.setQuantity(String.valueOf(newAmount));
-                        inventoryDao.update(tempItem);
+                        UserInventoryItem tempItem = inventoryDao.getInventoryItemById(joinInventoryItems.get(i).itemId);
+                        // Only subtract if the inventory item is quantified, too!
+                        if (tempItem.isQuantify()) {
+                            Unit joinItemUnit = unitDao.getUnitByAbbrev(joinInventoryItems.get(i).unit);
+                            Unit inventoryItemUnit = unitDao.getUnitByAbbrev(tempItem.getUnit());
+                            Log.e("CONVERSION_DEBUG", "join unit - name=" + joinItemUnit.getFullName() + " type=" + joinItemUnit.getType());
+                            Log.e("CONVERSION_DEBUG", "inventory unit - name=" + inventoryItemUnit.getFullName() + " type=" + inventoryItemUnit.getType());
+                            if (joinItemUnit.getFullName().equals(inventoryItemUnit.getFullName())) { //TODO: what if no unit???
+                                //same units, subtract as usual
+                                int used = Integer.parseInt(joinInventoryItems.get(i).quantity); //TODO: need to convert from possible fraction! (check preferences?)(***multiply by servings***)
+                                int newAmount = Integer.parseInt(tempItem.getQuantity()) - used;
+                                tempItem.setQuantity(String.valueOf(newAmount));
+                                inventoryDao.update(tempItem);
+                            } else if (joinItemUnit.getType().equals(inventoryItemUnit.getType())) { //TODO: fix unit conversion...
+                                //different units, but same types: convert and subtract
+                                UnitConversionDao conversionDao = new UnitConversionDao(getContext());
+                                Log.e("CONVERSION_DEBUG", "Before: " + joinInventoryItems.get(i).quantity + joinItemUnit.getFullName());
+                                int used = conversionDao.convertUnitQuantity(
+                                        /*convert recipe quantity...*/ Integer.parseInt(joinInventoryItems.get(i).quantity),
+                                        /*  ...from recipe unit...  */ String.valueOf(joinItemUnit.get_ID()),
+                                        /*  ...to inventory unit... */ String.valueOf(inventoryItemUnit.get_ID()));
+                                Log.e("CONVERSION_DEBUG", "After: " + used + inventoryItemUnit.getFullName());
+                                //and now we can subtract like normal
+                                int newAmount = Integer.parseInt(tempItem.getQuantity()) - used;
+                                tempItem.setQuantity(String.valueOf(newAmount));
+                                inventoryDao.update(tempItem);
+                            } //else {
+                                //different unit types, not possible: skip
+                            //}
+                        }
                     }
-                    Log.e("INVENTORY_DEBUG", "Not in inventory!");
                 }
             }
         });
@@ -184,7 +211,6 @@ public class HomeFragment extends Fragment {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                //TODO: change to query schedule db table
                 UserCustomDatabase db = UserCustomDatabase.getDatabase(getContext());
                 UserRecipeBoxDao boxDao = db.getUserRecipeBoxDao();
                 for (int i=0; i<scheduleItems.size(); i++) {

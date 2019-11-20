@@ -61,6 +61,58 @@ public class UnitDao {
         return abbrev;
     }
 
+    public Unit getUnitByAbbrev(String abbrev) {
+        SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
+        String sql = "Select * from Unit where abbreviation = ?";
+        Cursor cursor = db.rawQuery(sql, new String[] {abbrev});
+        String name, type;
+        int id, sysId;
+        Unit unit = new Unit();
+        try {
+            cursor.moveToFirst();
+            while ( !cursor.isAfterLast()) {
+                id = (cursor.getInt(cursor.getColumnIndex("_ID")));
+                name = (cursor.getString(cursor.getColumnIndex("fullName")));
+                type = (cursor.getString(cursor.getColumnIndex("type")));
+                sysId = (cursor.getInt(cursor.getColumnIndex("systemId")));
+                unit = new Unit(id, name, abbrev, sysId, type);
+                cursor.moveToNext();
+            }
+        } catch (Exception e) {
+            Log.e("Database Error", e.toString());
+        } finally {
+            cursor.close();
+            db.close();
+        }
+        return unit;
+    }
+
+    public Unit getUnitByName(String name) {
+        SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
+        String sql = "Select * from Unit where fullName = ?";
+        Cursor cursor = db.rawQuery(sql, new String[] {name});
+        String abbrev, type;
+        int id, sysId;
+        Unit unit = new Unit();
+        try {
+            cursor.moveToFirst();
+            while ( !cursor.isAfterLast()) {
+                id = (cursor.getInt(cursor.getColumnIndex("_ID")));
+                abbrev = (cursor.getString(cursor.getColumnIndex("abbreviation")));
+                type = (cursor.getString(cursor.getColumnIndex("type")));
+                sysId = (cursor.getInt(cursor.getColumnIndex("systemId")));
+                unit = new Unit(id, name, abbrev, sysId, type);
+                cursor.moveToNext();
+            }
+        } catch (Exception e) {
+            Log.e("Database Error", e.toString());
+        } finally {
+            cursor.close();
+            db.close();
+        }
+        return unit;
+    }
+
     public List<String> getAllUnitNames() {
         SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
         String sql = "Select fullName from Unit";

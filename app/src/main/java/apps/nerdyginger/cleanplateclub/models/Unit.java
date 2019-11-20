@@ -47,6 +47,10 @@ public class Unit {
         this.type = type;
     }
 
+    public Unit() {
+        //empty constructor
+    }
+
     public Unit(int _ID, String fullName, String abbreviation, int systemId, String type) {
         this._ID = _ID;
         this.fullName = fullName;

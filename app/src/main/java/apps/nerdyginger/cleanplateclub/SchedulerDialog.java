@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.TextView;
@@ -18,6 +19,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -56,6 +58,11 @@ public class SchedulerDialog extends DialogFragment {
         currentDate = format.format(c.getTime());
         title.setText(getCurrentWeek(c, format));
 
+        // Add adapter to recipeName field
+        ArrayAdapter<String> recipeNamesAdapter = new ArrayAdapter<>(getContext(),
+                android.R.layout.simple_dropdown_item_1line, getRecipeNames());
+        recipeNameBox.setAdapter(recipeNamesAdapter);
+
         // Add listener to recipeName field
         recipeNameBox.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -85,6 +92,26 @@ public class SchedulerDialog extends DialogFragment {
         return view;
     }
 
+    private List<String> getRecipeNames() {
+        final List<String> names = new ArrayList<>();
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                UserCustomDatabase db = UserCustomDatabase.getDatabase(getContext());
+                UserRecipeBoxDao dao = db.getUserRecipeBoxDao();
+                names.addAll(dao.getAllRecipeNames());
+            }
+        });
+        t.start();
+        try {
+            t.join();
+            return names;
+        } catch (Exception e) {
+            Log.e("Database Error", "Problem waiting for db thread to complete");
+            return names;
+        }
+    }
+
     private String getCurrentWeek(Calendar c, SimpleDateFormat dateFormat) {
         c.setFirstDayOfWeek(Calendar.SUNDAY); //TODO: change to query preferences for first day of week
         int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
@@ -112,7 +139,6 @@ public class SchedulerDialog extends DialogFragment {
                 UserCustomDatabase db = UserCustomDatabase.getDatabase(getContext());
                 UserScheduleDao dao = db.getUserScheduleDao();
                 UserRecipeBoxDao boxDao = db.getUserRecipeBoxDao();
-
                 List<String> names = boxDao.getAllRecipeNames();
                 if (names.contains(recipeName)) {
                     newScheduleItem.setRecipeBoxItemId(String.valueOf(boxDao.getRecipeIdByName(recipeName)));

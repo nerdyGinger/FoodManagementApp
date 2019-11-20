@@ -23,6 +23,7 @@ import android.widget.ImageButton;
 import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
@@ -366,41 +367,7 @@ public class CustomRecipeDialog extends DialogFragment {
     }
 
     private void performUpdateOperations() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                UserCustomDatabase db = UserCustomDatabase.getDatabase(getContext());
-                UserRecipeDao dao = db.getUserRecipeDao();
-                UserRecipeItemJoinDao joinDao = db.getUserRecipeItemJoinDao();
-                UserRecipeBoxDao recipeBoxDao = db.getUserRecipeBoxDao();
 
-                if (existingBoxItem.isUserAdded()) {
-                    //double check that we're editing an existing custom recipe
-                    newRecipe.set_ID(existingBoxItem.getRecipeId());
-                    dao.update(newRecipe);
-                    existingBoxItem.setRecipeName(newRecipe.getName());
-                    existingBoxItem.setCategory(newRecipe.getRecipeCategory());
-                    existingBoxItem.setServings(newRecipe.getRecipeYield());
-                    recipeBoxDao.update(existingBoxItem);
-
-                    //delete old ingredient join items
-                    List<UserRecipeItemJoin> oldIngredients = joinDao.getJoinItemsInRecipe(existingBoxItem.getRecipeId());
-                    for (int i=0; i<oldIngredients.size(); i++) {
-                        joinDao.delete(oldIngredients.get(i));
-                    }
-
-                    //add new ingredient join items
-                    for (int i=0; i<ingredientsList.size(); i++) {
-                        if (ingredientsList.get(i).itemId == -1) {
-                            ingredientsList.get(i).itemId = 0;
-                        }
-                        ingredientsList.get(i).recipeId = existingBoxItem.getRecipeId();
-                        joinDao.insert(ingredientsList.get(i));
-                    }
-                }
-            }
-        }).start();
-        /*
         try {
             new Thread(new Runnable() {
                 @Override
@@ -437,8 +404,9 @@ public class CustomRecipeDialog extends DialogFragment {
                 }
             }).start();
         } catch (Exception e) {
+            Toast.makeText(getContext(), "An error occurred - data may not have been saved", Toast.LENGTH_SHORT).show();
             Log.e("Database Error", e.toString());
-        }*/
+        }
     }
 
     private void performInsertOperations(){
@@ -479,6 +447,7 @@ public class CustomRecipeDialog extends DialogFragment {
                         itemsDao.insert(ingredientsList.get(i));
                     }
                 } catch (Exception e) {
+                    Toast.makeText(getContext(), "An error occurred - data may not have been saved", Toast.LENGTH_SHORT).show();
                     Log.e("Database Error", e.toString());
                 }
             }
