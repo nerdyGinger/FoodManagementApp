@@ -210,7 +210,7 @@ public class CustomItemDialog extends DialogFragment {
 
     private boolean saveNewItem() {
         String name = itemName.getText().toString();
-        String quantity = amount.getText().toString();
+        String quantity = amount.getText().toString(); //TODO: fraction input validation
         String unitName = unit.getSelectedItem().toString();
         int stockLevel = stockMeter.getProgress();
         if (!name.equals("")) {

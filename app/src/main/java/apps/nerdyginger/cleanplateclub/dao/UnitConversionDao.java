@@ -43,6 +43,6 @@ public class UnitConversionDao {
             cursor.close();
             db.close();
         }
-        return ((quantity + fromOffset) * multiplicand / denominator) * fromOffset;
+        return ((quantity + fromOffset) * multiplicand / denominator) + toOffset;
     }
 }

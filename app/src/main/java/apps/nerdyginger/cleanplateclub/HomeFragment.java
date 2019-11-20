@@ -136,10 +136,9 @@ public class HomeFragment extends Fragment {
                         if (tempItem.isQuantify()) {
                             Unit joinItemUnit = unitDao.getUnitByAbbrev(joinInventoryItems.get(i).unit);
                             Unit inventoryItemUnit = unitDao.getUnitByAbbrev(tempItem.getUnit());
-                            Log.e("CONVERSION_DEBUG", "join unit - name=" + joinItemUnit.getFullName() + " type=" + joinItemUnit.getType());
-                            Log.e("CONVERSION_DEBUG", "inventory unit - name=" + inventoryItemUnit.getFullName() + " type=" + inventoryItemUnit.getType());
-                            if (joinItemUnit.getFullName().equals(inventoryItemUnit.getFullName())) { //TODO: what if no unit???
-                                //same units, subtract as usual
+                            if (joinInventoryItems.get(i).unit.equals("") && tempItem.getUnit().equals("") || // if both units are empty
+                                        joinItemUnit.getFullName().equals(inventoryItemUnit.getFullName())) { // ...or they have the same unit
+                                // ...then subtract as usual
                                 int used = Integer.parseInt(joinInventoryItems.get(i).quantity); //TODO: need to convert from possible fraction! (check preferences?)(***multiply by servings***)
                                 int newAmount = Integer.parseInt(tempItem.getQuantity()) - used;
                                 tempItem.setQuantity(String.valueOf(newAmount));

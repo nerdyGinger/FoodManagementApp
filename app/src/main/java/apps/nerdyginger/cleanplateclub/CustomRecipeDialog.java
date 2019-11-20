@@ -288,8 +288,9 @@ public class CustomRecipeDialog extends DialogFragment {
                     if (id == 0) {
                         Log.e("INVENTORY_DEBUG", "Setting '" + name + "' to not in inventory!");
                         inInventory[0] = false;
+                    } else {
+                        inInventory[0] = true;
                     }
-                    inInventory[0] = true;
                 } catch (Exception e) {
                     //item not found
                     Log.e("Database Error", e.toString());
@@ -345,7 +346,7 @@ public class CustomRecipeDialog extends DialogFragment {
                             tempItem.inInventory = inInventory(ingredientsAdapter.getItemAtPosition(i).getItemName());
                             tempItem.itemName = ingredientsAdapter.getItemAtPosition(i).getItemName();
                             tempItem.detail = ingredientsAdapter.getItemAtPosition(i).getDetail();
-                            tempItem.quantity = ingredientsAdapter.getItemAtPosition(i).getAmount();
+                            tempItem.quantity = ingredientsAdapter.getItemAtPosition(i).getAmount(); // TODO: fraction input validation
                             tempItem.unit = ingredientsAdapter.getItemAtPosition(i).getUnit().equals("Unit") ? "" :
                                     ingredientsAdapter.getItemAtPosition(i).getUnit();
                             ingredientsList.add(tempItem);
