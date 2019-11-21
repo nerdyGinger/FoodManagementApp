@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
+import apps.nerdyginger.cleanplateclub.Fraction;
 import apps.nerdyginger.cleanplateclub.R;
 import apps.nerdyginger.cleanplateclub.RecyclerViewClickListener;
 import apps.nerdyginger.cleanplateclub.models.UserInventoryItem;
@@ -119,7 +120,8 @@ public class InventoryListAdapter extends RecyclerView.Adapter<RecyclerView.View
             quantity.setText(item.getQuantity() + " " + item.getUnit());
             ProgressBar lifeBar = detailHolder.lifeBar;
             lifeBar.setMax(Integer.parseInt(item.getMaxQuantity()));
-            lifeBar.setProgress(Integer.parseInt(item.getQuantity()));
+            Fraction quantityFraction = new Fraction().fromString(item.getQuantity());
+            lifeBar.setProgress(Integer.parseInt(item.getQuantity().contains("-") ? "0" : String.valueOf(quantityFraction.getWholeNum())));
         }
     }
 

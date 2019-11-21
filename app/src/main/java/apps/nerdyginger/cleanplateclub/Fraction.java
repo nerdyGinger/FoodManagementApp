@@ -11,6 +11,9 @@ public class Fraction {
 
     public Fraction() {
         //empty constructor
+        wholeNum = 0;
+        numerator = 0;
+        denominator = 1;
     }
 
     public Fraction(int wholeNum, int numerator, int denominator) {
@@ -56,10 +59,15 @@ public class Fraction {
 
     // assumes cleaned string of format [x] [y]/[z] where
     // [x] OR [y]/[z] is optional and x, y, z are integers
-    // VALID: "3", "3 1/4", "1/4"
+    // VALID: "3", "3 1/4", "1/4", ""
     // INVALID: "3/", "3 1", "1/0", "3 /3", "2.5"
     public Fraction fromString(String string) {
         try {
+            if (string.equals("")) {
+                setWholeNum(0);
+                setNumerator(0);
+                setDenominator(1);
+            }
             if (string.contains("/")) {
                 String[] slashSplit = string.split("/");
                 if (string.contains(" ")) {
@@ -90,6 +98,9 @@ public class Fraction {
             Integer.parseInt(string);
             return true;
         } catch (Exception e) {
+            if (string.equals("")) {
+                return true;
+            }
             if (string.matches("^(-?)*(?:(\\d+)\\s)?(\\d+)/(\\d+)$")) { //regex for mixed fraction
                 return true;
             }
@@ -168,7 +179,10 @@ public class Fraction {
     public Fraction multiply(Fraction other) {
         Fraction product = new Fraction();
 
-        product.setNumerator(numerator * other.getNumerator());
+        int selfNum = (denominator * wholeNum) + numerator;
+        int otherNum = (other.getDenominator() * other.getWholeNum()) + other.getNumerator();
+
+        product.setNumerator(selfNum * otherNum);
         product.setDenominator(denominator * other.getDenominator());
         product.simplify();
 
@@ -178,8 +192,11 @@ public class Fraction {
     public Fraction divide(Fraction other) {
         Fraction dividend = new Fraction();
 
-        dividend.setNumerator(numerator * other.getDenominator());
-        dividend.setDenominator(denominator * other.getNumerator());
+        int selfNum = (denominator * wholeNum) + numerator;
+        int otherNum = (other.getDenominator() * other.getWholeNum()) + other.getNumerator();
+
+        dividend.setNumerator(selfNum * other.getDenominator());
+        dividend.setDenominator(denominator * otherNum);
         dividend.simplify();
 
         return dividend;

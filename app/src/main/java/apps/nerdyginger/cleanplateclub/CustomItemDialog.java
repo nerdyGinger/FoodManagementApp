@@ -92,7 +92,9 @@ public class CustomItemDialog extends DialogFragment {
             amount.setText(existingItem.getQuantity());
             unit.setSelection(unitsAdapter.getPosition(unitAbbrevPairs.get(existingItem.getUnit())));
             if (existingItem.isMultiUnit()) {
-                stockMeter.setProgress(Integer.parseInt(existingItem.getQuantity()) * 100 / Integer.parseInt(existingItem.getMaxQuantity()));
+                Fraction quantityFraction = new Fraction().fromString(existingItem.getQuantity());
+                stockMeter.setProgress(Integer.parseInt(existingItem.getQuantity().contains("-") ? "0" :
+                        String.valueOf(quantityFraction.getWholeNum())) * 100 / Integer.parseInt(existingItem.getMaxQuantity()));
             }
         }
 
@@ -192,7 +194,8 @@ public class CustomItemDialog extends DialogFragment {
                 Toast.makeText(getContext(), "Don't forget to set your stock level!", Toast.LENGTH_SHORT).show();
                 return;
             }
-            item.setMaxQuantity(String.valueOf(Integer.parseInt(quantity) * 100 / stockLevel));
+            Fraction quantityFraction = new Fraction().fromString(quantity);
+            item.setMaxQuantity(String.valueOf(quantityFraction.getWholeNum() * 100 / stockLevel));
         }
         Thread t = new Thread(new Runnable() {                                                                        // (or if existing item had a max quantity)
             @Override
@@ -210,12 +213,12 @@ public class CustomItemDialog extends DialogFragment {
             }
         });
         t.start();
-        /*
+
         try {
             t.join();
         }catch (Exception e) {
             Log.e("Thread Exception", "Problem waiting for db thread: " + e.toString());
-        } */
+        }
     }
 
     private boolean saveNewItem() {
@@ -265,12 +268,11 @@ public class CustomItemDialog extends DialogFragment {
             }
         });
         t.start();
-        /*
         try {
             t.join();
         }catch (Exception e) {
             Log.e("Thread Exception", "Problem waiting for db thread: " + e.toString());
-        } */
+        }
     }
 
     private List<String> getItems() {

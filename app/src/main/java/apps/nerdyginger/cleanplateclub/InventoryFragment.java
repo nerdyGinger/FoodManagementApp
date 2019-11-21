@@ -81,7 +81,7 @@ public class InventoryFragment extends Fragment {
         }
 
         // Fill in the RecyclerView with inventory data
-        final RecyclerView rv = view.findViewById(R.id.inventoryRecycler);
+        RecyclerView rv = view.findViewById(R.id.inventoryRecycler);
         rv.addItemDecoration(new DividerItemDecoration(context, LinearLayoutManager.VERTICAL));
         rv.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
@@ -108,6 +108,7 @@ public class InventoryFragment extends Fragment {
             @Override
             public void onChanged(List<UserInventoryItem> userInventories) {
                 adapter.updateData(userInventories);
+                adapter.notifyDataSetChanged();
             }
         });
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new InventorySwipeDeleteCallback(adapter, context, inventoryViewModel));

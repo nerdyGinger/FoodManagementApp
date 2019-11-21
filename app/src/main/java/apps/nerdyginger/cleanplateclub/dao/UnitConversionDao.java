@@ -47,6 +47,22 @@ public class UnitConversionDao {
             cursor.close();
             db.close();
         }
+
+        /*
+        Fraction step1 = quantity.add(fromOffset);
+        Log.e("CONVERSION_DEBUG", "STEP 1: " + quantity.toString() + " + " + fromOffset.toString() + " = " + step1.toString());
+        Fraction step2 = step1.multiply(multiplicand);
+        Log.e("CONVERSION_DEBUG", "STEP 2: " + step1.toString() + " * " + multiplicand.toString() + " = " + step2.toString());
+        Fraction step3 = step2.divide(denominator);
+        Log.e("CONVERSION_DEBUG", "STEP 3: " + step2.toString() + " / " + denominator.toString() + " = " + step3.toString());
+        Fraction step4 = step3.add(toOffset);
+        Log.e("CONVERSION_DEBUG", "STEP 4: " + step3.toString() + " + " + toOffset.toString() + " = " + step4.toString());
+
+
+        Log.e( "CONVERSION_DEBUG" ,
+                "( ( (" + quantity.toString() + " + " + fromOffset.toString() + ") * " + multiplicand.toString() + ") / " + denominator.toString() + " ) + " + toOffset.toString());
+         */
+
         return ( ( (quantity.add(fromOffset) ).multiply(multiplicand) ).divide(denominator) ).add(toOffset);
     }
 }
