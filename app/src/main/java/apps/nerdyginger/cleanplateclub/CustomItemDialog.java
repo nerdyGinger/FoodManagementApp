@@ -201,7 +201,7 @@ public class CustomItemDialog extends DialogFragment {
             @Override
             public void run() {
                 try {
-                    UserInventoryItemDao dao = userDatabase.getUserInventoryDao();
+                    UserInventoryItemDao dao = UserCustomDatabase.getDatabase(getContext()).getUserInventoryDao();
                     UnitDao unitDao = new UnitDao(getContext());
                     item.setUnit(unitName.equals("(No Unit)") ? "" : unitDao.getUnitAbbrevByName(unitName));
                     item.set_ID(existingItem.get_ID());
@@ -257,7 +257,7 @@ public class CustomItemDialog extends DialogFragment {
             @Override
             public void run() {
                 try {
-                    UserInventoryItemDao dao = userDatabase.getUserInventoryDao();
+                    UserInventoryItemDao dao = UserCustomDatabase.getDatabase(getContext()).getUserInventoryDao();
                     UnitDao unitDao = new UnitDao(getContext());
                     item.setUnit(unitName.equals("(No Unit)") ? "" : unitDao.getUnitAbbrevByName(unitName));
                     dao.insert(item);
