@@ -3,6 +3,7 @@ package apps.nerdyginger.pocketpantry;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +29,7 @@ import java.util.Objects;
 
 import apps.nerdyginger.pocketpantry.dao.ItemDao;
 import apps.nerdyginger.pocketpantry.dao.UnitDao;
+import apps.nerdyginger.pocketpantry.dao.UnitSystemDao;
 import apps.nerdyginger.pocketpantry.dao.UserInventoryItemDao;
 import apps.nerdyginger.pocketpantry.models.Unit;
 import apps.nerdyginger.pocketpantry.models.UserInventoryItem;
@@ -63,7 +65,7 @@ public class CustomItemDialog extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_add_inventory_item, container, false);
-        userPreferences = getContext().getSharedPreferences(getContext().getPackageName() + "userPreferences", Context.MODE_PRIVATE);
+        userPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         //find views
         final TextView expandTxt = view.findViewById(R.id.addInventoryExpandLabel);
@@ -287,11 +289,12 @@ public class CustomItemDialog extends DialogFragment {
     private List<String> getUnits() {
         unitAbbrevPairs.put("", "(No Unit)");
         UnitDao dao = new UnitDao(getContext());
+        UnitSystemDao systemDao = new UnitSystemDao(getContext());
         List<String> unitAbbrevs = new ArrayList<>();
         unitAbbrevs.add("(No Unit)");
-        unitAbbrevs.addAll(dao.getAllUnitNamesBySystemId(userPreferences.getString("unitSystemId", "1")));
+        String systemId = systemDao.getSystemIdByName(userPreferences.getString("unitSystem", "Metric"));
+        unitAbbrevs.addAll(dao.getAllUnitNamesBySystemId(systemId));
         List<Unit> units = new ArrayList<>(dao.getAllUnits());
-        String systemId = userPreferences.getString("unitSystemId", "1");
         for (int i=0; i<units.size(); i++) {
             if (String.valueOf(units.get(i).getSystemId()).equals(systemId)) {
                 unitAbbrevPairs.put(units.get(i).getAbbreviation(), units.get(i).getFullName());

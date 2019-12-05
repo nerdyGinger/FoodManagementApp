@@ -67,7 +67,9 @@ public class MainActivity extends AppCompatActivity implements ListsFragment.OnF
         navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                Toast.makeText(getApplicationContext(), menuItem.getTitle(), Toast.LENGTH_SHORT).show();
+                if (menuItem.getTitle().equals("Settings")) {
+                    settingsClick();
+                }
                 return false;
             }
         });
@@ -168,6 +170,8 @@ public class MainActivity extends AppCompatActivity implements ListsFragment.OnF
 
     private void settingsClick() {
         //open preferences
+        Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
+        startActivity(intent);
     }
 
     private void aboutClick() {

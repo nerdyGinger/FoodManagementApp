@@ -1,6 +1,8 @@
 package apps.nerdyginger.pocketpantry;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -108,7 +110,31 @@ public class SchedulerDialog extends DialogFragment {
     }
 
     private String getCurrentWeek(Calendar c, SimpleDateFormat dateFormat) {
-        c.setFirstDayOfWeek(Calendar.SUNDAY); //TODO: change to query preferences for first day of week
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        String day = prefs.getString("firstDayOfWeek", "Sunday");
+        switch(day != null ? day : "Sunday") {
+            case "Monday":
+                c.setFirstDayOfWeek(Calendar.MONDAY);
+                break;
+            case "Tuesday":
+                c.setFirstDayOfWeek(Calendar.TUESDAY);
+                break;
+            case "Wednesday":
+                c.setFirstDayOfWeek(Calendar.WEDNESDAY);
+                break;
+            case "Thursday":
+                c.setFirstDayOfWeek(Calendar.THURSDAY);
+                break;
+            case "Friday":
+                c.setFirstDayOfWeek(Calendar.FRIDAY);
+                break;
+            case "Saturday":
+                c.setFirstDayOfWeek(Calendar.SATURDAY);
+                break;
+            default:
+                c.setFirstDayOfWeek(Calendar.SUNDAY);
+                break;
+        }
         int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
         int offset;
         if (dayOfWeek == 1) {

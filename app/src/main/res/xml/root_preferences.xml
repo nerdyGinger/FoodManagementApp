@@ -1,0 +1,65 @@
+<!--
+  ~ Copyright 2018 The app Open Source Project
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <SwitchPreference
+        android:key="recipeViewingMode"
+        android:title="Detailed Recipe Listing"
+        android:summary="See more detail in recipe list entries"
+        android:switchTextOff="Simple"
+        android:switchTextOn="Detailed"
+        android:defaultValue="true"
+        />
+
+    <ListPreference
+        android:key="unitSystem"
+        android:entries="@array/unitSystems"
+        android:entryValues="@array/unitSystems"
+        android:title="Unit System"
+        android:dialogTitle="Select unit system"
+        android:summary="Configure units for item and ingredient amounts"
+        />
+
+    <ListPreference
+        android:key="firstDayOfWeek"
+        android:entries="@array/daysOfWeek"
+        android:entryValues="@array/daysOfWeek"
+        android:title="First Day of Week"
+        android:dialogTitle="Select day"
+        android:summary="Select starting day of week for schedule"
+        />
+
+    <SwitchPreference
+        android:key="enableStockWarnings"
+        android:title="Enable Stock Level Warnings"
+        android:summary="Warn if stock levels go below warning level"
+        android:defaultValue="true"
+        />
+
+    <ListPreference
+        android:key="inventoryWarnLevel"
+        android:entries="@array/warnLevels"
+        android:entryValues="@array/warnLevels"
+        android:title="Inventory Warning Level"
+        android:summary="Stock level to warn at for tracked quantities"
+        android:dialogTitle="Select an inventory warning level"
+        android:enabled="true"
+        android:dependency="enableStockWarnings"
+        />
+
+</PreferenceScreen>

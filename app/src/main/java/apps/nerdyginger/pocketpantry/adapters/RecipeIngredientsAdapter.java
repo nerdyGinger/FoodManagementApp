@@ -2,6 +2,7 @@ package apps.nerdyginger.pocketpantry.adapters;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +27,7 @@ import java.util.Objects;
 import apps.nerdyginger.pocketpantry.R;
 import apps.nerdyginger.pocketpantry.dao.ItemDao;
 import apps.nerdyginger.pocketpantry.dao.UnitDao;
+import apps.nerdyginger.pocketpantry.dao.UnitSystemDao;
 import apps.nerdyginger.pocketpantry.view_models.RecipeIngredientsViewModel;
 
 
@@ -221,10 +223,12 @@ public class RecipeIngredientsAdapter extends RecyclerView.Adapter<RecyclerView.
 
     private List<String> getUnits(Context context) {
         List<String> units = new ArrayList<>();
-        SharedPreferences userPreferences = context.getSharedPreferences(context.getPackageName() + "userPreferences", Context.MODE_PRIVATE);
+        SharedPreferences userPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         UnitDao dao = new UnitDao(context);
+        UnitSystemDao systemDao = new UnitSystemDao(context);
+        String systemId = systemDao.getSystemIdByName(userPreferences.getString("unitSystem", "Metric"));
         units.add("Unit");
-        units.addAll(dao.getAllUnitAbbrevsBySystemId(userPreferences.getString("unitSystemId", "1")));
+        units.addAll(dao.getAllUnitAbbrevsBySystemId(systemId));
 
         return units;
     }

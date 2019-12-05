@@ -1,0 +1,25 @@
+<resources>
+    <string-array name="unitSystems">
+        <item>Metric</item>
+        <item>Imperial</item>
+        <item>US Customary</item>
+    </string-array>
+
+    <string-array name="daysOfWeek">
+        <item>Sunday</item>
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+        <item>Saturday</item>
+    </string-array>
+
+    <string-array name="warnLevels">
+        <item>10%</item>
+        <item>15%</item>
+        <item>20%</item>
+        <item>25%</item>
+    </string-array>
+
+</resources>

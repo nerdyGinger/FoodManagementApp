@@ -37,6 +37,25 @@ public class UnitSystemDao {
         return new UnitSystem(Integer.parseInt(id), name);
     }
 
+    public String getSystemIdByName(String name) {
+        SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
+        String sql = "Select _ID from UnitSystem where name = ?";
+        String id = "";
+        Cursor cursor = db.rawQuery(sql, new String[] {name});
+        try {
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+            }
+            id = cursor.getString(cursor.getColumnIndex("_ID"));
+        } catch (Exception e) {
+            Log.e("Database Error", e.toString());
+        } finally {
+            cursor.close();
+            db.close();
+        }
+        return id;
+    }
+
     public List<UnitSystem> getAllSystems() {
         SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
         String sql = "Select * from UnitSystems";
