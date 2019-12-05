@@ -69,6 +69,10 @@ public class MainActivity extends AppCompatActivity implements ListsFragment.OnF
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 if (menuItem.getTitle().equals("Settings")) {
                     settingsClick();
+                } else if (menuItem.getTitle().equals("About")) {
+                    aboutClick();
+                } else if (menuItem.getTitle().equals("Contact Us")) {
+                    contactClick();
                 }
                 return false;
             }
@@ -164,10 +168,6 @@ public class MainActivity extends AppCompatActivity implements ListsFragment.OnF
         transaction.commit();
     }
 
-    void setCurrentFragment(Fragment fragment) {
-        currentFragment = fragment;
-    }
-
     private void settingsClick() {
         //open preferences
         Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
@@ -175,11 +175,12 @@ public class MainActivity extends AppCompatActivity implements ListsFragment.OnF
     }
 
     private void aboutClick() {
-        //open about page
+        Toast.makeText(getApplicationContext(), "About Clicked!", Toast.LENGTH_SHORT).show();
     }
 
     private void contactClick() {
         //open contact page
+        Toast.makeText(getApplicationContext(), "Contact Clicked!", Toast.LENGTH_SHORT).show();
     }
 
     @Override

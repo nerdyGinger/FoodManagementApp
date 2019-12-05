@@ -166,7 +166,7 @@ public class CustomItemDialog extends DialogFragment {
         String unitName = unit.getSelectedItem().toString();
         int stockLevel =  stockMeter.getProgress();
         if (!newName.equals("")) {
-            if ((stockClicked || !existingItem.getMaxQuantity().equals("")) && stockLevel == 0) { //preventing divide by zero
+            if ((stockClicked || (existingItem.getMaxQuantity() != null && !existingItem.getMaxQuantity().equals(""))) && stockLevel == 0) { //preventing divide by zero
                 Toast.makeText(getContext(), "Don't forget to set your stock level!", Toast.LENGTH_SHORT).show();
                 return false;
             }

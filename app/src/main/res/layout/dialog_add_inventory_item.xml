@@ -47,8 +47,6 @@
             android:inputType="datetime"
             />
 
-        <!-- Not allowing fractions yet! TODO: make fraction package -->
-
         <Spinner
             android:id="@+id/addInventoryUnit"
             android:layout_width="150dp"

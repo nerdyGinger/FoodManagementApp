@@ -31,8 +31,8 @@ public class RecipeSwipeDeleteCallback extends ItemTouchHelper.SimpleCallback {
         mAdapter = adapter;
         mContext = context;
         mModel = viewModel;
-        icon = ContextCompat.getDrawable(context, R.drawable.ic_delete); //TODO: credit icons!//TODO: credit icons!
-        background = new ColorDrawable(Color.RED); // trash icon made by Kiranshastry on flaticon.com
+        icon = ContextCompat.getDrawable(context, R.drawable.ic_delete);
+        background = new ColorDrawable(Color.RED);
     }
 
     @Override

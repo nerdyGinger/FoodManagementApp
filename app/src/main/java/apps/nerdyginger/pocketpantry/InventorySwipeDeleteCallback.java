@@ -31,8 +31,8 @@ public class InventorySwipeDeleteCallback extends ItemTouchHelper.SimpleCallback
         super(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
         mAdapter = adapter;
         mModel = viewModel;
-        icon = ContextCompat.getDrawable(context, R.drawable.ic_delete); //TODO: credit icons!
-        background = new ColorDrawable(Color.RED); // trash icon made by Kiranshastry on flaticon.com
+        icon = ContextCompat.getDrawable(context, R.drawable.ic_delete);
+        background = new ColorDrawable(Color.RED);
     }
 
     @Override
