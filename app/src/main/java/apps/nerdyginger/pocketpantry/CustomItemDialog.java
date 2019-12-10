@@ -1,6 +1,5 @@
 package apps.nerdyginger.pocketpantry;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -19,7 +18,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.DialogFragment;
-import androidx.room.Room;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,7 +50,7 @@ public class CustomItemDialog extends DialogFragment {
         MODE = "create";
     }
 
-    public CustomItemDialog(UserInventoryItem item) {
+    CustomItemDialog(UserInventoryItem item) {
         existingItem = item;
         MODE = "edit";
     }
@@ -120,7 +118,7 @@ public class CustomItemDialog extends DialogFragment {
 
         //handle expansion/de-expansion
         quantityContainer.setVisibility(View.GONE);
-        expandTxt.setText("Click to add quantity");
+        expandTxt.setText(getString(R.string.inventory_item_expansion));
         if (MODE.equals("edit")) { toggleExpansion(quantityContainer, expandTxt); }
         expandTxt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -157,7 +155,7 @@ public class CustomItemDialog extends DialogFragment {
 
     private void toggleExpansion(RelativeLayout container, TextView label) {
         container.setVisibility(container.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
-        label.setText(container.getVisibility() == View.VISIBLE ? "Click to collapse" : "Click to add quantity");
+        label.setText(container.getVisibility() == View.VISIBLE ? getString(R.string.inventory_item_collapse) : getString(R.string.inventory_item_expansion));
     }
 
     private boolean editExistingItem() {
@@ -167,21 +165,18 @@ public class CustomItemDialog extends DialogFragment {
         int stockLevel =  stockMeter.getProgress();
         if (!newName.equals("")) {
             if ((stockClicked || (existingItem.getMaxQuantity() != null && !existingItem.getMaxQuantity().equals(""))) && stockLevel == 0) { //preventing divide by zero
-                Toast.makeText(getContext(), "Don't forget to set your stock level!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getString(R.string.inventory_stock_level_error), Toast.LENGTH_SHORT).show();
                 return false;
             }
             updateItem(newName, newQuantity, unitName, stockLevel);
             return true;
         } else {
-            Toast.makeText(getContext(), "Item name cannot be empty", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), getString(R.string.inventory_name_error), Toast.LENGTH_SHORT).show();
             return false;
         }
     }
 
     private void updateItem(String name, String quantity, final String unitName, int stockLevel) {
-        final UserCustomDatabase userDatabase = Room.databaseBuilder(getContext(), UserCustomDatabase.class, "userDatabase")
-                .fallbackToDestructiveMigration() //don't do this in production!!!
-                .build();
         final UserInventoryItem item = new UserInventoryItem();
         item.setItemName(name);
         if (names.contains(name)) {
@@ -193,7 +188,7 @@ public class CustomItemDialog extends DialogFragment {
         // only set the stock level if it was click at least once
         if (stockClicked || !existingItem.getMaxQuantity().equals("")) {
             if (stockLevel == 0) {
-                Toast.makeText(getContext(), "Don't forget to set your stock level!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getString(R.string.inventory_stock_level_error), Toast.LENGTH_SHORT).show();
                 return;
             }
             Fraction quantityFraction = new Fraction().fromString(quantity);
@@ -209,7 +204,7 @@ public class CustomItemDialog extends DialogFragment {
                     item.set_ID(existingItem.get_ID());
                     dao.update(item);
                 } catch (Exception e) {
-                    Toast.makeText(getContext(), "An error occurred - data may not have been saved", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), getString(R.string.database_unknown_error), Toast.LENGTH_SHORT).show();
                     Log.e("Database Error", e.toString());
                 }
             }
@@ -233,7 +228,7 @@ public class CustomItemDialog extends DialogFragment {
             return true;
         } else if (quantity.equals("") && ! stockClicked) {
             // tell user to enter quantity for stock level calculations
-            Toast.makeText(getContext(), "Please enter quantity for stock level calculations",
+            Toast.makeText(getContext(), getString(R.string.inventory_quantity_error),
                     Toast.LENGTH_SHORT).show();
             return false;
         } else {
@@ -267,7 +262,7 @@ public class CustomItemDialog extends DialogFragment {
                     item.setUnit(unitName.equals("(No Unit)") ? "" : unitDao.getUnitAbbrevByName(unitName));
                     dao.insert(item);
                 } catch (Exception e) {
-                    Toast.makeText(getContext(), "An error occurred - data may not have been saved", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), getString(R.string.database_unknown_error), Toast.LENGTH_SHORT).show();
                     Log.e("Database Error", e.toString());
                 }
             }

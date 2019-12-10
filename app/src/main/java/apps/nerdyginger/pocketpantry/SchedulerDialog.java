@@ -20,15 +20,13 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import apps.nerdyginger.pocketpantry.dao.UserRecipeBoxDao;
 import apps.nerdyginger.pocketpantry.dao.UserScheduleDao;
 import apps.nerdyginger.pocketpantry.models.UserSchedule;
 
 public class SchedulerDialog extends DialogFragment {
-    private String currentDate;
-    private String currentWeekStartDate;
-    private String currentWeekEndDate;
     private AutoCompleteTextView recipeNameBox;
     private String recipeName;
     private UserSchedule newScheduleItem = new UserSchedule();
@@ -52,11 +50,11 @@ public class SchedulerDialog extends DialogFragment {
         // Set title date range
         Calendar c = Calendar.getInstance();
         SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
-        currentDate = format.format(c.getTime());
+        String currentDate = format.format(c.getTime());
         title.setText(getCurrentWeek(c, format));
 
         // Add adapter to recipeName field
-        ArrayAdapter<String> recipeNamesAdapter = new ArrayAdapter<>(getContext(),
+        ArrayAdapter<String> recipeNamesAdapter = new ArrayAdapter<>(Objects.requireNonNull(getContext()),
                 android.R.layout.simple_dropdown_item_1line, getRecipeNames());
         recipeNameBox.setAdapter(recipeNamesAdapter);
 
@@ -112,7 +110,7 @@ public class SchedulerDialog extends DialogFragment {
     private String getCurrentWeek(Calendar c, SimpleDateFormat dateFormat) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         String day = prefs.getString("firstDayOfWeek", "Sunday");
-        switch(day != null ? day : "Sunday") {
+        switch(day) {
             case "Monday":
                 c.setFirstDayOfWeek(Calendar.MONDAY);
                 break;
@@ -143,10 +141,10 @@ public class SchedulerDialog extends DialogFragment {
             offset = 2 - dayOfWeek;
         }
         c.add(Calendar.DAY_OF_YEAR, offset);
-        currentWeekStartDate = dateFormat.format(c.getTime());
+        String currentWeekStartDate = dateFormat.format(c.getTime());
         newScheduleItem.setStartDate(currentWeekStartDate);
         c.add(Calendar.DAY_OF_YEAR, 6);
-        currentWeekEndDate = dateFormat.format(c.getTime());
+        String currentWeekEndDate = dateFormat.format(c.getTime());
         newScheduleItem.setEndDate(currentWeekEndDate);
         return currentWeekStartDate + " - " + currentWeekEndDate;
     }

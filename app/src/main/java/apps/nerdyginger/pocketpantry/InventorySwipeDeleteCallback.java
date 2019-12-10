@@ -23,11 +23,10 @@ import apps.nerdyginger.pocketpantry.view_models.InventoryViewModel;
 public class InventorySwipeDeleteCallback extends ItemTouchHelper.SimpleCallback {
     private InventoryListAdapter mAdapter;
     private InventoryViewModel mModel;
-    private Context mContext;
     private Drawable icon;
     private final ColorDrawable background;
 
-    public InventorySwipeDeleteCallback(InventoryListAdapter adapter, Context context, InventoryViewModel viewModel) {
+    InventorySwipeDeleteCallback(InventoryListAdapter adapter, Context context, InventoryViewModel viewModel) {
         super(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
         mAdapter = adapter;
         mModel = viewModel;
@@ -55,7 +54,7 @@ public class InventorySwipeDeleteCallback extends ItemTouchHelper.SimpleCallback
     }
 
     @Override
-    public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder holder,
+    public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder holder,
                             float dX, float dY, int actionState, boolean isCurrentlyActive) {
         super.onChildDraw(c, recyclerView, holder, dX, dY, actionState, isCurrentlyActive);
         View itemView = holder.itemView;

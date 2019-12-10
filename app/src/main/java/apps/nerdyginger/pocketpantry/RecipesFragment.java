@@ -3,6 +3,7 @@ package apps.nerdyginger.pocketpantry;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
@@ -74,7 +75,7 @@ public class RecipesFragment extends Fragment {
             @Override
             public void onClick(View view, int position) {
                 CustomRecipeDialog dialog = new CustomRecipeDialog("view", adapter.getItemAtPosition(position));
-                dialog.show(getFragmentManager(), "input a recipe!");
+                dialog.show(Objects.requireNonNull(getFragmentManager()), "input a recipe!");
             }
 
             @Override
@@ -102,7 +103,7 @@ public class RecipesFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         this.context = context;
     }

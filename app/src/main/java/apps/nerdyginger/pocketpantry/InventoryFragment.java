@@ -1,7 +1,6 @@
 package apps.nerdyginger.pocketpantry;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -21,6 +20,7 @@ import android.view.ViewGroup;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
+import java.util.Objects;
 
 import apps.nerdyginger.pocketpantry.adapters.InventoryListAdapter;
 import apps.nerdyginger.pocketpantry.models.UserInventoryItem;
@@ -28,7 +28,6 @@ import apps.nerdyginger.pocketpantry.view_models.InventoryViewModel;
 
 public class InventoryFragment extends Fragment {
     private UserCustomDatabase userDatabase;
-    private SharedPreferences userPreferences;
     private Context context;
     private InventoryListAdapter adapter;// = new InventoryListAdapter();
 
@@ -39,8 +38,6 @@ public class InventoryFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        userPreferences = context.getSharedPreferences(context.getPackageName() + "userPreferences", Context.MODE_PRIVATE);
-        //currently in userPreferences: String("unitSystemId", "3");
 
     }
 
@@ -56,7 +53,7 @@ public class InventoryFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 CustomItemDialog dialog = new CustomItemDialog();
-                dialog.show(getFragmentManager(), "input a recipe!");
+                dialog.show(Objects.requireNonNull(getFragmentManager()), "input a recipe!");
             }
         });
 
@@ -77,7 +74,7 @@ public class InventoryFragment extends Fragment {
             @Override
             public void onClick(View view, int position) {
                 CustomItemDialog dialog = new CustomItemDialog(adapter.getItemAtPosition(position));
-                dialog.show(getFragmentManager(), "input an item!");
+                dialog.show(Objects.requireNonNull(getFragmentManager()), "input an item!");
             }
 
             @Override
@@ -104,7 +101,7 @@ public class InventoryFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         this.context = context;
     }

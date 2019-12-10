@@ -22,6 +22,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -182,7 +183,7 @@ public class CustomRecipeDialog extends DialogFragment {
 
         //set parent views according to mode
         if (MODE.equals("view")) {
-            title.setText("View Recipe");
+            title.setText(getString(R.string.recipe_dialog_view_title));
             editBtn.setVisibility(View.VISIBLE);
             if ( ! existingBoxItem.isUserAdded()) {
                 editBtn.setEnabled(false);
@@ -190,13 +191,13 @@ public class CustomRecipeDialog extends DialogFragment {
             editBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    getDialog().dismiss();
+                    Objects.requireNonNull(getDialog()).dismiss();
                     CustomRecipeDialog dialog = new CustomRecipeDialog("edit", existingBoxItem);
                     dialog.show(Objects.requireNonNull(getFragmentManager()), "input a recipe!");
                 }
             });
         } else if (MODE.equals("edit")) {
-            title.setText("Edit Recipe");
+            title.setText(getString(R.string.recipe_dialog_edit_title));
             editBtn.setVisibility(View.GONE);
         }
 
@@ -209,18 +210,18 @@ public class CustomRecipeDialog extends DialogFragment {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 if (position == 2) {
-                    nextBtn.setText("Save");
+                    nextBtn.setText(getString(R.string.recipe_dialog_save_btn));
                 } else {
-                    nextBtn.setText("Next");
+                    nextBtn.setText(getString(R.string.recipe_dialog_next_btn));
                 }
             }
 
             @Override
             public void onPageSelected(int position) {
                 if (position == 2) {
-                    nextBtn.setText("Save");
+                    nextBtn.setText(getString(R.string.recipe_dialog_save_btn));
                 } else {
-                    nextBtn.setText("Next");
+                    nextBtn.setText(getString(R.string.recipe_dialog_next_btn));
                 }
             }
 
@@ -449,7 +450,7 @@ public class CustomRecipeDialog extends DialogFragment {
                         itemsDao.insert(ingredientsList.get(i));
                     }
                 } catch (Exception e) {
-                    Toast.makeText(getContext(), "An error occurred - data may not have been saved", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), getString(R.string.database_unknown_error), Toast.LENGTH_SHORT).show();
                     Log.e("Database Error", e.toString());
                 }
             }
@@ -463,10 +464,11 @@ public class CustomRecipeDialog extends DialogFragment {
         private String parentMode;
 
         ScreenSlidePagerAdapter (FragmentManager manager, String mode) {
-            super(manager);
+            super(manager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
             parentMode = mode;
         }
 
+        @NonNull
         @Override
         public Fragment getItem(int position) {
             if (position == 0) {
@@ -896,7 +898,6 @@ public class CustomRecipeDialog extends DialogFragment {
 
     public static class ThirdPageFragment extends Fragment {
         private String MODE;
-        private ArrayList<String> instructions = new ArrayList<>();
         private List<RecipeInstructionsViewModel> modelList = new ArrayList<>();
 
         ThirdPageFragment(String mode) {
@@ -935,15 +936,13 @@ public class CustomRecipeDialog extends DialogFragment {
                 case "view":
                     //filled page that you can't edit
                     instructionsAdapter.isClickable = false;
-                    instructions = existingBoxItem.isUserAdded() ? existingCustomRecipeItem.getRecipeInstructions() : readOnlyItem.getRecipeInstructions();
+                    ArrayList<String> instructions = existingBoxItem.isUserAdded() ? existingCustomRecipeItem.getRecipeInstructions() : readOnlyItem.getRecipeInstructions();
                     if (instructions != null) {
                         //only set steps if there were actually instructions previously
                         for (int i = 0; i < instructions.size(); i++) {
                             modelList.add(new RecipeInstructionsViewModel(instructions.get(i), false));
                         }
                         instructionsAdapter.updateData(modelList);
-                    } else {
-                        instructions = new ArrayList<>();
                     }
                     break;
                 case "edit":
@@ -955,8 +954,6 @@ public class CustomRecipeDialog extends DialogFragment {
                         for (int i = 0; i < instructions.size(); i++) {
                             modelList.add(new RecipeInstructionsViewModel(instructions.get(i), false));
                         }
-                    } else {
-                        instructions = new ArrayList<>();
                     }
                     modelList.add(new RecipeInstructionsViewModel("", true));
                     instructionsAdapter.updateData(modelList);

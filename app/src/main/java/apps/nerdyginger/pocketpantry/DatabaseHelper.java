@@ -10,7 +10,6 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-    private static String ASSETS_PATH = "databases";
     private static String DATABASE_NAME = "food.sqlite3";
     private static int DATABASE_VERSION = 4;
     private Context mContext;
@@ -38,6 +37,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private void installDatabaseFromAssets() {
         try {
+            String ASSETS_PATH = "databases";
             InputStream inStream = mContext.getAssets().open(ASSETS_PATH + "/" + DATABASE_NAME);
             File outputFile = new File(mContext.getDatabasePath(DATABASE_NAME).getPath());
             FileOutputStream outputStream = new FileOutputStream(outputFile);

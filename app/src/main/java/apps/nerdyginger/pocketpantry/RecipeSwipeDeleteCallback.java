@@ -26,7 +26,7 @@ public class RecipeSwipeDeleteCallback extends ItemTouchHelper.SimpleCallback {
     private Drawable icon;
     private final ColorDrawable background;
 
-    public RecipeSwipeDeleteCallback(RecipesListAdapter adapter, Context context, RecipeViewModel viewModel) {
+    RecipeSwipeDeleteCallback(RecipesListAdapter adapter, Context context, RecipeViewModel viewModel) {
         super(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
         mAdapter = adapter;
         mContext = context;
@@ -55,7 +55,7 @@ public class RecipeSwipeDeleteCallback extends ItemTouchHelper.SimpleCallback {
     }
 
     @Override
-    public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder holder,
+    public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder holder,
                             float dX, float dY, int actionState, boolean isCurrentlyActive) {
         super.onChildDraw(c, recyclerView, holder, dX, dY, actionState, isCurrentlyActive);
         View itemView = holder.itemView;

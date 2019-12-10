@@ -1,9 +1,9 @@
 package apps.nerdyginger.pocketpantry;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -15,8 +15,6 @@ import android.view.ViewGroup;
 //
 // Last edited: 11/12/19
 public class TipsFragment extends Fragment {
-
-    private OnFragmentInteractionListener mListener;
 
     public TipsFragment() {
         // Required empty public constructor
@@ -36,23 +34,12 @@ public class TipsFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
-    }
-
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
     }
 }

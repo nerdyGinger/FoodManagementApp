@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import apps.nerdyginger.pocketpantry.adapters.BrowseRecipesItemAdapter;
 import apps.nerdyginger.pocketpantry.dao.UnitConversionDao;
@@ -72,7 +74,7 @@ public class HomeFragment extends Fragment {
                 if (position == adapter.getItemCount() - 1) {
                     //add button click
                     SchedulerDialog dialog = new SchedulerDialog();
-                    dialog.show(getFragmentManager(), "open scheduler");
+                    dialog.show(Objects.requireNonNull(getFragmentManager()), "open scheduler");
                 } else {
                     buildConfirmationDialog(position).show();
                 }
@@ -110,7 +112,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 SchedulerDialog dialog = new SchedulerDialog();
-                dialog.show(getFragmentManager(), "open scheduler");
+                dialog.show(Objects.requireNonNull(getFragmentManager()), "open scheduler");
                 //Toast.makeText(getContext(), "Unable to access scheduler (not built yet)", Toast.LENGTH_SHORT).show();
             }
         });
@@ -175,7 +177,7 @@ public class HomeFragment extends Fragment {
     }
 
     private AlertDialog buildConfirmationDialog(final int position) {
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(Objects.requireNonNull(getContext()));
         dialogBuilder.setTitle("Mark as Complete");
         dialogBuilder.setMessage("Mark the recipe '"+adapter.getItemAtPosition(position).getRecipeName()+"' as complete and remove the items from inventory?");
         dialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -233,7 +235,7 @@ public class HomeFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
     }
 

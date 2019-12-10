@@ -1,32 +1,78 @@
 package apps.nerdyginger.pocketpantry;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.creativityapps.gmailbackgroundlibrary.BackgroundMail;
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 
-import java.io.ByteArrayOutputStream;
+import java.util.Objects;
 
 
 public class ContactActivity extends AppCompatActivity {
     private boolean messageSuccess;
     private TextInputEditText messageBox;
+    private DrawerLayout navLayout;
+    private boolean drawerOpen = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact);
+
+        //Set up toolbar
+        androidx.appcompat.widget.Toolbar toolBar = findViewById(R.id.toolbar);
+        TextView title = findViewById(R.id.toolbarTitle);
+        title.setText(getString(R.string.contact_title));
+        ImageButton menuBtn = findViewById(R.id.toolbarNavButton);
+        menuBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (drawerOpen) {
+                    navLayout.closeDrawer(GravityCompat.START);
+                    drawerOpen = false;
+                } else {
+                    navLayout.openDrawer(GravityCompat.START);
+                    drawerOpen = true;
+                }
+            }
+        });
+        setSupportActionBar(toolBar);
+        ActionBar actionBar = getSupportActionBar();
+        Objects.requireNonNull(actionBar).setDisplayShowTitleEnabled(false);
+
+        //Set up navigation drawer
+        navLayout = findViewById(R.id.navDrawerLayout);
+        NavigationView navView = findViewById(R.id.navDrawerView);
+        navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                if (menuItem.getTitle().equals("Settings")) {
+                    settingsClick();
+                } else if (menuItem.getTitle().equals("About")) {
+                    aboutClick();
+                } else if (menuItem.getTitle().equals("Contact Us")) {
+                    contactClick();
+                }
+                return false;
+            }
+        });
 
         final Button submitBtn = findViewById(R.id.contactSubmitBtn);
         submitBtn.setEnabled(false);
@@ -39,7 +85,7 @@ public class ContactActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (messageBox.getText().toString().equals("")) {
+                if (Objects.requireNonNull(messageBox.getText()).toString().equals("")) {
                     submitBtn.setEnabled(false);
                 } else {
                     submitBtn.setEnabled(true);
@@ -54,12 +100,36 @@ public class ContactActivity extends AppCompatActivity {
         submitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendEmail(messageBox.getText().toString());
+                sendEmail(Objects.requireNonNull(messageBox.getText()).toString());
                 if (messageSuccess) {
                     submitBtn.setEnabled(false);
                 }
             }
         });
+    }
+
+    private void settingsClick() {
+        //open preferences
+        Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
+        startActivity(intent);
+        navLayout.closeDrawer(GravityCompat.START);
+        drawerOpen = false;
+    }
+
+    private void aboutClick() {
+        //open about page
+        Intent intent = new Intent(getApplicationContext(), AboutActivity.class);
+        startActivity(intent);
+        navLayout.closeDrawer(GravityCompat.START);
+        drawerOpen = false;
+    }
+
+    private void contactClick() {
+        //open contact page
+        Intent intent = new Intent(getApplicationContext(), ContactActivity.class);
+        startActivity(intent);
+        navLayout.closeDrawer(GravityCompat.START);
+        drawerOpen = false;
     }
 
     public void sendEmail(String message) {

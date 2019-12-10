@@ -9,25 +9,18 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.Toolbar;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.Objects;
 
-public class MainActivity extends AppCompatActivity implements ListsFragment.OnFragmentInteractionListener,
-                                                               TipsFragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity {
     private String fragmentTag;
     private Fragment currentFragment;
     private DrawerLayout navLayout;
@@ -193,11 +186,8 @@ public class MainActivity extends AppCompatActivity implements ListsFragment.OnF
     }
 
     @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
+    public void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putString("FragmentTag", fragmentTag);
     }
-
-    @Override
-    public void onFragmentInteraction(Uri uri) {    }
 }
