@@ -5,31 +5,58 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AboutActivity">
+    tools:context=".AboutActivity"
+    android:isScrollContainer="true">
 
-    <TextView
-        android:id="@+id/aboutText"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="This is the about screen, which contains information about the app."
-        />
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/aboutCredits"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/aboutText"
-        android:textAlignment="center"
-        android:text="@string/about_credits"
-        />
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/aboutDevPic"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/aboutCredits"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/self_portrait"
-        />
+            <TextView
+                android:id="@+id/aboutText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="15sp"
+                android:textSize="18sp"
+                android:textColor="@color/custom_text_color"
+                android:text="@string/about_text"
+                />
+
+            <TextView
+                android:id="@+id/aboutCredits"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/aboutText"
+                android:padding="15dp"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/custom_text_color"
+                android:text="@string/about_credits"
+                />
+
+            <ImageView
+                android:id="@+id/aboutDevPic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/aboutCredits"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/self_portrait"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/aboutDevPic"
+                android:layout_toEndOf="@+id/aboutDevPic"
+                android:layout_marginBottom="50dp"
+                android:text="@string/about_signature"
+                />
+        </RelativeLayout>
+
+    </ScrollView>
 
 </RelativeLayout>

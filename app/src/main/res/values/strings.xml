@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">Pocket Pantry</string>
 
-    <string name="about_text">Pocket Pantry was developed by Morgan Snyder during her senior year in the University of Sioux Falls Computer Science program. </string>
-    <string name="about_credits">Icons:/nTrash icon made by Kiranshastry on flaticon.com\nRecipe book, Fridge, and House icon made by Freepik on flaticon.com/nLists icon made by Smashicons on flaticon.com/nChef icon made by ??? on flaticon.com</string>
+    <string name="about_text">\t\tThanks for using Pocket Pantry! This app was developed by me during my senior year in the University of Sioux Falls Computer Science program. I hope that it has proven useful to you! Visit the contact page to send me a message if you have questions or comments. </string>
+    <string name="about_credits">Icons:\n\nTrash icon made by Kiranshastry on flaticon.com\n\nChef, Recipe book, Fridge, and House icon made by Freepik on flaticon.com\n\nLists icon made by Smashicons on flaticon.com\n\nThanks to all!</string>
+    <string name="about_signature">- NerdyGinger</string>
 
 </resources>

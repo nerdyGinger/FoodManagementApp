@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ContactActivity">
+
+    <TextView
+        android:id="@+id/contactWelcome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="25dp"
+        android:textSize="18sp"
+        android:textColor="@color/custom_text_color"
+        android:text="Do you have a question or comment for me? Fill out the form below!"
+        />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/contactMessageLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/contactWelcome"
+        android:layout_margin="5dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/contactMessage"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:gravity="top"
+            android:textColor="@color/custom_text_color"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/contactSubmitBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/contactMessageLayout"
+        android:layout_centerHorizontal="true"
+        android:text="Submit"
+        />
+
+</RelativeLayout>

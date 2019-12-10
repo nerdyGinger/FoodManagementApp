@@ -172,15 +172,24 @@ public class MainActivity extends AppCompatActivity implements ListsFragment.OnF
         //open preferences
         Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
         startActivity(intent);
+        navLayout.closeDrawer(GravityCompat.START);
+        drawerOpen = false;
     }
 
     private void aboutClick() {
-        Toast.makeText(getApplicationContext(), "About Clicked!", Toast.LENGTH_SHORT).show();
+        //open about page
+        Intent intent = new Intent(getApplicationContext(), AboutActivity.class);
+        startActivity(intent);
+        navLayout.closeDrawer(GravityCompat.START);
+        drawerOpen = false;
     }
 
     private void contactClick() {
         //open contact page
-        Toast.makeText(getApplicationContext(), "Contact Clicked!", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(getApplicationContext(), ContactActivity.class);
+        startActivity(intent);
+        navLayout.closeDrawer(GravityCompat.START);
+        drawerOpen = false;
     }
 
     @Override
