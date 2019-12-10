@@ -14,7 +14,7 @@
         android:layout_centerInParent="true"
         android:layout_alignParentTop="true"
         android:layout_margin="15dp"
-        android:hint="Item Name"
+        android:hint="@string/inventory_item_name"
         />
 
     <TextView
@@ -40,7 +40,7 @@
             android:id="@+id/addInventoryQuantity"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:hint="How much?"
+            android:hint="@string/inventory_quantity_hint"
             android:layout_alignParentTop="true"
             android:textSize="16sp"
             android:layout_margin="5dp"
@@ -64,7 +64,7 @@
             android:gravity="end"
             android:layout_centerHorizontal="true"
             android:layout_below="@+id/addInventoryQuantity"
-            android:text="How much is this?"
+            android:text="@string/inventory_stock_level_hint"
             />
 
         <SeekBar
@@ -86,7 +86,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/addInventoryQuantityContainer"
         android:layout_margin="5dp"
-        android:text="Cancel"
+        android:text="@string/app_cancel_btn"
         />
 
     <Button
@@ -96,7 +96,7 @@
         android:layout_alignParentEnd="true"
         android:layout_below="@+id/addInventoryQuantityContainer"
         android:layout_margin="5dp"
-        android:text="Save"
+        android:text="@string/app_save_btn"
         />
 
 </RelativeLayout>

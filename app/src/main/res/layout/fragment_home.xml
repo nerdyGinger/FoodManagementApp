@@ -7,21 +7,11 @@
     tools:context=".HomeFragment">
 
     <TextView
-        android:id="@+id/homeTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:gravity="center"
-        android:textSize="16sp"
-        android:text="Welcome!"
-        />
-
-    <TextView
         android:id="@+id/homeScheduledRecipesTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
-        android:layout_below="@+id/homeTitle"
+        android:layout_alignParentTop="true"
         android:text="Recipes scheduled for this week:"
         />
 

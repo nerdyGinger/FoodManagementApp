@@ -18,6 +18,7 @@
             android:layout_height="wrap_content"
             android:src="@drawable/ic_menu"
             android:background="#00FFFFFF"
+            android:contentDescription="@string/menu_nav_btn_description"
             />
 
         <TextView

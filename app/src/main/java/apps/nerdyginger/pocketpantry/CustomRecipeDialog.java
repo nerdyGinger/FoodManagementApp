@@ -210,18 +210,18 @@ public class CustomRecipeDialog extends DialogFragment {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 if (position == 2) {
-                    nextBtn.setText(getString(R.string.recipe_dialog_save_btn));
+                    nextBtn.setText(getString(R.string.app_save_btn));
                 } else {
-                    nextBtn.setText(getString(R.string.recipe_dialog_next_btn));
+                    nextBtn.setText(getString(R.string.app_next_btn));
                 }
             }
 
             @Override
             public void onPageSelected(int position) {
                 if (position == 2) {
-                    nextBtn.setText(getString(R.string.recipe_dialog_save_btn));
+                    nextBtn.setText(getString(R.string.app_save_btn));
                 } else {
-                    nextBtn.setText(getString(R.string.recipe_dialog_next_btn));
+                    nextBtn.setText(getString(R.string.app_next_btn));
                 }
             }
 

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -22,7 +21,7 @@
         android:layout_below="@+id/toolbar"
         android:textSize="18sp"
         android:textColor="@color/custom_text_color"
-        android:text="Do you have a question or comment for me? Fill out the form below!"
+        android:text="@string/contact_text"
         />
 
     <com.google.android.material.textfield.TextInputLayout
@@ -49,7 +48,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/contactMessageLayout"
         android:layout_centerHorizontal="true"
-        android:text="Submit"
+        android:text="@string/contact_submit_btn"
         />
 
 </RelativeLayout>

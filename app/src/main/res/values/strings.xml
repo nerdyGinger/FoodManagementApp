@@ -1,30 +1,53 @@
 <resources>
     <string name="app_name">Pocket Pantry</string>
 
+
+    <string name="app_save_btn">Save</string>
+    <string name="app_next_btn">Next</string>
+    <string name="app_cancel_btn">Cancel</string>
+
     <string name="database_unknown_error">An error occurred - data may not have been saved</string>
+
 
     <string name="about_title">About</string>
     <string name="about_text">\t\tThanks for using Pocket Pantry! This app was developed by me during my senior year in the University of Sioux Falls Computer Science program. I hope that it has proven useful to you! Visit the contact page to send me a message if you have questions or comments. </string>
-    <string name="about_credits">Icons:\n\nTrash icon made by Kiranshastry on flaticon.com\n\nChef, Recipe book, Fridge, and House icon made by Freepik on flaticon.com\n\nLists icon made by Smashicons on flaticon.com\n\nThanks to all!</string>
+    <string name="about_credits">Credits:\n\nTrash icon made by Kiranshastry on flaticon.com\n\nChef, Recipe book, Fridge, and House icon made by Freepik on flaticon.com\n\nLists icon made by Smashicons on flaticon.com\n\nThanks to all!</string>
     <string name="about_signature">- NerdyGinger</string>
+    <string name="about_pic_description">Self-portrait of developer</string>
 
     <string name="contact_title">Contact Us</string>
+    <string name="contact_text">Do you have a question or comment for me? Fill out the form below!</string>
+    <string name="contact_submit_btn">Submit</string>
 
     <string name="menu_home">Home</string>
     <string name="menu_items">Inventory</string>
     <string name="menu_recipes">Recipes</string>
     <string name="menu_lists">Lists</string>
     <string name="menu_five">Tips</string>
+    <string name="menu_nav_btn_description">Navigation Button</string>
 
+    <string name="inventory_item_name">Item Name</string>
+    <string name="inventory_quantity_hint">How much?</string>
+    <string name="inventory_stock_level_hint">How much is this?</string>
     <string name="inventory_item_expansion">Click to add quantity</string>
     <string name="inventory_item_collapse">Click to collapse</string>
     <string name="inventory_name_error">Item name cannot be empty</string>
     <string name="inventory_quantity_error">Please enter quantity for stock level calculations</string>
     <string name="inventory_stock_level_error">Don\'t forget to set your stock level!</string>
 
+    <string name="recipe_pic_description">Recipe Image</string>
+    <string name="recipe_add_browse">Browse</string>
+    <string name="recipe_add_custom">Custom</string>
+
     <string name="recipe_dialog_edit_title">Edit Recipe</string>
     <string name="recipe_dialog_view_title">View Recipe</string>
-    <string name="recipe_dialog_save_btn">Save</string>
-    <string name="recipe_dialog_next_btn">Next</string>
+    <string name="recipe_dialog_name">Recipe Name</string>
+    <string name="recipe_dialog_author">Author</string>
+    <string name="recipe_dialog_description">Description</string>
+    <string name="recipe_dialog_time">Total Time</string>
+    <string name="recipe_dialog_yield">Yield</string>
+    <string name="recipe_dialog_ingredients_title">Ingredients</string>
+    <string name="recipe_dialog_instructions_title">Instructions</string>
+
 
 </resources>
