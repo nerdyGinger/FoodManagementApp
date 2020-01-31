@@ -65,7 +65,7 @@ public class InventoryFragment extends Fragment {
         }
 
         // Fill in the RecyclerView with inventory data
-        RecyclerView rv = view.findViewById(R.id.inventoryRecycler);
+        EmptyRecyclerView rv = view.findViewById(R.id.inventoryRecycler);
         rv.addItemDecoration(new DividerItemDecoration(context, LinearLayoutManager.VERTICAL));
         rv.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
@@ -85,6 +85,7 @@ public class InventoryFragment extends Fragment {
         };
         adapter = new InventoryListAdapter(listener);
         rv.setAdapter(adapter);
+        rv.setEmptyView(view.findViewById(R.id.inventoryEmptyMessage));
 
         // Get inventory data
         InventoryViewModel inventoryViewModel = ViewModelProviders.of(this).get(InventoryViewModel.class);

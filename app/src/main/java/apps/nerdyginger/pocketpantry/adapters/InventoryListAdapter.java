@@ -13,12 +13,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
+import apps.nerdyginger.pocketpantry.EmptyRecyclerView;
 import apps.nerdyginger.pocketpantry.Fraction;
 import apps.nerdyginger.pocketpantry.R;
 import apps.nerdyginger.pocketpantry.RecyclerViewClickListener;
 import apps.nerdyginger.pocketpantry.models.UserInventoryItem;
 
-public class InventoryListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class InventoryListAdapter extends  EmptyRecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<UserInventoryItem> dataSet = new ArrayList<>();
     private RecyclerViewClickListener mListener;
 

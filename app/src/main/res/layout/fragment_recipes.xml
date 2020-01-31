@@ -17,11 +17,20 @@
         android:iconifiedByDefault="false"
         />
 
-    <androidx.recyclerview.widget.RecyclerView
+    <apps.nerdyginger.pocketpantry.EmptyRecyclerView
         android:id="@+id/recipesRecycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/recipesSearchBar"
+        />
+
+    <TextView
+        android:id="@+id/recipesEmptyMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:textSize="26sp"
+        android:text="Add recipes to your recipe box!"
         />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

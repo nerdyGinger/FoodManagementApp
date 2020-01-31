@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.Button;
 import android.widget.TabHost;
 import android.widget.Toast;
@@ -25,11 +27,13 @@ import java.util.List;
 import java.util.Objects;
 
 import apps.nerdyginger.pocketpantry.adapters.BrowseRecipesItemAdapter;
+import apps.nerdyginger.pocketpantry.adapters.RecipesListAdapter;
 import apps.nerdyginger.pocketpantry.dao.UnitConversionDao;
 import apps.nerdyginger.pocketpantry.dao.UnitDao;
 import apps.nerdyginger.pocketpantry.dao.UserInventoryItemDao;
 import apps.nerdyginger.pocketpantry.dao.UserRecipeBoxDao;
 import apps.nerdyginger.pocketpantry.dao.UserRecipeItemJoinDao;
+import apps.nerdyginger.pocketpantry.dao.UserScheduleDao;
 import apps.nerdyginger.pocketpantry.models.Unit;
 import apps.nerdyginger.pocketpantry.models.UserInventoryItem;
 import apps.nerdyginger.pocketpantry.models.UserRecipeBoxItem;
@@ -41,8 +45,9 @@ import apps.nerdyginger.pocketpantry.view_models.ScheduleViewModel;
 public class HomeFragment extends Fragment {
     private BrowseRecipesItemAdapter adapter;
     private ScheduleViewModel viewModel;
-    private List<UserSchedule> currentList;
+    private List<UserSchedule> currentList = new ArrayList<>();
     private List<UserRecipeBoxItem> currentRecipeBoxList;
+    private ScheduleHelper scheduleHelper;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -58,6 +63,9 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_home, container, false);
+
+        // Initialize schedule helper
+        scheduleHelper = new ScheduleHelper(getContext());
 
         // Find views
         RecyclerView recipeSelection = view.findViewById(R.id.homeScheduledRecipes);
@@ -91,12 +99,19 @@ public class HomeFragment extends Fragment {
         viewModel.getScheduleList().observe(getViewLifecycleOwner(), new Observer<List<UserSchedule>>() {
             @Override
             public void onChanged(List<UserSchedule> userSchedules) {
-                currentList = userSchedules;
-                currentRecipeBoxList = generateRecipes(userSchedules);
+                // Only add the uncompleted scheduled recipes from the current week date range
+                currentList = new ArrayList<>();
+                for (int i=0; i<userSchedules.size(); i++) {
+                    if ( (!userSchedules.get(i).isCompleted()) &&
+                        scheduleHelper.isInCurrentWeek(userSchedules.get(i))) {
+                        currentList.add(userSchedules.get(i));
+                    }
+                }
+                currentRecipeBoxList = getRecipes(currentList);
                 adapter.updateData(currentRecipeBoxList);
             }
         });
-        //adapter.updateData(generateRecipes(viewModel.getScheduleList().getValue()));
+        //adapter.updateData(getRecipes(viewModel.getScheduleList().getValue()));
 
         // Set up tabs
         setUpTabs(tabHost);
@@ -113,7 +128,6 @@ public class HomeFragment extends Fragment {
             public void onClick(View v) {
                 SchedulerDialog dialog = new SchedulerDialog();
                 dialog.show(Objects.requireNonNull(getFragmentManager()), "open scheduler");
-                //Toast.makeText(getContext(), "Unable to access scheduler (not built yet)", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -161,7 +175,7 @@ public class HomeFragment extends Fragment {
                                     tempItem.setQuantity(newAmount.toString());
                                     inventoryDao.update(tempItem);
                                 } //else {
-                                //different unit types, not possible: skip
+                                //  different unit types, not possible: skip
                                 //}
                             }
                         }
@@ -176,6 +190,22 @@ public class HomeFragment extends Fragment {
         //join?
     }
 
+    private void markAsComplete(final int recipeBoxId) {
+        UserCustomDatabase db = UserCustomDatabase.getDatabase(getContext());
+        final UserScheduleDao scheduleDao = db.getUserScheduleDao();
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                UserSchedule oldItem = scheduleDao.getScheduleItemByRecipeBoxId(recipeBoxId);
+                oldItem.setCompleted(true);
+                oldItem.setDateCompleted(scheduleHelper.getCurrentDate());
+                scheduleDao.update(oldItem);
+            }
+        });
+        t.start();
+        //join?
+    }
+
     private AlertDialog buildConfirmationDialog(final int position) {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(Objects.requireNonNull(getContext()));
         dialogBuilder.setTitle("Mark as Complete");
@@ -184,9 +214,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 subtractInventory(adapter.getItemAtPosition(position).getRecipeId());
-                //adapter.deleteItem(position);
-                viewModel.deleteItem(currentList.get(position));
-                // add to the today tab
+                markAsComplete(adapter.getItemAtPosition(position).get_ID());
             }
         });
         dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -201,19 +229,62 @@ public class HomeFragment extends Fragment {
     private void setUpTabs(TabHost tabHost) {
         // Set up tabs
         tabHost.setup();
+
         // Today's recipes tab
         TabHost.TabSpec spec = tabHost.newTabSpec("today");
         spec.setContent(R.id.homeTodayTab);
+        EmptyRecyclerView todayRv = tabHost.getTabContentView().findViewById(R.id.homeCompletedTodayRecipeRecycler);
+        LinearLayoutManager llm = new LinearLayoutManager(getContext());
+        todayRv.setLayoutManager(llm);
+        final RecipesListAdapter todayAdapter = new RecipesListAdapter();
+        todayRv.setAdapter(todayAdapter);
+        ScheduleViewModel todayModel = ViewModelProviders.of(this).get(ScheduleViewModel.class);
+        todayModel.getScheduleList().observe(getViewLifecycleOwner(), new Observer<List<UserSchedule>>() {
+            @Override
+            public void onChanged(List<UserSchedule> userSchedules) {
+                List<UserSchedule> list = new ArrayList<>();
+                for (int i=0; i<userSchedules.size(); i++) {
+                    if (scheduleHelper.completedToday(userSchedules.get(i))) {
+                        list.add(userSchedules.get(i));
+                    }
+                }
+                List<UserRecipeBoxItem> itemList = getRecipes(list);
+                todayAdapter.updateData(itemList);
+            }
+        });
+        todayRv.setEmptyView(tabHost.getTabContentView().findViewById(R.id.homeTodayEmptyMessage));
         spec.setIndicator("Today");
         tabHost.addTab(spec);
+
         // This week's recipes tab
         spec = tabHost.newTabSpec("this week");
-        spec.setContent(R.id.homeThistWeekTab);
+        spec.setContent(R.id.homeThisWeekTab);
+        EmptyRecyclerView weekRv = tabHost.getTabContentView().findViewById(R.id.homeCompletedThisWeekRecipeRecycler);
+        LinearLayoutManager llm2 = new LinearLayoutManager(getContext());
+        weekRv.setLayoutManager(llm2);
+        final RecipesListAdapter weekAdapter = new RecipesListAdapter();
+        weekRv.setAdapter(weekAdapter); //properly set up adapter to pull from LiveData view model
+        ScheduleViewModel weekModel = ViewModelProviders.of(this).get(ScheduleViewModel.class);
+        weekModel.getScheduleList().observe(getViewLifecycleOwner(), new Observer<List<UserSchedule>>() {
+            @Override
+            public void onChanged(List<UserSchedule> userSchedules) {
+                List<UserSchedule> list = new ArrayList<>();
+                for (int i=0; i<userSchedules.size(); i++) {
+                    if (scheduleHelper.isInCurrentWeek(userSchedules.get(i)) &&
+                        userSchedules.get(i).isCompleted()) {
+                        list.add(userSchedules.get(i));
+                    }
+                }
+                List<UserRecipeBoxItem> itemList = getRecipes(list);
+                weekAdapter.updateData(itemList);
+            }
+        });
+        weekRv.setEmptyView(tabHost.getTabContentView().findViewById(R.id.homeThisWeekEmptyMessage));
         spec.setIndicator("This Week");
         tabHost.addTab(spec);
     }
 
-    private List<UserRecipeBoxItem> generateRecipes(final List<UserSchedule> scheduleItems) {
+    private List<UserRecipeBoxItem> getRecipes(final List<UserSchedule> scheduleItems) {
         final List<UserRecipeBoxItem> boxItems = new ArrayList<>();
         Thread t = new Thread(new Runnable() {
             @Override

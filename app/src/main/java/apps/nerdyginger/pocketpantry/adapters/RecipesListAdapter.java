@@ -14,11 +14,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
+import apps.nerdyginger.pocketpantry.EmptyRecyclerView;
 import apps.nerdyginger.pocketpantry.R;
 import apps.nerdyginger.pocketpantry.RecyclerViewClickListener;
 import apps.nerdyginger.pocketpantry.models.UserRecipeBoxItem;
 
-public class RecipesListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class RecipesListAdapter extends EmptyRecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<UserRecipeBoxItem> dataSet = new ArrayList<>();
     private RecyclerViewClickListener mListener;
 
@@ -34,7 +35,9 @@ public class RecipesListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
         @Override
         public void onClick(View view) {
-            mListener.onClick(view, getAdapterPosition());
+            if (mListener != null) {
+                mListener.onClick(view, getAdapterPosition());
+            }
         }
     }
 
@@ -52,7 +55,9 @@ public class RecipesListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
         @Override
         public void onClick(View view) {
-            mListener.onClick(view, getAdapterPosition());
+            if (mListener != null) {
+                mListener.onClick(view, getAdapterPosition());
+            }
         }
     }
 

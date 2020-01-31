@@ -7,11 +7,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".InventoryFragment">
 
-    <androidx.recyclerview.widget.RecyclerView
+    <apps.nerdyginger.pocketpantry.EmptyRecyclerView
         android:id="@+id/inventoryRecycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
 
+        />
+
+    <TextView
+        android:id="@+id/inventoryEmptyMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textSize="26sp"
+        android:text="Add some items to your pantry!"
         />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

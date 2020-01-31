@@ -66,7 +66,7 @@ public class RecipesFragment extends Fragment {
         }
 
         // Set up RecyclerView
-        RecyclerView rv = view.findViewById(R.id.recipesRecycler);
+        EmptyRecyclerView rv = view.findViewById(R.id.recipesRecycler);
         rv.addItemDecoration(new DividerItemDecoration(context, LinearLayoutManager.VERTICAL));
         rv.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
@@ -87,6 +87,7 @@ public class RecipesFragment extends Fragment {
         adapter = new RecipesListAdapter(listener);
         //adapter.updateData(dataList[0]);
         rv.setAdapter(adapter);
+        rv.setEmptyView(view.findViewById(R.id.recipesEmptyMessage));
 
         // Get recipes data
         RecipeViewModel recipeViewModel = ViewModelProviders.of(this).get(RecipeViewModel.class);

@@ -1,8 +1,6 @@
 package apps.nerdyginger.pocketpantry;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,18 +13,19 @@ import android.widget.Toast;
 
 import androidx.fragment.app.DialogFragment;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 
 import apps.nerdyginger.pocketpantry.dao.UserRecipeBoxDao;
 import apps.nerdyginger.pocketpantry.dao.UserScheduleDao;
 import apps.nerdyginger.pocketpantry.models.UserSchedule;
 
+// The schedule dialog opened with the '+' button on the home screen
+// TODO: Schedule dialog should be extended to include a variant that will allow week selection (for 'Next Week' button)
+// TODO: Also, possibly change 'Next Week' button verbage to include more than just the next week
 public class SchedulerDialog extends DialogFragment {
+    private ScheduleHelper scheduleHelper;
     private AutoCompleteTextView recipeNameBox;
     private String recipeName;
     private UserSchedule newScheduleItem = new UserSchedule();
@@ -41,17 +40,17 @@ public class SchedulerDialog extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.scheduler_dialog, container, false);
 
+        // Initialize schedule helper
+        scheduleHelper = new ScheduleHelper(getContext());
+
         // Find views
-        TextView title = view.findViewById(R.id.schedulerDateTitle); //TODO: change to dropdown(?) to select week
+        TextView title = view.findViewById(R.id.schedulerDateTitle);
         recipeNameBox = view.findViewById(R.id.schedulerRecipeName);
         Button cancelBtn = view.findViewById(R.id.schedulerCancelBtn);
         Button addBtn = view.findViewById(R.id.schedulerAddBtn);
 
         // Set title date range
-        Calendar c = Calendar.getInstance();
-        SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
-        String currentDate = format.format(c.getTime());
-        title.setText(getCurrentWeek(c, format));
+        title.setText(scheduleHelper.getCurrentWeekDateRange());
 
         // Add adapter to recipeName field
         ArrayAdapter<String> recipeNamesAdapter = new ArrayAdapter<>(Objects.requireNonNull(getContext()),
@@ -87,6 +86,8 @@ public class SchedulerDialog extends DialogFragment {
         return view;
     }
 
+    // Gets the recipe names from the user recipe box
+    // ASSUMPTION: User will only want to add recipes to schedule that are in their recipe box
     private List<String> getRecipeNames() {
         final List<String> names = new ArrayList<>();
         Thread t = new Thread(new Runnable() {
@@ -107,50 +108,13 @@ public class SchedulerDialog extends DialogFragment {
         }
     }
 
-    private String getCurrentWeek(Calendar c, SimpleDateFormat dateFormat) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String day = prefs.getString("firstDayOfWeek", "Sunday");
-        switch(day) {
-            case "Monday":
-                c.setFirstDayOfWeek(Calendar.MONDAY);
-                break;
-            case "Tuesday":
-                c.setFirstDayOfWeek(Calendar.TUESDAY);
-                break;
-            case "Wednesday":
-                c.setFirstDayOfWeek(Calendar.WEDNESDAY);
-                break;
-            case "Thursday":
-                c.setFirstDayOfWeek(Calendar.THURSDAY);
-                break;
-            case "Friday":
-                c.setFirstDayOfWeek(Calendar.FRIDAY);
-                break;
-            case "Saturday":
-                c.setFirstDayOfWeek(Calendar.SATURDAY);
-                break;
-            default:
-                c.setFirstDayOfWeek(Calendar.SUNDAY);
-                break;
-        }
-        int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
-        int offset;
-        if (dayOfWeek == 1) {
-            offset = -6;
-        } else {
-            offset = 2 - dayOfWeek;
-        }
-        c.add(Calendar.DAY_OF_YEAR, offset);
-        String currentWeekStartDate = dateFormat.format(c.getTime());
-        newScheduleItem.setStartDate(currentWeekStartDate);
-        c.add(Calendar.DAY_OF_YEAR, 6);
-        String currentWeekEndDate = dateFormat.format(c.getTime());
-        newScheduleItem.setEndDate(currentWeekEndDate);
-        return currentWeekStartDate + " - " + currentWeekEndDate;
-    }
 
     private boolean addToDb() {
         recipeName = recipeNameBox.getText().toString();
+        newScheduleItem.setStartDate(scheduleHelper.getCurrentWeekStartDate());
+        newScheduleItem.setEndDate(scheduleHelper.getCurrentWeekEndDate());
+        newScheduleItem.setDateAdded(scheduleHelper.getCurrentDate());
+        newScheduleItem.setCompleted(false);
         final boolean[] valid = {false};
         Thread t = new Thread(new Runnable() {
             @Override

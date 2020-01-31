@@ -11,6 +11,9 @@ public class UserSchedule {
     private String startDate;
     private String endDate;
     private String recipeBoxItemId;
+    private String dateAdded;
+    private boolean completed;
+    private String dateCompleted;
 
     public int get_ID() {
         return _ID;
@@ -42,5 +45,29 @@ public class UserSchedule {
 
     public void setRecipeBoxItemId(String recipeBoxItemId) {
         this.recipeBoxItemId = recipeBoxItemId;
+    }
+
+    public String getDateAdded() {
+        return dateAdded;
+    }
+
+    public void setDateAdded(String dateAdded) {
+        this.dateAdded = dateAdded;
+    }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
+    }
+
+    public String getDateCompleted() {
+        return dateCompleted;
+    }
+
+    public void setDateCompleted(String dateCompleted) {
+        this.dateCompleted = dateCompleted;
     }
 }
