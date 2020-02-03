@@ -26,7 +26,14 @@ public class ListsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_lists_fragement, container, false);
+        View view =  inflater.inflate(R.layout.fragment_lists, container, false);
+
+        // Get views
+        EmptyRecyclerView rv = view.findViewById(R.id.listRecycler);
+        //set adapter
+        //rv.setEmptyView(view.findViewById(R.id.listEmptyMessage));
+
+        return view;
     }
 
     @Override

@@ -14,6 +14,10 @@ import androidx.recyclerview.widget.RecyclerView;
  * A class to make empty RecyclerViews a little bit more user-friendly.
  * Thanks to:
  * https://alexzh.com/2017/02/05/how-to-setemptyview-to-recyclerview/
+ *
+ * NOTE1: MUST set adapter before calling setEmptyView to avoid issues
+ * NOTE2: Adding animation to empty view will help with jerky data filling
+ *        (empty view appears for split second before data)
  */
 public class EmptyRecyclerView extends RecyclerView {
     private View emptyView;
