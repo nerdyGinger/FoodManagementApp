@@ -21,6 +21,13 @@ public interface UserItemDao {
     @Delete
     void delete(UserItem item);
 
+    @Query("SELECT name from userItems")
+    List<String> getAllItemNames();
+
+    @Query("SELECT _ID from userItems WHERE name = :name")
+    int getItemIdFromName(String name);
+
+
     @Query("SELECT * FROM userItems")
     List<UserItem> getAllUserItems();
 

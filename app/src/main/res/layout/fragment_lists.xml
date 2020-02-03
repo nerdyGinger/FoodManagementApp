@@ -7,10 +7,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ListsFragment">
 
+    <Button
+        android:id="@+id/listsAddBtn"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_margin="5dp"
+        android:textColor="@color/custom_text_color"
+        android:text="Add Item"
+        />
+
+    <!-- I don't like the positioning margin here, but I need coordinator
+         layout in order to get the floating action button where I want it. -->
     <apps.nerdyginger.pocketpantry.EmptyRecyclerView
         android:id="@+id/listRecycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="55dp"
         />
 
     <TextView
@@ -24,12 +36,12 @@
 
     <!-- To be a sort or add button? -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/listFloatingAddBtn"
+        android:id="@+id/listFloatingActionBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:layout_gravity="bottom|end"
-        android:src="@drawable/plus96px"
+        android:src="@drawable/ic_swap_vertical"
         android:elevation="0dp"
         app:elevation="0dp"
         app:backgroundTint="@color/colorAccent"

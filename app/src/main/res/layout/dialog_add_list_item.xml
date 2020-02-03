@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <AutoCompleteTextView
+        android:id="@+id/listDialogItemName"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:hint="Item Name"
+        />
+
+    <EditText
+        android:id="@+id/listDialogItemQuantity"
+        android:layout_width="75dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:inputType="number"
+        android:layout_toEndOf="@+id/listDialogItemName"
+        android:hint="#"
+        />
+
+    <Button
+        android:id="@+id/listDialogCancelBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cancel"
+        android:layout_below="@+id/listDialogItemName"
+        />
+
+    <Button
+        android:id="@+id/listDialogAddButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add"
+        android:layout_below="@+id/listDialogItemQuantity"
+        android:layout_alignEnd="@id/listDialogItemQuantity"
+        />
+
+</RelativeLayout>

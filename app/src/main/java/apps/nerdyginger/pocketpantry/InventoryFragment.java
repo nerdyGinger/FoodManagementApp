@@ -68,7 +68,7 @@ public class InventoryFragment extends Fragment {
         EmptyRecyclerView rv = view.findViewById(R.id.inventoryRecycler);
         rv.addItemDecoration(new DividerItemDecoration(context, LinearLayoutManager.VERTICAL));
         rv.setHasFixedSize(true);
-        LinearLayoutManager llm = new LinearLayoutManager(getContext());
+        LinearLayoutManager llm = new LinearLayoutManager(context);
         rv.setLayoutManager(llm);
         RecyclerViewClickListener listener = new RecyclerViewClickListener() {
             @Override
