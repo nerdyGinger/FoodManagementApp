@@ -6,19 +6,11 @@
     android:layout_height="match_parent"
     tools:context=".ContactActivity">
 
-    <include
-        android:id="@+id/toolbar"
-        layout="@layout/custom_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        />
-
     <TextView
         android:id="@+id/contactWelcome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="25dp"
-        android:layout_below="@+id/toolbar"
         android:textSize="18sp"
         android:textColor="@color/custom_text_color"
         android:text="@string/contact_text"

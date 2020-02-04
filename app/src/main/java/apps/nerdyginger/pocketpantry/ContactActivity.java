@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.creativityapps.gmailbackgroundlibrary.BackgroundMail;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -28,52 +29,13 @@ import java.util.Objects;
 public class ContactActivity extends AppCompatActivity {
     private boolean messageSuccess;
     private TextInputEditText messageBox;
-    private DrawerLayout navLayout;
-    private boolean drawerOpen = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact);
 
-        //Set up toolbar
-        androidx.appcompat.widget.Toolbar toolBar = findViewById(R.id.toolbar);
-        TextView title = findViewById(R.id.toolbarTitle);
-        title.setText(getString(R.string.contact_title));
-        ImageButton menuBtn = findViewById(R.id.toolbarNavButton);
-        menuBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (drawerOpen) {
-                    navLayout.closeDrawer(GravityCompat.START);
-                    drawerOpen = false;
-                } else {
-                    navLayout.openDrawer(GravityCompat.START);
-                    drawerOpen = true;
-                }
-            }
-        });
-        setSupportActionBar(toolBar);
-        ActionBar actionBar = getSupportActionBar();
-        Objects.requireNonNull(actionBar).setDisplayShowTitleEnabled(false);
-
-        //Set up navigation drawer
-        navLayout = findViewById(R.id.navDrawerLayout);
-        NavigationView navView = findViewById(R.id.navDrawerView);
-        navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                if (menuItem.getTitle().equals("Settings")) {
-                    settingsClick();
-                } else if (menuItem.getTitle().equals("About")) {
-                    aboutClick();
-                } else if (menuItem.getTitle().equals("Contact Us")) {
-                    contactClick();
-                }
-                return false;
-            }
-        });
-
+        // Set up submission button and message box
         final Button submitBtn = findViewById(R.id.contactSubmitBtn);
         submitBtn.setEnabled(false);
         messageBox = findViewById(R.id.contactMessage);
@@ -106,30 +68,6 @@ public class ContactActivity extends AppCompatActivity {
                 }
             }
         });
-    }
-
-    private void settingsClick() {
-        //open preferences
-        Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
-        startActivity(intent);
-        navLayout.closeDrawer(GravityCompat.START);
-        drawerOpen = false;
-    }
-
-    private void aboutClick() {
-        //open about page
-        Intent intent = new Intent(getApplicationContext(), AboutActivity.class);
-        startActivity(intent);
-        navLayout.closeDrawer(GravityCompat.START);
-        drawerOpen = false;
-    }
-
-    private void contactClick() {
-        //open contact page
-        Intent intent = new Intent(getApplicationContext(), ContactActivity.class);
-        startActivity(intent);
-        navLayout.closeDrawer(GravityCompat.START);
-        drawerOpen = false;
     }
 
     public void sendEmail(String message) {

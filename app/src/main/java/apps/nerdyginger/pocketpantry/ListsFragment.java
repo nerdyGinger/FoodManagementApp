@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Objects;
 
 import apps.nerdyginger.pocketpantry.adapters.ListsAdapter;
+import apps.nerdyginger.pocketpantry.dao.UserListItemDao;
 import apps.nerdyginger.pocketpantry.models.UserListItem;
 import apps.nerdyginger.pocketpantry.view_models.AddListItemDialog;
 import apps.nerdyginger.pocketpantry.view_models.ListItemViewModel;
@@ -69,7 +70,7 @@ public class ListsFragment extends Fragment {
         });
 
         // Set up EmptyRecyclerView
-        EmptyRecyclerView rv = view.findViewById(R.id.listRecycler);
+        final EmptyRecyclerView rv = view.findViewById(R.id.listRecycler);
         rv.addItemDecoration(new DividerItemDecoration(context, LinearLayoutManager.VERTICAL));
         rv.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(context);
@@ -80,6 +81,7 @@ public class ListsFragment extends Fragment {
                 UserListItem clicked = adapter.getItemAtPosition(position);
                 clicked.setChecked( ! clicked.isChecked());
                 adapter.notifyDataSetChanged();
+                saveCheckStatus(clicked);
             }
 
             @Override
@@ -102,6 +104,16 @@ public class ListsFragment extends Fragment {
         });
 
         return view;
+    }
+
+    private void saveCheckStatus(final UserListItem item) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                UserListItemDao dao = UserCustomDatabase.getDatabase(getContext()).getUserListItemDao();
+                dao.update(item);
+            }
+        }).start();
     }
 
     @Override

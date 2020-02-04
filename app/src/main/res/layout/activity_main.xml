@@ -3,7 +3,6 @@
      List Icon: made by Smashicons from flaticon.com -->
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -18,47 +17,12 @@
         android:layout_height="wrap_content"
         />
 
-
-    <androidx.drawerlayout.widget.DrawerLayout
-        android:id="@+id/navDrawerLayout"
+    <include
+        android:id="@+id/navDrawer_main"
+        layout="@layout/nav_drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/toolbar_inclusio"
-        tools:context=".MainActivity"
-        >
-
-        <androidx.coordinatorlayout.widget.CoordinatorLayout
-            android:id="@+id/drawer"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:context=".MainActivity"
-            tools:openDrawer="start">
-
-                <FrameLayout
-                    android:id="@+id/frame_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="?actionBarSize"
-                    app:layout_constraintEnd_toEndOf="parent">
-
-                </FrameLayout>
-
-                <com.google.android.material.bottomnavigation.BottomNavigationView
-                    android:id="@+id/bottomnav"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:layout_alignParentBottom="true"
-                    app:elevation="20dp"
-                    app:menu="@menu/bottom_navigation" />
-        </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
-        <com.google.android.material.navigation.NavigationView
-            android:id="@+id/navDrawerView"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="start"
-            app:menu="@menu/navigation_drawer" />
-    </androidx.drawerlayout.widget.DrawerLayout>
+        />
 
 </RelativeLayout>

@@ -1,11 +1,13 @@
 package apps.nerdyginger.pocketpantry.adapters;
 
+import android.app.LauncherActivity;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,6 +20,7 @@ import java.util.List;
 import apps.nerdyginger.pocketpantry.EmptyRecyclerView;
 import apps.nerdyginger.pocketpantry.R;
 import apps.nerdyginger.pocketpantry.RecyclerViewClickListener;
+import apps.nerdyginger.pocketpantry.UserCustomDatabase;
 import apps.nerdyginger.pocketpantry.models.UserListItem;
 
 public class ListsAdapter extends  EmptyRecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -28,12 +31,20 @@ public class ListsAdapter extends  EmptyRecyclerView.Adapter<RecyclerView.ViewHo
         CheckBox checkBox;
         TextView itemName, quantity;
 
-        ListItemViewHolder(View itemView) {
+        ListItemViewHolder(final View itemView) {
             super(itemView);
             checkBox = itemView.findViewById(R.id.listCheck);
             itemName = itemView.findViewById(R.id.listItemName);
             quantity = itemView.findViewById(R.id.listItemQuantity);
             itemView.setOnClickListener(this);
+            checkBox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //UserListItem clicked = getItemAtPosition(getAdapterPosition());
+                    //clicked.setChecked( ! clicked.isChecked());
+                    mListener.onClick(itemView, getAdapterPosition());
+                }
+            });
         }
 
         @Override
