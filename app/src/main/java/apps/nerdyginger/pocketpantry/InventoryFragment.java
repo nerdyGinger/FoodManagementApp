@@ -10,7 +10,6 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
 import android.view.LayoutInflater;
@@ -23,6 +22,7 @@ import java.util.List;
 import java.util.Objects;
 
 import apps.nerdyginger.pocketpantry.adapters.InventoryListAdapter;
+import apps.nerdyginger.pocketpantry.callbacks.InventorySwipeDeleteCallback;
 import apps.nerdyginger.pocketpantry.models.UserInventoryItem;
 import apps.nerdyginger.pocketpantry.view_models.InventoryViewModel;
 

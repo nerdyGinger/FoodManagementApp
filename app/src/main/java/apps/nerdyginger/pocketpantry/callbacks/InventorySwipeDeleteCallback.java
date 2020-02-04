@@ -1,4 +1,4 @@
-package apps.nerdyginger.pocketpantry;
+package apps.nerdyginger.pocketpantry.callbacks;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import apps.nerdyginger.pocketpantry.R;
 import apps.nerdyginger.pocketpantry.adapters.InventoryListAdapter;
 import apps.nerdyginger.pocketpantry.models.UserInventoryItem;
 import apps.nerdyginger.pocketpantry.view_models.InventoryViewModel;
@@ -26,7 +27,7 @@ public class InventorySwipeDeleteCallback extends ItemTouchHelper.SimpleCallback
     private Drawable icon;
     private final ColorDrawable background;
 
-    InventorySwipeDeleteCallback(InventoryListAdapter adapter, Context context, InventoryViewModel viewModel) {
+    public InventorySwipeDeleteCallback(InventoryListAdapter adapter, Context context, InventoryViewModel viewModel) {
         super(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
         mAdapter = adapter;
         mModel = viewModel;

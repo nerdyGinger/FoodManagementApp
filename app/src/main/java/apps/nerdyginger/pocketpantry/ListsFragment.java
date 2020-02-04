@@ -9,6 +9,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.view.LayoutInflater;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Objects;
 
 import apps.nerdyginger.pocketpantry.adapters.ListsAdapter;
+import apps.nerdyginger.pocketpantry.callbacks.ListsSwipeDeleteCallback;
 import apps.nerdyginger.pocketpantry.dao.UserListItemDao;
 import apps.nerdyginger.pocketpantry.models.UserListItem;
 import apps.nerdyginger.pocketpantry.view_models.AddListItemDialog;
@@ -102,6 +104,8 @@ public class ListsFragment extends Fragment {
                 adapter.notifyDataSetChanged();
             }
         });
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ListsSwipeDeleteCallback(adapter, context, viewModel));
+        itemTouchHelper.attachToRecyclerView(rv);
 
         return view;
     }

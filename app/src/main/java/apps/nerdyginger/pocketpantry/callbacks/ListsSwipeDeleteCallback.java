@@ -1,4 +1,4 @@
-package apps.nerdyginger.pocketpantry;
+package apps.nerdyginger.pocketpantry.callbacks;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -12,25 +12,21 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
-import apps.nerdyginger.pocketpantry.adapters.RecipesListAdapter;
-import apps.nerdyginger.pocketpantry.models.UserRecipeBoxItem;
-import apps.nerdyginger.pocketpantry.view_models.RecipeViewModel;
+import apps.nerdyginger.pocketpantry.R;
+import apps.nerdyginger.pocketpantry.adapters.ListsAdapter;
+import apps.nerdyginger.pocketpantry.models.UserListItem;
+import apps.nerdyginger.pocketpantry.view_models.ListItemViewModel;
 
-//Custom callback class to handle swipe-to-delete operations for recipes.
-//NOTE: Will only delete from recipe box, custom (and read-only) recipes will remain in respective db tables.
-//Last edited: 11/4/19
-public class RecipeSwipeDeleteCallback extends ItemTouchHelper.SimpleCallback {
-    private RecipesListAdapter mAdapter;
-    private RecipeViewModel mModel;
-    private Context mContext;
+public class ListsSwipeDeleteCallback extends ItemTouchHelper.SimpleCallback {
+    private ListsAdapter mAdapter;
+    private ListItemViewModel mModel;
     private Drawable icon;
     private final ColorDrawable background;
 
-    RecipeSwipeDeleteCallback(RecipesListAdapter adapter, Context context, RecipeViewModel viewModel) {
+    public ListsSwipeDeleteCallback(ListsAdapter adapter, Context context, ListItemViewModel model) {
         super(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
         mAdapter = adapter;
-        mContext = context;
-        mModel = viewModel;
+        mModel = model;
         icon = ContextCompat.getDrawable(context, R.drawable.ic_delete);
         background = new ColorDrawable(Color.RED);
     }
@@ -38,15 +34,8 @@ public class RecipeSwipeDeleteCallback extends ItemTouchHelper.SimpleCallback {
     @Override
     public void onSwiped(@NonNull RecyclerView.ViewHolder holder, int direction) {
         int position = holder.getAdapterPosition();
-        final UserRecipeBoxItem deletedItem = mAdapter.deleteItem(position);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                UserCustomDatabase db = UserCustomDatabase.getDatabase(mContext);
-                db.getUserRecipeBoxDao().delete(deletedItem);
-            }
-        }).start();
-        mModel.deleteRecipe(deletedItem);
+        final UserListItem deletedItem = mAdapter.deleteItem(position);
+        mModel.deleteItem(deletedItem);
     }
 
     @Override
@@ -95,4 +84,5 @@ public class RecipeSwipeDeleteCallback extends ItemTouchHelper.SimpleCallback {
         background.draw(c);
         icon.draw(c);
     }
+
 }
