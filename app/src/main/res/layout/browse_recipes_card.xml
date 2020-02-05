@@ -15,7 +15,7 @@
         android:clickable="true"
         android:focusable="true"
         android:foreground="?android:selectableItemBackground"
-        android:background="@android:color/background_light"
+        android:background="?android:attr/selectableItemBackground"
         >
 
         <RelativeLayout

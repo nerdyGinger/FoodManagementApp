@@ -25,7 +25,7 @@ public class BrowseRecipesItemAdapter extends RecyclerView.Adapter<RecyclerView.
     private RecyclerViewClickListener mListener;
     private String MODE; //either "browse" or "home"
 
-    public class RecipeCardViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class RecipeCardViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
         TextView name, category;
         ImageView image;
         CardView card;
@@ -36,10 +36,17 @@ public class BrowseRecipesItemAdapter extends RecyclerView.Adapter<RecyclerView.
             image = view.findViewById(R.id.recipeCardImage);
             card = view.findViewById(R.id.recipeCard);
             card.setOnClickListener(this);
+            card.setOnLongClickListener(this);
         }
         @Override
         public void onClick(View view) {
             mListener.onClick(view, getAdapterPosition());
+        }
+
+        @Override
+        public boolean onLongClick(View view) {
+            mListener.onLongClick(view, getAdapterPosition());
+            return false;
         }
     }
 

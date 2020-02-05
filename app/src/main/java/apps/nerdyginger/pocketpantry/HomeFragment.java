@@ -87,9 +87,9 @@ public class HomeFragment extends Fragment {
                     buildConfirmationDialog(position).show();
                 }
             }
-
             @Override
             public boolean onLongClick(View view, int position) {
+                buildDeleteDialog(position).show();
                 return false;
             }
         };
@@ -206,6 +206,37 @@ public class HomeFragment extends Fragment {
         //join?
     }
 
+    private void deleteScheduleItem(final int recipeBoxId) {
+        final UserCustomDatabase db = UserCustomDatabase.getDatabase(getContext());
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                UserScheduleDao dao = db.getUserScheduleDao();
+                viewModel.deleteItem(dao.getScheduleItemByRecipeBoxId(recipeBoxId));
+            }
+        });
+        t.start();
+    }
+
+    private AlertDialog buildDeleteDialog(final int position) {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(Objects.requireNonNull(getContext()));
+        dialogBuilder.setTitle("Delete Schedule Item?");
+        dialogBuilder.setMessage("Are you sure you want to delete this schedule item?");
+        dialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                deleteScheduleItem(adapter.getItemAtPosition(position).getRecipeId());
+            }
+        });
+        dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //don't do anything
+            }
+        });
+        return dialogBuilder.create();
+    }
+
     private AlertDialog buildConfirmationDialog(final int position) {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(Objects.requireNonNull(getContext()));
         dialogBuilder.setTitle("Mark as Complete");
@@ -223,7 +254,7 @@ public class HomeFragment extends Fragment {
                 // don't do anything
             }
         });
-        return  dialogBuilder.create();
+        return dialogBuilder.create();
     }
 
     private void setUpTabs(TabHost tabHost) {
