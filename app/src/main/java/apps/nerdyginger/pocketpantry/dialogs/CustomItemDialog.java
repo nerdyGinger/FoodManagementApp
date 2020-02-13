@@ -1,4 +1,4 @@
-package apps.nerdyginger.pocketpantry;
+package apps.nerdyginger.pocketpantry.dialogs;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -25,6 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import apps.nerdyginger.pocketpantry.Fraction;
+import apps.nerdyginger.pocketpantry.R;
+import apps.nerdyginger.pocketpantry.UserCustomDatabase;
 import apps.nerdyginger.pocketpantry.dao.ItemDao;
 import apps.nerdyginger.pocketpantry.dao.UnitDao;
 import apps.nerdyginger.pocketpantry.dao.UnitSystemDao;
@@ -50,7 +53,7 @@ public class CustomItemDialog extends DialogFragment {
         MODE = "create";
     }
 
-    CustomItemDialog(UserInventoryItem item) {
+    public CustomItemDialog(UserInventoryItem item) {
         existingItem = item;
         MODE = "edit";
     }

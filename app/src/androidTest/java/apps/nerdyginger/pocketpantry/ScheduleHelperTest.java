@@ -19,22 +19,22 @@ public class ScheduleHelperTest {
 
     @Test
     public void getCurrentDateTest() {
-        Assert.assertEquals("01/31/2020", helper.getCurrentDate());
+        Assert.assertEquals("02/13/2020", helper.getCurrentDate());
     }
 
     @Test
     public void getCurrentWeekStartDateTest() {
-        Assert.assertEquals("01/27/2020", helper.getCurrentWeekStartDate());
+        Assert.assertEquals("02/10/2020", helper.getCurrentWeekStartDate());
     }
 
     @Test
     public void getCurrentWeekEndDateTest() {
-        Assert.assertEquals("02/02/2020", helper.getCurrentWeekEndDate());
+        Assert.assertEquals("02/16/2020", helper.getCurrentWeekEndDate());
     }
 
     @Test
     public void getCurrentWeekDateRangeTest() {
-        Assert.assertEquals("01/27/2020 - 02/02/2020", helper.getCurrentWeekDateRange());
+        Assert.assertEquals("02/10/2020 - 02/16/2020", helper.getCurrentWeekDateRange());
     }
 
     @Test
@@ -43,10 +43,16 @@ public class ScheduleHelperTest {
         s1.setStartDate("01/16/2004");
         s1.setEndDate("01/18/2004");
         UserSchedule s2 = new UserSchedule();
-        s2.setStartDate("01/27/2020");
-        s2.setEndDate("02/02/2020");
+        s2.setStartDate("02/10/2020");
+        s2.setEndDate("02/16/2020");
 
         Assert.assertFalse(helper.isInCurrentWeek(s1));
         Assert.assertTrue(helper.isInCurrentWeek(s2));
+    }
+
+    @Test
+    public void getWeekDateRangeTest() {
+        Assert.assertEquals("02/10/2020 - 02/16/2020", helper.getWeekRange("02/10/2020"));
+        Assert.assertEquals("12/02/2019 - 12/08/2019", helper.getWeekRange("12/04/2019"));
     }
 }

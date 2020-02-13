@@ -1,4 +1,4 @@
-package apps.nerdyginger.pocketpantry;
+package apps.nerdyginger.pocketpantry.dialogs;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import apps.nerdyginger.pocketpantry.R;
+import apps.nerdyginger.pocketpantry.ScheduleHelper;
+import apps.nerdyginger.pocketpantry.UserCustomDatabase;
 import apps.nerdyginger.pocketpantry.dao.UserRecipeBoxDao;
 import apps.nerdyginger.pocketpantry.dao.UserScheduleDao;
 import apps.nerdyginger.pocketpantry.models.UserSchedule;
@@ -30,7 +33,6 @@ public class SchedulerDialog extends DialogFragment {
     private String recipeName;
     private UserSchedule newScheduleItem = new UserSchedule();
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,7 +40,7 @@ public class SchedulerDialog extends DialogFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.scheduler_dialog, container, false);
+        View view = inflater.inflate(R.layout.dialog_scheduler, container, false);
 
         // Initialize schedule helper
         scheduleHelper = new ScheduleHelper(getContext());

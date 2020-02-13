@@ -23,6 +23,7 @@ import java.util.Objects;
 
 import apps.nerdyginger.pocketpantry.adapters.InventoryListAdapter;
 import apps.nerdyginger.pocketpantry.callbacks.InventorySwipeDeleteCallback;
+import apps.nerdyginger.pocketpantry.dialogs.CustomItemDialog;
 import apps.nerdyginger.pocketpantry.models.UserInventoryItem;
 import apps.nerdyginger.pocketpantry.view_models.InventoryViewModel;
 

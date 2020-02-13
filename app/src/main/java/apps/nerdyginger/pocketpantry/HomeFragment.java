@@ -8,7 +8,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,7 +16,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.Button;
 import android.widget.TabHost;
 import android.widget.Toast;
@@ -34,6 +32,8 @@ import apps.nerdyginger.pocketpantry.dao.UserInventoryItemDao;
 import apps.nerdyginger.pocketpantry.dao.UserRecipeBoxDao;
 import apps.nerdyginger.pocketpantry.dao.UserRecipeItemJoinDao;
 import apps.nerdyginger.pocketpantry.dao.UserScheduleDao;
+import apps.nerdyginger.pocketpantry.dialogs.ScheduleHistoryDialog;
+import apps.nerdyginger.pocketpantry.dialogs.SchedulerDialog;
 import apps.nerdyginger.pocketpantry.models.Unit;
 import apps.nerdyginger.pocketpantry.models.UserInventoryItem;
 import apps.nerdyginger.pocketpantry.models.UserRecipeBoxItem;
@@ -120,7 +120,8 @@ public class HomeFragment extends Fragment {
         historyBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getContext(),  "No history yet, sorry!", Toast.LENGTH_SHORT).show();
+                ScheduleHistoryDialog historyDialog = new ScheduleHistoryDialog();
+                historyDialog.show(Objects.requireNonNull(getFragmentManager()), "open history");
             }
         });
         scheduleBtn.setOnClickListener(new View.OnClickListener() {

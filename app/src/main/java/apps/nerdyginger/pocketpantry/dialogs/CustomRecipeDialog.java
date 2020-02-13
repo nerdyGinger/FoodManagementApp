@@ -1,4 +1,4 @@
-package apps.nerdyginger.pocketpantry;
+package apps.nerdyginger.pocketpantry.dialogs;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -46,6 +46,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import apps.nerdyginger.pocketpantry.Fraction;
+import apps.nerdyginger.pocketpantry.R;
+import apps.nerdyginger.pocketpantry.UserCustomDatabase;
 import apps.nerdyginger.pocketpantry.adapters.RecipeIngredientsAdapter;
 import apps.nerdyginger.pocketpantry.adapters.RecipeInstructionsAdapter;
 import apps.nerdyginger.pocketpantry.dao.CategoryDao;
@@ -102,7 +105,7 @@ public class CustomRecipeDialog extends DialogFragment {
     }
 
     //constructor to set mode, pass in existing item
-    CustomRecipeDialog(String mode, UserRecipeBoxItem item) {
+    public CustomRecipeDialog(String mode, UserRecipeBoxItem item) {
         MODE = mode;
         existingBoxItem = item;
         newRecipe = new UserRecipe();
