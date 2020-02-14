@@ -8,6 +8,7 @@ public class UserSchedule {
     @PrimaryKey(autoGenerate = true)
     private int _ID;
 
+    private String scheduleDate;
     private String startDate;
     private String endDate;
     private String recipeBoxItemId;
@@ -21,6 +22,14 @@ public class UserSchedule {
 
     public void set_ID(int _ID) {
         this._ID = _ID;
+    }
+
+    public String getScheduleDate() {
+        return scheduleDate;
+    }
+
+    public void setScheduleDate(String scheduleDate) {
+        this.scheduleDate = scheduleDate;
     }
 
     public String getStartDate() {

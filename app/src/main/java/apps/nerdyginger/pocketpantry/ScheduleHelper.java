@@ -9,6 +9,7 @@ import androidx.room.util.StringUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -62,6 +63,27 @@ public class ScheduleHelper {
         return format.format(cal.getTime());
     }
 
+    // Sets cal to a specific date
+    private void setDate(String date) {
+        cal = Calendar.getInstance();
+        String[] dateParts = date.split("/");
+        cal.set(Integer.parseInt(dateParts[2].replaceFirst("^0+(?!$)", "")),
+                Integer.parseInt(dateParts[0].replaceFirst("^0+(?!$)", "")) - 1, // 0 is Jan, so adjust accordingly
+                Integer.parseInt(dateParts[1].replaceFirst("^0+(?!$)", "")));
+    }
+
+    public long convertDateToLong(String date) {
+        long newDate = 0;
+        try {
+            Date dateObj = format.parse(date);
+            newDate =  dateObj.getTime();
+        } catch(Exception e) {
+            Log.e("-PRO TIPS! AND ERRORS-", "Error converting date to long: " + e.toString());
+        }
+        return newDate;
+    }
+
+    // Returns the start date for the last stored date in the helper
     private String getWeekStartDate() {
         int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
         int offset;
@@ -74,14 +96,28 @@ public class ScheduleHelper {
         return format.format(cal.getTime());
     }
 
+    public String getWeekStartDate(String date) {
+        setDate(date);
+        return getWeekStartDate();
+    }
+
     public String getCurrentWeekStartDate() {
         cal = Calendar.getInstance();
         return getWeekStartDate();
     }
 
+    // Returns the end date for the last stored date in the helper
+    // NOTE: always use getWeekStartDate() first!
     private String getWeekEndDate() {
         cal.add(Calendar.DAY_OF_YEAR, 6);
         return format.format(cal.getTime());
+    }
+
+    // Public method to get the week end date for a given date
+    public String getWeekEndDate(String date) {
+        setDate(date);
+        getWeekStartDate();
+        return getWeekEndDate();
     }
 
     public String getCurrentWeekEndDate() {
@@ -94,11 +130,7 @@ public class ScheduleHelper {
     }
 
     public String getWeekRange(String date) {
-        cal = Calendar.getInstance();
-        String[] dateParts = date.split("/");
-        cal.set(Integer.parseInt(dateParts[2].replaceFirst("^0+(?!$)", "")),
-                Integer.parseInt(dateParts[0].replaceFirst("^0+(?!$)", "")) - 1, // 0 is Jan, so adjust accordingly
-                Integer.parseInt(dateParts[1].replaceFirst("^0+(?!$)", "")));
+        setDate(date);
         return getWeekStartDate() + " - " + getWeekEndDate();
     }
 

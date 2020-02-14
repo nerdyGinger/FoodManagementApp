@@ -8,9 +8,12 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CalendarView;
+import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
 import java.util.ArrayList;
@@ -32,6 +35,18 @@ public class SchedulerDialog extends DialogFragment {
     private AutoCompleteTextView recipeNameBox;
     private String recipeName;
     private UserSchedule newScheduleItem = new UserSchedule();
+    private String MODE;   // "present" or "future"
+    private String selectedDate;
+    private String selectedStart;
+    private String selectedEnd;
+
+    public SchedulerDialog(String mode) {
+        MODE = mode;
+    }
+
+    public SchedulerDialog() {
+        MODE = "present";
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -46,13 +61,34 @@ public class SchedulerDialog extends DialogFragment {
         scheduleHelper = new ScheduleHelper(getContext());
 
         // Find views
-        TextView title = view.findViewById(R.id.schedulerDateTitle);
+        final TextView title = view.findViewById(R.id.schedulerDateTitle);
         recipeNameBox = view.findViewById(R.id.schedulerRecipeName);
         Button cancelBtn = view.findViewById(R.id.schedulerCancelBtn);
         Button addBtn = view.findViewById(R.id.schedulerAddBtn);
+        CalendarView calendar = view.findViewById(R.id.schedulerCalendar);
 
         // Set title date range
         title.setText(scheduleHelper.getCurrentWeekDateRange());
+
+        // Set up the calendar
+        if (MODE.equals("present")) {
+            calendar.setVisibility(View.GONE);
+        } else {
+            calendar.setVisibility(View.VISIBLE);
+            calendar.setDate(scheduleHelper.convertDateToLong(scheduleHelper.getCurrentDate()));
+            selectedDate = scheduleHelper.getCurrentDate();
+            selectedStart = scheduleHelper.getWeekStartDate(selectedDate);
+            selectedEnd = scheduleHelper.getWeekEndDate(selectedDate);
+            calendar.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+                @Override
+                public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
+                    selectedDate = (month + 1) + "/" + dayOfMonth + "/" + year; // Jan = 0, adjust month accordingly
+                    selectedStart = scheduleHelper.getWeekStartDate(selectedDate);
+                    selectedEnd = scheduleHelper.getWeekEndDate(selectedDate);
+                    title.setText(scheduleHelper.getWeekRange(selectedDate));
+                }
+            });
+        }
 
         // Add adapter to recipeName field
         ArrayAdapter<String> recipeNamesAdapter = new ArrayAdapter<>(Objects.requireNonNull(getContext()),
@@ -113,8 +149,9 @@ public class SchedulerDialog extends DialogFragment {
 
     private boolean addToDb() {
         recipeName = recipeNameBox.getText().toString();
-        newScheduleItem.setStartDate(scheduleHelper.getCurrentWeekStartDate());
-        newScheduleItem.setEndDate(scheduleHelper.getCurrentWeekEndDate());
+        newScheduleItem.setScheduleDate(selectedDate);
+        newScheduleItem.setStartDate(selectedStart);
+        newScheduleItem.setEndDate(selectedEnd);
         newScheduleItem.setDateAdded(scheduleHelper.getCurrentDate());
         newScheduleItem.setCompleted(false);
         final boolean[] valid = {false};

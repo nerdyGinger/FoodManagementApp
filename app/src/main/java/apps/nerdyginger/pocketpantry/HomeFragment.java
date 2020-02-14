@@ -9,6 +9,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -81,7 +82,7 @@ public class HomeFragment extends Fragment {
             public void onClick(View view, final int position) {
                 if (position == adapter.getItemCount() - 1) {
                     //add button click
-                    SchedulerDialog dialog = new SchedulerDialog();
+                    SchedulerDialog dialog = new SchedulerDialog("present");
                     dialog.show(Objects.requireNonNull(getFragmentManager()), "open scheduler");
                 } else {
                     buildConfirmationDialog(position).show();
@@ -127,7 +128,7 @@ public class HomeFragment extends Fragment {
         scheduleBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SchedulerDialog dialog = new SchedulerDialog();
+                SchedulerDialog dialog = new SchedulerDialog("future");
                 dialog.show(Objects.requireNonNull(getFragmentManager()), "open scheduler");
             }
         });
@@ -266,6 +267,7 @@ public class HomeFragment extends Fragment {
         TabHost.TabSpec spec = tabHost.newTabSpec("today");
         spec.setContent(R.id.homeTodayTab);
         EmptyRecyclerView todayRv = tabHost.getTabContentView().findViewById(R.id.homeCompletedTodayRecipeRecycler);
+        todayRv.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         todayRv.setLayoutManager(llm);
         final RecipesListAdapter todayAdapter = new RecipesListAdapter();
@@ -292,6 +294,7 @@ public class HomeFragment extends Fragment {
         spec = tabHost.newTabSpec("this week");
         spec.setContent(R.id.homeThisWeekTab);
         EmptyRecyclerView weekRv = tabHost.getTabContentView().findViewById(R.id.homeCompletedThisWeekRecipeRecycler);
+        weekRv.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
         LinearLayoutManager llm2 = new LinearLayoutManager(getContext());
         weekRv.setLayoutManager(llm2);
         final RecipesListAdapter weekAdapter = new RecipesListAdapter();

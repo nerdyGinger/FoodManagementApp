@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import java.util.ArrayList;
@@ -62,6 +63,7 @@ public class ScheduleHistoryDialog extends DialogFragment {
         });
 
         // Set up rv with data
+        rv.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         rv.setLayoutManager(llm);
         adapter = new HistoryListAdapter();
@@ -88,7 +90,6 @@ public class ScheduleHistoryDialog extends DialogFragment {
     private String currentHeader = "";
 
     private List<HistoryComboItem> getHistoryItems(final List<UserSchedule> scheduleItems) {
-        //TODO: Figure out how to add section headers at date range changes
         final List<HistoryComboItem> historyItems = new ArrayList<>();
         if (scheduleItems.size() == 0) {
             // just return empty list of no history
@@ -105,6 +106,9 @@ public class ScheduleHistoryDialog extends DialogFragment {
                     if ( ! currentHeader.equals(scheduleItem.getStartDate() + " - " + scheduleItem.getEndDate())) {
                         comboItem.setSectionHeader(true);
                         comboItem.setSectionDateRange(scheduleHelper.getWeekRange(scheduleItem.getDateCompleted()));
+                        currentHeader = comboItem.getSectionDateRange();
+                        historyItems.add(comboItem);
+                        comboItem = new HistoryComboItem();
                     }
                     UserRecipeBoxItem boxItem = boxDao.getRecipeById(Integer.parseInt(scheduleItem.getRecipeBoxItemId()));
                     comboItem.setRecipeName(boxItem.getRecipeName());
