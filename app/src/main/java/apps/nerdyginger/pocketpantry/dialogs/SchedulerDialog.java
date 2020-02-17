@@ -27,9 +27,12 @@ import apps.nerdyginger.pocketpantry.dao.UserRecipeBoxDao;
 import apps.nerdyginger.pocketpantry.dao.UserScheduleDao;
 import apps.nerdyginger.pocketpantry.models.UserSchedule;
 
-// The schedule dialog opened with the '+' button on the home screen
-// TODO: Schedule dialog should be extended to include a variant that will allow week selection (for 'Next Week' button)
-// TODO: Also, possibly change 'Next Week' button verbage to include more than just the next week
+// The schedule dialog opened with the '+' or the 'Add to Schedule' button on the
+// Home screen. Has two modes, 'present' and 'future' work scheduling current
+// week or future weeks
+// Last edited: 2/17/2020
+
+// TODO: figure out how to display previously added future schedule items
 public class SchedulerDialog extends DialogFragment {
     private ScheduleHelper scheduleHelper;
     private AutoCompleteTextView recipeNameBox;
@@ -71,14 +74,14 @@ public class SchedulerDialog extends DialogFragment {
         title.setText(scheduleHelper.getCurrentWeekDateRange());
 
         // Set up the calendar
+        selectedDate = scheduleHelper.getCurrentDate();
+        selectedStart = scheduleHelper.getWeekStartDate(selectedDate);
+        selectedEnd = scheduleHelper.getWeekEndDate(selectedDate);
         if (MODE.equals("present")) {
             calendar.setVisibility(View.GONE);
         } else {
             calendar.setVisibility(View.VISIBLE);
             calendar.setDate(scheduleHelper.convertDateToLong(scheduleHelper.getCurrentDate()));
-            selectedDate = scheduleHelper.getCurrentDate();
-            selectedStart = scheduleHelper.getWeekStartDate(selectedDate);
-            selectedEnd = scheduleHelper.getWeekEndDate(selectedDate);
             calendar.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
                 @Override
                 public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {

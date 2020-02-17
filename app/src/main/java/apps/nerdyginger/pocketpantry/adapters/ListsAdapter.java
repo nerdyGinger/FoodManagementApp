@@ -1,41 +1,43 @@
 package apps.nerdyginger.pocketpantry.adapters;
 
-import android.app.LauncherActivity;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
 import apps.nerdyginger.pocketpantry.EmptyRecyclerView;
 import apps.nerdyginger.pocketpantry.R;
 import apps.nerdyginger.pocketpantry.RecyclerViewClickListener;
-import apps.nerdyginger.pocketpantry.UserCustomDatabase;
 import apps.nerdyginger.pocketpantry.models.UserListItem;
 
+import static android.view.View.GONE;
+
+// A checkable, sortable, expandable grocery list adapter
+// Last edited: 2/17/2020
 public class ListsAdapter extends  EmptyRecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<UserListItem> dataSet = new ArrayList<>();
     private RecyclerViewClickListener mListener;
 
     public class ListItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         CheckBox checkBox;
-        TextView itemName, quantity;
+        TextView itemName, quantity, noteIndicator, notes;
 
         ListItemViewHolder(final View itemView) {
             super(itemView);
             checkBox = itemView.findViewById(R.id.listCheck);
             itemName = itemView.findViewById(R.id.listItemName);
             quantity = itemView.findViewById(R.id.listItemQuantity);
+            noteIndicator = itemView.findViewById(R.id.listNoteIndicator);
+            notes = itemView.findViewById(R.id.listNote);
             itemView.setOnClickListener(this);
             checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -49,7 +51,11 @@ public class ListsAdapter extends  EmptyRecyclerView.Adapter<RecyclerView.ViewHo
 
         @Override
         public void onClick(View view) {
-            mListener.onClick(view, getAdapterPosition());
+            if (dataSet.get(getAdapterPosition()).getNotes().isEmpty()) {
+                mListener.onClick(view, getAdapterPosition());
+            } else {
+                toggleExpansion(dataSet.get(getAdapterPosition()), this);
+            }
         }
     }
 
@@ -70,6 +76,10 @@ public class ListsAdapter extends  EmptyRecyclerView.Adapter<RecyclerView.ViewHo
         notifyDataSetChanged();
     }
 
+    // TODO: fix bug where checking/unchecking items undoes sorting
+    // `> updating the data set works, but the change isn't persisted in db,
+    //    so it doesn't survive another update, like with checking, unchecking,
+    //    or adding another item
     public void sortData() {
         List<UserListItem> unchecked = new ArrayList<>();
         List<UserListItem> checked = new ArrayList<>();
@@ -85,6 +95,15 @@ public class ListsAdapter extends  EmptyRecyclerView.Adapter<RecyclerView.ViewHo
         // add checked items to bottom of unchecked list, reload data set
         unchecked.addAll(checked);
         updateData(unchecked);
+    }
+
+    // toggle the expansion of the note section, for user notes on grocery list items,
+    // i.e. "Market Pantry brand", or "Don't get Fat-free, it gives Karen gas!" or
+    // other things like that
+    private void toggleExpansion(UserListItem item, ListItemViewHolder holder) {
+        holder.notes.setVisibility(item.isExpanded() ? View.GONE : View.VISIBLE);
+        item.setExpanded( ! item.isExpanded());
+        //TODO: known bug -> expansions don't persist through data updates, i.e. checks, unchecks, additions
     }
 
     public UserListItem getItemAtPosition(int position) {
@@ -113,7 +132,13 @@ public class ListsAdapter extends  EmptyRecyclerView.Adapter<RecyclerView.ViewHo
         ListItemViewHolder holder = (ListItemViewHolder) viewHolder;
         holder.itemName.setText(item.getItemName());
         holder.quantity.setText(item.getQuantity());
+        holder.notes.setText(item.getNotes());
         holder.checkBox.setChecked(item.isChecked());
+        if (item.getNotes().isEmpty()) {
+            holder.noteIndicator.setText("   ");
+        } else {
+            holder.noteIndicator.setText("...");
+        }
     }
 
     @Override

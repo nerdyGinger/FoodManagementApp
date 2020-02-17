@@ -23,20 +23,43 @@
         android:hint="#"
         />
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/listDialogNotesLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/listDialogItemName"
+        android:hint="Notes"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        >
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/listDialogNotes"
+            android:layout_width="285dp"
+            android:layout_height="wrap_content"
+            android:gravity="top"
+            android:textColor="@color/custom_text_color"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
     <Button
         android:id="@+id/listDialogCancelBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="5dp"
         android:text="Cancel"
-        android:layout_below="@+id/listDialogItemName"
+        android:layout_below="@+id/listDialogNotesLayout"
         />
 
     <Button
         android:id="@+id/listDialogAddButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="5dp"
         android:text="Add"
-        android:layout_below="@+id/listDialogItemQuantity"
+        android:layout_below="@+id/listDialogNotesLayout"
         android:layout_alignEnd="@id/listDialogItemQuantity"
         />
 

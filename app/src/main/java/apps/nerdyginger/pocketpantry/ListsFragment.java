@@ -6,7 +6,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -26,7 +25,7 @@ import apps.nerdyginger.pocketpantry.adapters.ListsAdapter;
 import apps.nerdyginger.pocketpantry.callbacks.ListsSwipeDeleteCallback;
 import apps.nerdyginger.pocketpantry.dao.UserListItemDao;
 import apps.nerdyginger.pocketpantry.models.UserListItem;
-import apps.nerdyginger.pocketpantry.view_models.AddListItemDialog;
+import apps.nerdyginger.pocketpantry.dialogs.AddListItemDialog;
 import apps.nerdyginger.pocketpantry.view_models.ListItemViewModel;
 
 

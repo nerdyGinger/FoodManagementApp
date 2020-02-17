@@ -13,8 +13,14 @@ public class UserListItem {
     private boolean userAdded;
     private int itemID;
     private boolean checked;
+    private String notes;
+    private boolean expanded = false;
+
+    // this indicated the item's position in the list, which is necessary for persistent sorting
+    private int position;
 
     //for sorting into multiple lists; store list ids in preferences? or make another db table?
+    //TODO: Multiple lists? Ver. 2?
     private int listID;
 
     public int get_ID() {
@@ -71,5 +77,29 @@ public class UserListItem {
 
     public void setListID(int listID) {
         this.listID = listID;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
+    public boolean isExpanded() {
+        return expanded;
+    }
+
+    public void setExpanded(boolean expanded) {
+        this.expanded = expanded;
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
     }
 }

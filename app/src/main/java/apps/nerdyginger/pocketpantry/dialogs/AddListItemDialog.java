@@ -1,4 +1,4 @@
-package apps.nerdyginger.pocketpantry.view_models;
+package apps.nerdyginger.pocketpantry.dialogs;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -11,6 +11,8 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.fragment.app.DialogFragment;
+
+import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
@@ -27,9 +29,12 @@ import apps.nerdyginger.pocketpantry.models.Item;
 import apps.nerdyginger.pocketpantry.models.UserItem;
 import apps.nerdyginger.pocketpantry.models.UserListItem;
 
+// Simple dialog for adding list items to lists tab
+// Last edited: 2/17/2020
 public class AddListItemDialog extends DialogFragment {
     private AutoCompleteTextView itemNameBox;
     private EditText itemQuantityBox;
+    private TextInputEditText itemNotesBox;
     private Button cancelBtn;
     private Button addBtn;
     private Dictionary<String, Integer> readOnlyNameIdValues = new Hashtable<>();
@@ -51,6 +56,7 @@ public class AddListItemDialog extends DialogFragment {
         // Get views
         itemNameBox = view.findViewById(R.id.listDialogItemName);
         itemQuantityBox = view.findViewById(R.id.listDialogItemQuantity);
+        itemNotesBox = view.findViewById(R.id.listDialogNotes);
         cancelBtn = view.findViewById(R.id.listDialogCancelBtn);
         addBtn = view.findViewById(R.id.listDialogAddButton);
 
@@ -86,6 +92,7 @@ public class AddListItemDialog extends DialogFragment {
                 UserListItem item = new UserListItem();
                 item.setItemName(itemName);
                 item.setQuantity(quantity);
+                item.setNotes(Objects.requireNonNull(itemNotesBox.getText()).toString());
                 item.setChecked(false);
                 Integer readonlyId = readOnlyNameIdValues.get(itemName);
                 Integer userItemId = userNameIdValues.get(itemName);
