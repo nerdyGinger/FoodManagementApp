@@ -25,18 +25,54 @@
         android:layout_below="@+id/schedulerWeekTitle"
         android:layout_centerHorizontal="true"
         android:textSize="16sp"
-        android:text="StartDate - EndData"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="StartDate - EndDate"
         />
 
-    <CalendarView
-        android:id="@+id/schedulerCalendar"
+    <LinearLayout
+        android:id="@+id/schedulerCalendarContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/schedulerDateTitle"
-        android:selectedWeekBackgroundColor="@color/colorPrimary"
-        />
+        >
+
+        <CalendarView
+            android:id="@+id/schedulerCalendar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            />
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/schedulerRecyclerContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/schedulerCalendarContainer"
+        >
+
+        <apps.nerdyginger.pocketpantry.EmptyRecyclerView
+            android:id="@+id/schedulerRecycler"
+            android:layout_width="350dp"
+            android:layout_height="wrap_content"
+            />
+
+        <TextView
+            android:id="@+id/schedulerRecyclerEmptyMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="75dp"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:text="No recipes scheduled"
+            />
+
+    </RelativeLayout>
 
     <AutoCompleteTextView
         android:id="@+id/schedulerRecipeName"
@@ -44,7 +80,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/schedulerCalendar"
+        android:layout_below="@+id/schedulerRecyclerContainer"
         android:hint="Recipe Name"
         />
 

@@ -17,6 +17,7 @@ import java.util.Objects;
 import apps.nerdyginger.pocketpantry.models.UserSchedule;
 
 // Helpful methods for dates and date ranges related to scheduling
+// Last edited: 2/18/2020
 public class ScheduleHelper {
     private Context context;
     private Calendar cal;
@@ -138,6 +139,11 @@ public class ScheduleHelper {
     public boolean isInCurrentWeek(UserSchedule scheduleItem) {
         return scheduleItem.getStartDate().equals(getCurrentWeekStartDate()) &&
                 scheduleItem.getEndDate().equals(getCurrentWeekEndDate());
+    }
+
+    public boolean isInWeek(String startDate, String endDate, UserSchedule item) {
+        return item.getStartDate().equals(startDate) &&
+                item.getEndDate().equals(endDate);
     }
 
     // Given a UserSchedule item, return true if it was marked as completed on today's date
