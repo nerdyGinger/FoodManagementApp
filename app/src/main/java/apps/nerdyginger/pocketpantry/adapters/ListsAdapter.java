@@ -22,7 +22,7 @@ import apps.nerdyginger.pocketpantry.models.UserListItem;
 import static android.view.View.GONE;
 
 // A checkable, sortable, expandable grocery list adapter
-// Last edited: 2/17/2020
+// Last edited: 2/18/2020
 public class ListsAdapter extends  EmptyRecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<UserListItem> dataSet = new ArrayList<>();
     private RecyclerViewClickListener mListener;
@@ -76,7 +76,6 @@ public class ListsAdapter extends  EmptyRecyclerView.Adapter<RecyclerView.ViewHo
         notifyDataSetChanged();
     }
 
-    // TODO: fix bug where checking/unchecking items undoes sorting
     // `> updating the data set works, but the change isn't persisted in db,
     //    so it doesn't survive another update, like with checking, unchecking,
     //    or adding another item
@@ -92,8 +91,11 @@ public class ListsAdapter extends  EmptyRecyclerView.Adapter<RecyclerView.ViewHo
             }
         }
 
-        // add checked items to bottom of unchecked list, reload data set
+        // add checked items to bottom of unchecked list, updates position data, reload data set
         unchecked.addAll(checked);
+        for (int i=0; i<unchecked.size(); i++) {
+            unchecked.get(i).setPosition(i);
+        }
         updateData(unchecked);
     }
 
@@ -103,7 +105,6 @@ public class ListsAdapter extends  EmptyRecyclerView.Adapter<RecyclerView.ViewHo
     private void toggleExpansion(UserListItem item, ListItemViewHolder holder) {
         holder.notes.setVisibility(item.isExpanded() ? View.GONE : View.VISIBLE);
         item.setExpanded( ! item.isExpanded());
-        //TODO: known bug -> expansions don't persist through data updates, i.e. checks, unchecks, additions
     }
 
     public UserListItem getItemAtPosition(int position) {

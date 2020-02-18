@@ -11,10 +11,10 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -28,7 +28,8 @@ import apps.nerdyginger.pocketpantry.models.UserListItem;
 import apps.nerdyginger.pocketpantry.dialogs.AddListItemDialog;
 import apps.nerdyginger.pocketpantry.view_models.ListItemViewModel;
 
-
+// Fragment for grocery list(s); currently only 1 list is available, potential plans to allow more than one list, maybe?
+// Last edited: 2/18/2020
 public class ListsFragment extends Fragment {
     private Context context;
     private ListsAdapter adapter;
@@ -49,8 +50,8 @@ public class ListsFragment extends Fragment {
         View view =  inflater.inflate(R.layout.fragment_lists, container, false);
         context = getContext();
 
-        // Set up add item button
-        Button addBtn = view.findViewById(R.id.listsAddBtn);
+        // Set up floating action add item button
+        FloatingActionButton addBtn = view.findViewById(R.id.listFloatingActionAddBtn);
         addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -60,9 +61,9 @@ public class ListsFragment extends Fragment {
             }
         });
 
-        // Set up floating action button (sort list unchecked/checked)
-        FloatingActionButton fab = view.findViewById(R.id.listFloatingActionBtn);
-        fab.setOnClickListener(new View.OnClickListener() {
+        // Set up floating action sort button (sort list unchecked/checked)
+        FloatingActionButton sortFab = view.findViewById(R.id.listFloatingActionSortBtn);
+        sortFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //sort the list
@@ -82,7 +83,7 @@ public class ListsFragment extends Fragment {
                 UserListItem clicked = adapter.getItemAtPosition(position);
                 clicked.setChecked( ! clicked.isChecked());
                 adapter.notifyDataSetChanged();
-                saveCheckStatus(clicked);
+                //saveCheckStatus(clicked);
             }
 
             @Override
@@ -100,6 +101,7 @@ public class ListsFragment extends Fragment {
             @Override
             public void onChanged(List<UserListItem> userListItems) {
                 adapter.updateData(userListItems);
+                adapter.sortData();
                 adapter.notifyDataSetChanged();
             }
         });
@@ -117,6 +119,26 @@ public class ListsFragment extends Fragment {
                 dao.update(item);
             }
         }).start();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        // save the states of the current list of items, including checked status and position
+        try {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    UserListItemDao dao = UserCustomDatabase.getDatabase(getContext()).getUserListItemDao();
+                    for (int i=0; i<adapter.getItemCount(); i++) {
+                        UserListItem item = adapter.getItemAtPosition(i);
+                        dao.update(item);
+                    }
+                }
+            }).start();
+        } catch (Exception e) {
+            Log.e("MY_CODE_ISSUES", "Error in List onPause: " + e);
+        }
     }
 
     @Override
