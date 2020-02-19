@@ -11,7 +11,7 @@ import java.io.InputStream;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static String DATABASE_NAME = "food.sqlite3";
-    private static int DATABASE_VERSION = 4;
+    private static int DATABASE_VERSION = 5;
     private Context mContext;
     private SharedPreferences preferences;
 
