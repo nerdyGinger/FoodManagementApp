@@ -18,9 +18,7 @@ import org.junit.runner.RunWith;
 import java.io.IOException;
 import java.util.List;
 
-import apps.nerdyginger.pocketpantry.dao.AllergyDao;
 import apps.nerdyginger.pocketpantry.dao.CategoryDao;
-import apps.nerdyginger.pocketpantry.dao.FlavorDao;
 import apps.nerdyginger.pocketpantry.dao.InventoryHelperDao;
 import apps.nerdyginger.pocketpantry.dao.ItemDao;
 import apps.nerdyginger.pocketpantry.dao.NutritionDao;
@@ -41,9 +39,7 @@ public class DatabaseTest {
     private RecipeDao recipeDao;
     private ItemDao itemDao;
     private NutritionDao nutritionDao;
-    private FlavorDao flavorDao;
     private CategoryDao categoryDao;
-    private AllergyDao allergyDao;
     private UserItemDao userItemDao;
     private UserRecipeDao userRecipeDao;
     private UserNutritionDao userNutritionDao;
@@ -59,9 +55,7 @@ public class DatabaseTest {
         recipeDao = new RecipeDao(context);
         itemDao = new ItemDao(context);
         nutritionDao = new NutritionDao(context);
-        flavorDao = new FlavorDao(context);
         categoryDao = new CategoryDao(context);
-        allergyDao = new AllergyDao(context);
         //custom database
         UserCustomDatabase customDb = Room.inMemoryDatabaseBuilder(context, UserCustomDatabase.class).build();
         userItemDao = customDb.getUserItemDao();
@@ -93,13 +87,9 @@ public class DatabaseTest {
 
     @Test
     public void subTablesTest() throws Exception {
-        String flavorName = flavorDao.getFlavorName("1");
         String categoryName = categoryDao.getCategoryName("1");
-        String allergyName = allergyDao.getAllergyName("1");
         String nutritionName = nutritionDao.getNutritionName("1");
-        Assert.assertEquals("Sweet", flavorName);
         Assert.assertEquals("Dairy", categoryName);
-        Assert.assertEquals("Peanuts", allergyName);
         Assert.assertEquals("", nutritionName);
     }
 

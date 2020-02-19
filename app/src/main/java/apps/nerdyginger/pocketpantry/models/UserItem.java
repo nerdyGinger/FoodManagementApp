@@ -11,9 +11,6 @@ public class UserItem {
     private int _ID;
 
     private String name;
-    private int flavor;
-    private int category;
-    private ArrayList<String> allergy;
 
     public int get_ID() {
         return _ID;
@@ -31,27 +28,4 @@ public class UserItem {
         this.name = name;
     }
 
-    public int getFlavor() {
-        return flavor;
-    }
-
-    public void setFlavor(int flavor) {
-        this.flavor = flavor;
-    }
-
-    public int getCategory() {
-        return category;
-    }
-
-    public void setCategory(int category) {
-        this.category = category;
-    }
-
-    public ArrayList<String> getAllergy() {
-        return allergy;
-    }
-
-    public void setAllergy(ArrayList<String> allergy) {
-        this.allergy = allergy;
-    }
 }
