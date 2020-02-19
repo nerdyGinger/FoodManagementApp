@@ -3,6 +3,10 @@ package apps.nerdyginger.pocketpantry.models;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+//
+// Used to store recipes that are in the user's recipe box (<- user recipe box dao)
+// ALSO used to display recipes for the browse page (<- NOT related to user recipe box dao)
+// Last edited: 2/19/2020
 @Entity(tableName = "recipeBox")
 public class UserRecipeBoxItem {
     @PrimaryKey(autoGenerate = true)

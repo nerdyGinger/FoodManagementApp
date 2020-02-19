@@ -5,7 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import apps.nerdyginger.pocketpantry.DatabaseHelper;
+import apps.nerdyginger.pocketpantry.helpers.DatabaseHelper;
 import apps.nerdyginger.pocketpantry.Fraction;
 import apps.nerdyginger.pocketpantry.models.Unit;
 

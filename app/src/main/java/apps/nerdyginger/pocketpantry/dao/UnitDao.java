@@ -8,7 +8,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
-import apps.nerdyginger.pocketpantry.DatabaseHelper;
+import apps.nerdyginger.pocketpantry.helpers.DatabaseHelper;
 import apps.nerdyginger.pocketpantry.models.Unit;
 
 public class UnitDao {

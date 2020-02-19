@@ -10,7 +10,6 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CalendarView;
-import android.widget.DatePicker;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,7 +27,7 @@ import java.util.Objects;
 
 import apps.nerdyginger.pocketpantry.EmptyRecyclerView;
 import apps.nerdyginger.pocketpantry.R;
-import apps.nerdyginger.pocketpantry.ScheduleHelper;
+import apps.nerdyginger.pocketpantry.helpers.ScheduleHelper;
 import apps.nerdyginger.pocketpantry.UserCustomDatabase;
 import apps.nerdyginger.pocketpantry.adapters.HistoryListAdapter;
 import apps.nerdyginger.pocketpantry.dao.UserRecipeBoxDao;
@@ -41,8 +40,6 @@ import apps.nerdyginger.pocketpantry.view_models.ScheduleViewModel;
 // Home screen. Has two modes, 'present' and 'future' work scheduling current
 // week or future weeks
 // Last edited: 2/17/2020
-
-// TODO: figure out how to display previously added future schedule items
 public class SchedulerDialog extends DialogFragment {
     private ScheduleHelper scheduleHelper;
     private AutoCompleteTextView recipeNameBox;
@@ -109,8 +106,9 @@ public class SchedulerDialog extends DialogFragment {
                     selectedDate = (month + 1) + "/" + dayOfMonth + "/" + year; // Jan = 0, adjust month accordingly
                     selectedStart = scheduleHelper.getWeekStartDate(selectedDate);
                     selectedEnd = scheduleHelper.getWeekEndDate(selectedDate);
-                    //TODO: trigger checkForSchedules(???)
+                    checkForSchedules();
                     title.setText(scheduleHelper.getWeekRange(selectedDate));
+                    toggleCalendar();
                 }
             });
             rv.addItemDecoration(new DividerItemDecoration(context, LinearLayoutManager.VERTICAL));
@@ -123,7 +121,8 @@ public class SchedulerDialog extends DialogFragment {
             viewModel.getScheduleList().observe(getViewLifecycleOwner(), new Observer<List<UserSchedule>>() {
                 @Override
                 public void onChanged(List<UserSchedule> userSchedules) {
-                    checkForSchedules(userSchedules);
+                    currentList = userSchedules;
+                    checkForSchedules();
                 }
             });
             rv.setEmptyView(view.findViewById(R.id.schedulerRecyclerEmptyMessage));
@@ -169,18 +168,16 @@ public class SchedulerDialog extends DialogFragment {
         return view;
     }
 
-    private void checkForSchedules(List<UserSchedule> userSchedules) {
-        currentList = new ArrayList<>();
-        for (int i=0; i<userSchedules.size(); i++) {
-            if ( (!userSchedules.get(i).isCompleted()) &&
-                    scheduleHelper.isInWeek(selectedStart, selectedEnd, userSchedules.get(i))) {
-                currentList.add(userSchedules.get(i));
-                Log.e("DEBUG", "HIT!");
+    private void checkForSchedules() {
+        List<UserSchedule> tempList = new ArrayList<>();
+        for (int i=0; i<currentList.size(); i++) {
+            if ( (!currentList.get(i).isCompleted()) &&
+                    scheduleHelper.isInWeek(selectedStart, selectedEnd, currentList.get(i))) {
+                tempList.add(currentList.get(i));
             }
         }
-        getHistoryItems(currentList);
+        getHistoryItems(tempList);
         adapter.updateData(currentHistoryList);
-        Log.e("DEBUG", "HIT!");
     }
 
     // Toggle calendar visibility

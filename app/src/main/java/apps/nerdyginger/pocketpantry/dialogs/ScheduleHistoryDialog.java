@@ -19,7 +19,7 @@ import java.util.List;
 
 import apps.nerdyginger.pocketpantry.EmptyRecyclerView;
 import apps.nerdyginger.pocketpantry.R;
-import apps.nerdyginger.pocketpantry.ScheduleHelper;
+import apps.nerdyginger.pocketpantry.helpers.ScheduleHelper;
 import apps.nerdyginger.pocketpantry.UserCustomDatabase;
 import apps.nerdyginger.pocketpantry.adapters.HistoryListAdapter;
 import apps.nerdyginger.pocketpantry.dao.UserRecipeBoxDao;

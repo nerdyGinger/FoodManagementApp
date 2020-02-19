@@ -9,15 +9,25 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.List;
+
 import apps.nerdyginger.pocketpantry.adapters.BrowseRecipesCategoryAdapter;
+import apps.nerdyginger.pocketpantry.dao.RecipeDao;
+import apps.nerdyginger.pocketpantry.dao.UserInventoryItemDao;
+import apps.nerdyginger.pocketpantry.dao.UserRecipeDao;
+import apps.nerdyginger.pocketpantry.models.Recipe;
+import apps.nerdyginger.pocketpantry.models.UserInventoryItem;
+import apps.nerdyginger.pocketpantry.models.UserRecipe;
 
 
 public class BrowseRecipeFragment extends Fragment {
     private Context context;
+    private BrowseRecipesCategoryAdapter parentAdapter;
 
     public BrowseRecipeFragment() {
         // Required empty public constructor
@@ -38,36 +48,54 @@ public class BrowseRecipeFragment extends Fragment {
         categoriesRv.addItemDecoration(new DividerItemDecoration(context, LinearLayoutManager.VERTICAL));
         LinearLayoutManager llm = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         categoriesRv.setLayoutManager(llm);
-        categoriesRv.setAdapter(new BrowseRecipesCategoryAdapter());//generateRecipeCategories()));
+        parentAdapter = new BrowseRecipesCategoryAdapter();
+        categoriesRv.setAdapter(parentAdapter);
+
 
 
         return view;
     }
 
-    /*
-    //TODO: Remove method when adding implementation is... added
-    private List<BrowseRecipeCategory> generateRecipeCategories() {
-        List<BrowseRecipeItem> collegeFare = new ArrayList<>();
-        collegeFare.add(new BrowseRecipeItem("PB & J", "Quick 'n' Easy"));
-        collegeFare.add(new BrowseRecipeItem("Microwave Pasta", "Quick 'n' Easy"));
-        collegeFare.add(new BrowseRecipeItem("Easy Frozen Bento Lunch", "Lunch"));
-        collegeFare.add(new BrowseRecipeItem("Instant Ramen", "Quick 'n' Easy"));
-
-        List<BrowseRecipeItem> snacks = new ArrayList<>();
-        snacks.add(new BrowseRecipeItem("Apple Granola Sandwich", "Healthy Snacks"));
-        snacks.add(new BrowseRecipeItem("Puppy Chow", "Unhealthy Snacks"));
-        snacks.add(new BrowseRecipeItem("Roasted Pumpkin Seeds", "Fall Favorites"));
-        snacks.add(new BrowseRecipeItem("Grandma's Ooey Gooey Brownie Bites", "Desserts"));
-        snacks.add(new BrowseRecipeItem("Carrot-Apple-slaw", "Sides"));
-        snacks.add(new BrowseRecipeItem("Russian Tea Cookies", "Desserts"));
-
-
-        List<BrowseRecipeCategory> parents = new ArrayList<>();
-        parents.add(new BrowseRecipeCategory("College Fare", collegeFare));
-        parents.add(new BrowseRecipeCategory("Snacks", snacks));
-        return parents;
+    private boolean inInventory(List<UserInventoryItem> inventoryItems, String itemName) {
+        for (int i=0; i<inventoryItems.size(); i++) {
+            if (inventoryItems.get(i).getItemName().equals(itemName)) {
+                return true;
+            }
+        }
+        return false;
     }
-    */
+
+    private void getBrowsableData() {
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // getting _all_ recipes
+                UserCustomDatabase userDb = UserCustomDatabase.getDatabase(context);
+                RecipeDao readOnlyDao = new RecipeDao(context);
+                UserRecipeDao userDao = userDb.getUserRecipeDao();
+                List<Recipe> readOnlyRecipes =  readOnlyDao.getAllRecipes();
+                List<UserRecipe> userRecipes = userDao.getAllUserRecipes();
+
+                // get inventory data
+                UserInventoryItemDao inventoryDao = userDb.getUserInventoryDao();
+                List<UserInventoryItem> inventoryItems = inventoryDao.getAllInventoryItems();
+
+                // sort into categories, create List<UserRecipeBoxItem>s for each category
+
+                // sort each list by relevance, i.e. how many ingredients user has on hand
+
+                // create recommended list with recipes that user has all/most ingredients on hand (top 20?)
+
+                // create quick trip list with recipes that are only missing 1-3 items (?)
+            }
+        });
+        t.start();
+        try {
+            t.join();
+        } catch (Exception e) {
+            Log.e("Database Error", "Problem waiting for db thread to complete");
+        }
+    }
 
     @Override
     public void onAttach(@NonNull Context context) {

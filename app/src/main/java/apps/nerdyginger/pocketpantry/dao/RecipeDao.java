@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import apps.nerdyginger.pocketpantry.Converters;
-import apps.nerdyginger.pocketpantry.DatabaseHelper;
+import apps.nerdyginger.pocketpantry.helpers.DatabaseHelper;
 import apps.nerdyginger.pocketpantry.models.Recipe;
 
 public class RecipeDao {
@@ -50,10 +50,6 @@ public class RecipeDao {
         }
         return new Recipe(Integer.parseInt(id), name, author, datePublished, description, totalTime,
                 keywords, recipeYield, recipeCategory, recipeCuisine, nutritionId, recipeInstructions);
-    }
-
-    public List<Recipe> buildRecipeListFromDb() {
-        return getAllRecipes();
     }
 
     public List<Recipe> getAllRecipes() {

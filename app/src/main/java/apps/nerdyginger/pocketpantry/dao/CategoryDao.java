@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import apps.nerdyginger.pocketpantry.models.Category;
-import apps.nerdyginger.pocketpantry.DatabaseHelper;
+import apps.nerdyginger.pocketpantry.helpers.DatabaseHelper;
 
 public class CategoryDao {
     private Context context;

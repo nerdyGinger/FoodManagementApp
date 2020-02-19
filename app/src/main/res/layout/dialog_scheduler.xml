@@ -58,8 +58,9 @@
 
         <apps.nerdyginger.pocketpantry.EmptyRecyclerView
             android:id="@+id/schedulerRecycler"
+            android:layout_margin="5dp"
             android:layout_width="350dp"
-            android:layout_height="wrap_content"
+            android:layout_height="200dp"
             />
 
         <TextView

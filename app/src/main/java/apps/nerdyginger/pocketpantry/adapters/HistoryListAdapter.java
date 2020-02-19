@@ -86,7 +86,13 @@ public class HistoryListAdapter extends EmptyRecyclerView.Adapter<RecyclerView.V
         } else {
             HistoryItemViewHolder dataHolder = (HistoryItemViewHolder) viewHolder;
             dataHolder.recipeName.setText(item.getRecipeName());
-            dataHolder.completedDate.setText(item.getCompletedDate());
+            if (item.getCompletedDate() == null ||
+                item.getCompletedDate().isEmpty()) {
+                //don't take up extra space with an empty completed date
+                dataHolder.completedDate.setVisibility(View.GONE);
+            } else {
+                dataHolder.completedDate.setText(item.getCompletedDate());
+            }
         }
     }
 

@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import apps.nerdyginger.pocketpantry.helpers.ScheduleHelper;
 import apps.nerdyginger.pocketpantry.models.UserSchedule;
 
 // NOTE: update strings for test run date

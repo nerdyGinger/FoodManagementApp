@@ -1,4 +1,4 @@
-package apps.nerdyginger.pocketpantry;
+package apps.nerdyginger.pocketpantry.helpers;
 
 import android.content.Context;
 import android.content.SharedPreferences;
