@@ -20,6 +20,33 @@ public class RecipeItemJoinDao {
         this.context = context;
     }
 
+    public List<RecipeItemJoin> getJoinItemsByItem(String itemId) {
+        SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
+        String sql = "Select * from RecipeItemJoin WHERE RecipeItemJoin.itemId = ?";
+        String[] params = new String[] {itemId};
+        List<RecipeItemJoin> joinItems = new ArrayList<>();
+        Cursor cursor = db.rawQuery(sql, params);
+        try {
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                while (!cursor.isAfterLast()) {
+                    int recipeId = cursor.getInt(cursor.getColumnIndex("recipeId"));
+                    String quantity = cursor.getString(cursor.getColumnIndex("itemQuantity"));
+                    String unit = cursor.getString(cursor.getColumnIndex("itemUnit"));
+                    String detail = cursor.getString(cursor.getColumnIndex("itemDetail"));
+                    joinItems.add(new RecipeItemJoin(recipeId, Integer.parseInt(itemId), quantity, unit, detail));
+                    cursor.moveToNext();
+                }
+            }
+        } catch (Exception e) {
+            Log.e("Database Error", e.toString());
+        } finally {
+            cursor.close();
+            db.close();
+        }
+        return joinItems;
+    }
+
     public List<Recipe> getRecipesByItem(String itemId) {
         SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
         String sql = "Select * from Recipe INNER JOIN RecipeItemJoin ON Recipe.rowid=RecipeItemJoin.recipeId WHERE RecipeItemJoin.itemId = ?";

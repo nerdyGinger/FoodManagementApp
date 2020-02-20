@@ -20,6 +20,7 @@ import apps.nerdyginger.pocketpantry.adapters.BrowseRecipesCategoryAdapter;
 import apps.nerdyginger.pocketpantry.dao.RecipeDao;
 import apps.nerdyginger.pocketpantry.dao.UserInventoryItemDao;
 import apps.nerdyginger.pocketpantry.dao.UserRecipeDao;
+import apps.nerdyginger.pocketpantry.helpers.SortRecipesHelper;
 import apps.nerdyginger.pocketpantry.models.Recipe;
 import apps.nerdyginger.pocketpantry.models.UserInventoryItem;
 import apps.nerdyginger.pocketpantry.models.UserRecipe;
@@ -28,6 +29,7 @@ import apps.nerdyginger.pocketpantry.models.UserRecipe;
 public class BrowseRecipeFragment extends Fragment {
     private Context context;
     private BrowseRecipesCategoryAdapter parentAdapter;
+    private SortRecipesHelper recipesHelper;
 
     public BrowseRecipeFragment() {
         // Required empty public constructor
@@ -44,11 +46,16 @@ public class BrowseRecipeFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_browse_recipe, container, false);
 
+        // initialize global variables
+        context = getContext();
+        recipesHelper = new SortRecipesHelper(context);
+        parentAdapter = new BrowseRecipesCategoryAdapter();
+
+        // set up parent RecyclerView
         RecyclerView categoriesRv = view.findViewById(R.id.browseRecipesRecycler);
         categoriesRv.addItemDecoration(new DividerItemDecoration(context, LinearLayoutManager.VERTICAL));
         LinearLayoutManager llm = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         categoriesRv.setLayoutManager(llm);
-        parentAdapter = new BrowseRecipesCategoryAdapter();
         categoriesRv.setAdapter(parentAdapter);
 
 
