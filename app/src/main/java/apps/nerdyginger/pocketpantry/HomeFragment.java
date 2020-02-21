@@ -27,7 +27,8 @@ import java.util.Objects;
 
 import apps.nerdyginger.pocketpantry.adapters.BrowseRecipesItemAdapter;
 import apps.nerdyginger.pocketpantry.adapters.RecipesListAdapter;
-import apps.nerdyginger.pocketpantry.dao.UnitConversionDao;
+import apps.nerdyginger.pocketpantry.dao.ItemDao;
+import apps.nerdyginger.pocketpantry.dao.RecipeItemJoinDao;
 import apps.nerdyginger.pocketpantry.dao.UnitDao;
 import apps.nerdyginger.pocketpantry.dao.UserInventoryItemDao;
 import apps.nerdyginger.pocketpantry.dao.UserRecipeBoxDao;
@@ -35,15 +36,19 @@ import apps.nerdyginger.pocketpantry.dao.UserRecipeItemJoinDao;
 import apps.nerdyginger.pocketpantry.dao.UserScheduleDao;
 import apps.nerdyginger.pocketpantry.dialogs.ScheduleHistoryDialog;
 import apps.nerdyginger.pocketpantry.dialogs.SchedulerDialog;
+import apps.nerdyginger.pocketpantry.helpers.ItemQuantityHelper;
 import apps.nerdyginger.pocketpantry.helpers.ScheduleHelper;
-import apps.nerdyginger.pocketpantry.models.Unit;
+import apps.nerdyginger.pocketpantry.models.RecipeItemJoin;
 import apps.nerdyginger.pocketpantry.models.UserInventoryItem;
 import apps.nerdyginger.pocketpantry.models.UserRecipeBoxItem;
 import apps.nerdyginger.pocketpantry.models.UserRecipeItemJoin;
 import apps.nerdyginger.pocketpantry.models.UserSchedule;
 import apps.nerdyginger.pocketpantry.view_models.ScheduleViewModel;
 
-
+/*
+ * The fragment controlling the home page, complete with schedule and history dashboard.
+ * Last edited: 2/20/2020
+ */
 public class HomeFragment extends Fragment {
     private BrowseRecipesItemAdapter adapter;
     private ScheduleViewModel viewModel;
@@ -143,54 +148,92 @@ public class HomeFragment extends Fragment {
             public void run() {
                 try {
                     UserCustomDatabase db = UserCustomDatabase.getDatabase(getContext());
+                    RecipeItemJoinDao joinDao = new RecipeItemJoinDao(getContext());
+                    UserInventoryItemDao inventoryDao = db.getUserInventoryDao();
+                    ItemDao itemDao = new ItemDao(getContext());
+                    List<RecipeItemJoin> joinInventoryItems = joinDao.getJoinItemsInRecipe(String.valueOf(recipeId));
+                    ItemQuantityHelper quantityHelper = new ItemQuantityHelper(getContext());
+                    for (int i=0; i<joinInventoryItems.size(); i++) {
+                        RecipeItemJoin joinItem = joinInventoryItems.get(i);
+                        String itemName = itemDao.getItemName(String.valueOf(joinItem.getItemId()));
+                        if (quantityHelper.itemNameInInventory(itemName)) {
+                            UserInventoryItem tempItem = inventoryDao.getInventoryItemById(joinItem.getItemId());
+                            // Only subtract if the inventory item is quantified, too!
+                            if (tempItem.isQuantify()) {
+                                //TODO: (check preferences?)(***multiply by servings***)
+                                tempItem = quantityHelper.subtractIngredient(joinItem, tempItem);
+                                inventoryDao.update(tempItem);
+                            }
+                        }
+                    }
+                }catch (Exception e) {
+                    Log.e("RD_ONLY_SUBTRACT_ERROR", e.toString());
+                    Toast.makeText(getContext(), "Unable to perform inventory subtraction", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        t.start();
+    }
+
+    private void subtractUserRecipeInventory(final int recipeId) {
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    UserCustomDatabase db = UserCustomDatabase.getDatabase(getContext());
                     UserRecipeItemJoinDao joinDao = db.getUserRecipeItemJoinDao();
                     UserInventoryItemDao inventoryDao = db.getUserInventoryDao();
-                    UnitDao unitDao = new UnitDao(getContext());
                     List<UserRecipeItemJoin> joinInventoryItems = joinDao.getJoinItemsInRecipe(recipeId);
+                    ItemQuantityHelper quantityHelper = new ItemQuantityHelper(getContext());
                     for (int i = 0; i < joinInventoryItems.size(); i++) {
                         UserRecipeItemJoin joinItem = joinInventoryItems.get(i);
-                        if (joinItem.inInventory) {
+                        if (quantityHelper.itemNameInInventory(joinItem.itemName)) {
                             UserInventoryItem tempItem = inventoryDao.getInventoryItemById(joinItem.itemId);
                             // Only subtract if the inventory item is quantified, too!
                             if (tempItem.isQuantify()) {
+                                //TODO: (check preferences?)(***multiply by servings***)
+                                tempItem = quantityHelper.subtractUserRecipeIngredient(joinItem, tempItem);
+                                inventoryDao.update(tempItem);
+
+                                /*
                                 Unit joinItemUnit = unitDao.getUnitByAbbrev(joinItem.unit);
                                 Unit inventoryItemUnit = unitDao.getUnitByAbbrev(tempItem.getUnit());
                                 Fraction joinItemQuantity = new Fraction().fromString(joinItem.quantity);
                                 Fraction inventoryItemQuantity = new Fraction().fromString(tempItem.getQuantity());
                                 if (joinItem.unit.equals("") && tempItem.getUnit().equals("") ||                  // if both units are empty
                                         joinItem.unit == null && tempItem.getUnit() == null ||                // ...or null
-                                        joinItemUnit.getFullName().equals(inventoryItemUnit.getFullName())) { // ...or they have the same unit
+                                        joinItemUnit.getFullName().equals(inventoryItemUnit.getFullName()) ||
+                                        joinItemUnit.getType().equals(inventoryItemUnit.getType())) { // ...or they have the same unit
                                     // ...then subtract as usual
-                                    //TODO: (check preferences?)(***multiply by servings***)
+                                    tempItem.setQuantity(quantityHelper.);
                                     tempItem.setQuantity(inventoryItemQuantity.subtract(joinItemQuantity).toString());
                                     inventoryDao.update(tempItem);
                                 } else if (joinItemUnit.getType().equals(inventoryItemUnit.getType())) {
                                     //different units, but same types: convert and subtract
                                     UnitConversionDao conversionDao = new UnitConversionDao(getContext());
-                                    Log.e("CONVERSION_DEBUG", "BEFORE: " + joinItemQuantity.toString());
                                     Fraction used = conversionDao.convertUnitQuantity(
-                                            /*convert recipe quantity...*/ joinItemQuantity,
-                                            /*  ...from recipe unit...  */ String.valueOf(joinItemUnit.get_ID()),
-                                            /*  ...to inventory unit... */ String.valueOf(inventoryItemUnit.get_ID()));
+                                            /*convert recipe quantity... joinItemQuantity,
+                                            /*  ...from recipe unit...   String.valueOf(joinItemUnit.get_ID()),
+                                            /*  ...to inventory unit...  String.valueOf(inventoryItemUnit.get_ID()));
                                     //and now we can subtract like normal
-                                    Log.e("CONVERSION_DEBUG", "AFTER: " + used.toString());
                                     Fraction newAmount = inventoryItemQuantity.subtract(used);
                                     tempItem.setQuantity(newAmount.toString());
                                     inventoryDao.update(tempItem);
                                 } //else {
                                 //  different unit types, not possible: skip
                                 //}
+
+                                 */
                             }
                         }
                     }
                 } catch (Exception e) {
-                    Log.e("HOME_SUBTRACT_ERROR", e.toString());
+                    Log.e("USER_SUBTRACT_ERROR", e.toString());
                     Toast.makeText(getContext(), "Unable to perform inventory subtraction", Toast.LENGTH_SHORT).show();
                 }
             }
         });
         t.start();
-        //join?
     }
 
     private void markAsComplete(final int recipeBoxId) {
@@ -247,8 +290,13 @@ public class HomeFragment extends Fragment {
         dialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                subtractInventory(adapter.getItemAtPosition(position).getRecipeId());
-                markAsComplete(adapter.getItemAtPosition(position).get_ID());
+                UserRecipeBoxItem selected = adapter.getItemAtPosition(position);
+                if (selected.isUserAdded()) {
+                    subtractUserRecipeInventory(selected.getRecipeId());
+                } else {
+                    subtractInventory(selected.getRecipeId());
+                }
+                markAsComplete(selected.get_ID());
             }
         });
         dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

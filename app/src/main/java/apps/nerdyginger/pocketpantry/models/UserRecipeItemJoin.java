@@ -10,7 +10,7 @@ public class UserRecipeItemJoin {
 
     public int recipeId; //unofficial foreign keys (from recipeBox)
     public int itemId;   //        '' ''           (from inventory or read-only db)
-    public boolean inInventory;
+    public boolean inInventory; //TODO: remove! This is not stable at ALL! User could remove item from inventory at any time!
     public String quantity;
     public String unit;
     public String detail;

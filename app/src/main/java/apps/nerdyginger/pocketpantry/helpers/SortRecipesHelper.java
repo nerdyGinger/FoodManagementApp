@@ -44,7 +44,10 @@ public class SortRecipesHelper {
             Integer itemID = inventoryItems.get(i).getItemId();
             List<RecipeItemJoin> joinItems = recipeItemJoinDao.getJoinItemsByItem(itemID.toString());
             for (int j=0; j<joinItems.size(); j++) {
-                //if (inventoryItems.get(i).getQuantity()) //TODO: create item quantity helper! (some code found in home fragment)
+                //if (inventoryItems.get(i).getQuantity() > joinItems.get(i).getQuantity()) {
+                // TODO: create item quantity helper! (some code found in home fragment)
+                //
+                //}
             }
 
         }

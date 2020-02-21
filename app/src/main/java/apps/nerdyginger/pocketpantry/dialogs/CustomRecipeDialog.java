@@ -60,6 +60,7 @@ import apps.nerdyginger.pocketpantry.dao.UserInventoryItemDao;
 import apps.nerdyginger.pocketpantry.dao.UserRecipeBoxDao;
 import apps.nerdyginger.pocketpantry.dao.UserRecipeDao;
 import apps.nerdyginger.pocketpantry.dao.UserRecipeItemJoinDao;
+import apps.nerdyginger.pocketpantry.helpers.ItemQuantityHelper;
 import apps.nerdyginger.pocketpantry.models.Recipe;
 import apps.nerdyginger.pocketpantry.models.RecipeItemJoin;
 import apps.nerdyginger.pocketpantry.models.UserRecipe;
@@ -74,9 +75,10 @@ import apps.nerdyginger.pocketpantry.view_models.RecipeInstructionsViewModel;
  * ... Okay, so the _dialog_ has to be beautiful, elegant, and absolutely dreamy. Apparently I'm willing
  * to sacrifice the beauty of this class for that cause, because no 900+ LoC class can be called dreamy.
  *
- * Last Edited: 11/12/19
+ * Last Edited: 2/20/2020
  */
 public class CustomRecipeDialog extends DialogFragment {
+    private ItemQuantityHelper quantityHelper;
     private static final int pages = 3; // Slide-able pages for basic info, ingredients, and instructions
     private ViewPager pager;
     private Button nextBtn;
@@ -177,6 +179,7 @@ public class CustomRecipeDialog extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View parentView = inflater.inflate(R.layout.recipe_dialog, container, false);
+        quantityHelper = new ItemQuantityHelper(getContext());
 
         //find views
         TextView title = parentView.findViewById(R.id.customRecipeTitle);
@@ -275,37 +278,6 @@ public class CustomRecipeDialog extends DialogFragment {
         return id[0];
     }
 
-    private boolean inInventory(final String name) {
-        final boolean[] inInventory = {false};
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    UserCustomDatabase db = UserCustomDatabase.getDatabase(getContext());
-                    UserInventoryItemDao dao = db.getUserInventoryDao();
-                    int id = dao.getInventoryItemIdByName(name);
-                    if (id == 0) {
-                        Log.e("INVENTORY_DEBUG", "Setting '" + name + "' to not in inventory!");
-                        inInventory[0] = false;
-                    } else {
-                        inInventory[0] = true;
-                    }
-                } catch (Exception e) {
-                    //item not found
-                    Log.e("Database Error", e.toString());
-                    inInventory[0] = false;
-                }
-            }
-        });
-        t.start();
-        try {
-            t.join();
-        } catch (Exception e) {
-            Log.e("Thread Exception", "Problem waiting for db thread: " + e.toString());
-        }
-        return inInventory[0];
-    }
-
     private void addDialogBtnClicks(View view) {
         final Button backBtn = view.findViewById(R.id.customRecipeBackBtn);
         backBtn.setOnClickListener(new View.OnClickListener() {
@@ -343,7 +315,7 @@ public class CustomRecipeDialog extends DialogFragment {
                             UserRecipeItemJoin tempItem = new UserRecipeItemJoin();
                             tempItem.recipeId = ! MODE.equals("create") && existingBoxItem.isUserAdded() ? existingBoxItem.getRecipeId() : -1;
                             tempItem.itemId = getItemId(viewModelItem.getItemName());
-                            tempItem.inInventory = inInventory(viewModelItem.getItemName());
+                            tempItem.inInventory = quantityHelper.itemNameInInventory(viewModelItem.getItemName());
                             tempItem.itemName = viewModelItem.getItemName();
                             tempItem.detail = viewModelItem.getDetail();
                             Fraction quantityFrac = new Fraction();
