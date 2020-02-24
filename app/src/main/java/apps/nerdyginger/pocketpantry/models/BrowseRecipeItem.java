@@ -1,33 +1,18 @@
 package apps.nerdyginger.pocketpantry.models;
 
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
-
-//
-// Used to store recipes that are in the user's recipe box
-// Last edited: 2/19/2020
-@Entity(tableName = "recipeBox")
-public class UserRecipeBoxItem {
-    @PrimaryKey(autoGenerate = true)
-    private int _ID;
-
+// Class to hold recipe items for sorting on the browse recipes page
+// Very similar to UserRecipeBoxItem, but with the addition of ingredientsMissing
+// and the exclusion of an ID field, plus, this makes the use of UserRecipeBoxItem
+// much clearer.
+// NOT connected to any db table
+// Last edited: 2/20/2020
+public class BrowseRecipeItem implements Comparable<BrowseRecipeItem>{
     private boolean userAdded;
-
     private int recipeId;
-
     private String recipeName;
-
     private String category;
-
     private String servings;
-
-    public int get_ID() {
-        return _ID;
-    }
-
-    public void set_ID(int _ID) {
-        this._ID = _ID;
-    }
+    private int ingredientsMissing;
 
     public boolean isUserAdded() {
         return userAdded;
@@ -67,5 +52,19 @@ public class UserRecipeBoxItem {
 
     public void setServings(String servings) {
         this.servings = servings;
+    }
+
+    public int getIngredientsMissing() {
+        return ingredientsMissing;
+    }
+
+    public void setIngredientsMissing(int ingredientsMissing) {
+        this.ingredientsMissing = ingredientsMissing;
+    }
+
+    public int compareTo(BrowseRecipeItem compareItem) {
+        int compareQuantity  = compareItem.getIngredientsMissing();
+
+        return compareQuantity - ingredientsMissing;
     }
 }

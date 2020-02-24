@@ -202,6 +202,71 @@ public class Fraction {
         return dividend;
     }
 
+    public boolean isLessThan(Fraction other) {
+        int selfNum = (denominator * wholeNum) + numerator;
+        int otherNum = (other.getDenominator() * other.getWholeNum()) + other.getNumerator();
+        int lcm = denominator;
+
+        if (denominator != other.getDenominator()) {
+            lcm = getLCM(denominator, other.getDenominator());
+            if (denominator != lcm) {
+                int multiplicand = lcm / denominator;
+                selfNum *= multiplicand;
+            }
+            if (other.getDenominator() != lcm) {
+                int multiplicand = lcm / other.getDenominator();
+                otherNum *= multiplicand;
+            }
+        }
+        return selfNum < otherNum;
+    }
+
+    public boolean isLessThanOrEqualTo(Fraction other) {
+        return this.isLessThan(other) || this.equals(other);
+    }
+
+    public boolean isGreaterThan(Fraction other) {
+        int selfNum = (denominator * wholeNum) + numerator;
+        int otherNum = (other.getDenominator() * other.getWholeNum()) + other.getNumerator();
+        int lcm = denominator;
+
+        if (denominator != other.getDenominator()) {
+            lcm = getLCM(denominator, other.getDenominator());
+            if (denominator != lcm) {
+                int multiplicand = lcm / denominator;
+                selfNum *= multiplicand;
+            }
+            if (other.getDenominator() != lcm) {
+                int multiplicand = lcm / other.getDenominator();
+                otherNum *= multiplicand;
+            }
+        }
+        return selfNum > otherNum;
+    }
+
+    public boolean isGreaterThanOrEqualTo(Fraction other) {
+        return this.isGreaterThan(other) || this.equals(other);
+    }
+
+    public boolean equals(Fraction other) {
+        int selfNum = (denominator * wholeNum) + numerator;
+        int otherNum = (other.getDenominator() * other.getWholeNum()) + other.getNumerator();
+        int lcm = denominator;
+
+        if (denominator != other.getDenominator()) {
+            lcm = getLCM(denominator, other.getDenominator());
+            if (denominator != lcm) {
+                int multiplicand = lcm / denominator;
+                selfNum *= multiplicand;
+            }
+            if (other.getDenominator() != lcm) {
+                int multiplicand = lcm / other.getDenominator();
+                otherNum *= multiplicand;
+            }
+        }
+        return selfNum == otherNum;
+    }
+
     public void simplify() {
         if (denominator == 0) {
             setNumerator(0);

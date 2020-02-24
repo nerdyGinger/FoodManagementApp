@@ -65,13 +65,20 @@ public class CuisineDao {
         Cursor cursor = db.rawQuery("SELECT * FROM Cuisine", new String[] {});
         cursor.moveToFirst();
         ArrayMap<String, String> cuisines = new ArrayMap<>();
-        while ( !cursor.isAfterLast()) {
-            Integer id = cursor.getInt(cursor.getColumnIndex("_ID"));
-            String name = cursor.getString(cursor.getColumnIndex("name"));
-            cuisines.put(id.toString(), name);
+        try {
+            cursor.moveToFirst();
+            while ( !cursor.isAfterLast()) {
+                Integer id = cursor.getInt(cursor.getColumnIndex("_ID"));
+                String name = cursor.getString(cursor.getColumnIndex("name"));
+                cuisines.put(id.toString(), name);
+                cursor.moveToNext();
+            }
+        } catch (Exception e) {
+            Log.e("Database Error", e.toString());
+        } finally {
+            cursor.close();
+            db.close();
         }
-        cursor.close();
-        db.close();
         return cuisines;
     }
 

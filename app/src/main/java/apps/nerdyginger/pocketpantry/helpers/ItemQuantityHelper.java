@@ -29,7 +29,7 @@ public class ItemQuantityHelper {
 
     // Get difference of two fraction with the same unit type
     private Fraction getDifference(Fraction a, Unit aUnit, Fraction b, Unit bUnit) {
-        if (aUnit.getType().equals(bUnit.getType())) {
+        if ( ! aUnit.getFullName().equals(bUnit.getFullName())) {
             //different units, but same type: convert and subtract
             conversionDao.convertUnitQuantity(
                     /* convert 'a' quantity...*/ a,
@@ -44,7 +44,7 @@ public class ItemQuantityHelper {
 
     // Get sum of two fractions with the same unit type
     private Fraction getSum(Fraction a, Unit aUnit, Fraction b, Unit bUnit) {
-        if (aUnit.getType().equals(bUnit.getType())) {
+        if ( ! aUnit.getFullName().equals(bUnit.getFullName())) {
             //different units, but same type: convert and add
             conversionDao.convertUnitQuantity(
                     /* convert 'a' quantity...*/ a,
@@ -97,20 +97,20 @@ public class ItemQuantityHelper {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    UserCustomDatabase db = UserCustomDatabase.getDatabase(context);
-                    UserInventoryItemDao dao = db.getUserInventoryDao();
-                    int id = dao.getInventoryItemIdByName(name);
-                    if (id == 0) {
-                        inInventory[0] = false;
-                    } else {
-                        inInventory[0] = true;
-                    }
-                } catch (Exception e) {
-                    //item not found
-                    Log.e("Database Error", e.toString());
+            try {
+                UserCustomDatabase db = UserCustomDatabase.getDatabase(context);
+                UserInventoryItemDao dao = db.getUserInventoryDao();
+                int id = dao.getInventoryItemIdByName(name);
+                if (id == 0) {
                     inInventory[0] = false;
+                } else {
+                    inInventory[0] = true;
                 }
+            } catch (Exception e) {
+                //item not found
+                Log.e("Database Error", e.toString());
+                inInventory[0] = false;
+            }
             }
         });
         t.start();
@@ -123,7 +123,7 @@ public class ItemQuantityHelper {
     }
 
     // Checks if the recipe ingredient item quantity <= inventory item quantity.
-    // Only accepts read-only recipe ingredient items because (so far) I'm only planning
+    // Only accepts READ-ONLY recipe ingredient items because (so far) I'm only planning
     // on sorting the read-only recipes.
     public boolean enoughInventoryForIngredient(RecipeItemJoin joinItem, UserInventoryItem inventoryItem) {
         Fraction ingredient = new Fraction().fromString(joinItem.getQuantity());
@@ -131,8 +131,20 @@ public class ItemQuantityHelper {
         Unit ingredientUnit = unitDao.getUnitByAbbrev(joinItem.getUnit());
         Unit inventoryUnit = unitDao.getUnitByAbbrev(inventoryItem.getUnit());
 
-
-        return false;
+        if ( ! ingredientUnit.getType().equals(inventoryUnit.getType())) {
+            //can't compare amounts of different types, so assume not
+            return false;
+        } else if (ingredientUnit.getFullName().equals(inventoryUnit.getFullName())) {
+            //same unit (or both have no unit)
+            return inventory.isGreaterThanOrEqualTo(ingredient);
+        } else {
+            //different units, same type
+            conversionDao.convertUnitQuantity(
+                    /* convert 'inventory' quantity...*/ inventory,
+                    /*   ...from 'inventory' unit...  */ String.valueOf(inventoryUnit.get_ID()),
+                    /*    ...to 'ingredient' unit...   */ String.valueOf(ingredientUnit.get_ID()));
+            return inventory.isGreaterThanOrEqualTo(ingredient);
+        }
     }
 
 }

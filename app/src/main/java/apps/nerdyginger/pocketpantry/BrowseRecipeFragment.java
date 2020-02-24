@@ -14,6 +14,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import apps.nerdyginger.pocketpantry.adapters.BrowseRecipesCategoryAdapter;
@@ -21,11 +23,15 @@ import apps.nerdyginger.pocketpantry.dao.RecipeDao;
 import apps.nerdyginger.pocketpantry.dao.UserInventoryItemDao;
 import apps.nerdyginger.pocketpantry.dao.UserRecipeDao;
 import apps.nerdyginger.pocketpantry.helpers.SortRecipesHelper;
+import apps.nerdyginger.pocketpantry.models.BrowseRecipeCategory;
 import apps.nerdyginger.pocketpantry.models.Recipe;
 import apps.nerdyginger.pocketpantry.models.UserInventoryItem;
 import apps.nerdyginger.pocketpantry.models.UserRecipe;
 
-
+// Fragment for the browse recipes page; displays recipes that
+// are in the read-only db by category
+// The heavy lifting for recipe sorting is handled by the SortRecipesHelper
+// Last edited: 2/20/2020
 public class BrowseRecipeFragment extends Fragment {
     private Context context;
     private BrowseRecipesCategoryAdapter parentAdapter;
@@ -58,50 +64,21 @@ public class BrowseRecipeFragment extends Fragment {
         categoriesRv.setLayoutManager(llm);
         categoriesRv.setAdapter(parentAdapter);
 
+        // add data to adapter
+        List<BrowseRecipeCategory> masterList = recipesHelper.getRecipesByCategory();
+        //TODO: update categories to just be recipe categories
+        Log.e("DEBUG", "HIT");
+        masterList.addAll(recipesHelper.getRecipesByCuisine());
+        Collections.shuffle(masterList); //shuffle categories so they are in a different order every time
+        BrowseRecipeCategory recommended = new BrowseRecipeCategory();
+        recommended.setCategoryName("Recommended For You");
+        //recommended.setRecipeCards(recipesHelper.getRecommendedRecipes(masterList));
+        //masterList.add(0, recommended); //TODO: Add back in once recipe data is in; it'll go forever with no data
+                                            // (must have at least 20 recipes)
 
+        parentAdapter.updateData(masterList);
 
         return view;
-    }
-
-    private boolean inInventory(List<UserInventoryItem> inventoryItems, String itemName) {
-        for (int i=0; i<inventoryItems.size(); i++) {
-            if (inventoryItems.get(i).getItemName().equals(itemName)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private void getBrowsableData() {
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                // getting _all_ recipes
-                UserCustomDatabase userDb = UserCustomDatabase.getDatabase(context);
-                RecipeDao readOnlyDao = new RecipeDao(context);
-                UserRecipeDao userDao = userDb.getUserRecipeDao();
-                List<Recipe> readOnlyRecipes =  readOnlyDao.getAllRecipes();
-                List<UserRecipe> userRecipes = userDao.getAllUserRecipes();
-
-                // get inventory data
-                UserInventoryItemDao inventoryDao = userDb.getUserInventoryDao();
-                List<UserInventoryItem> inventoryItems = inventoryDao.getAllInventoryItems();
-
-                // sort into categories, create List<UserRecipeBoxItem>s for each category
-
-                // sort each list by relevance, i.e. how many ingredients user has on hand
-
-                // create recommended list with recipes that user has all/most ingredients on hand (top 20?)
-
-                // create quick trip list with recipes that are only missing 1-3 items (?)
-            }
-        });
-        t.start();
-        try {
-            t.join();
-        } catch (Exception e) {
-            Log.e("Database Error", "Problem waiting for db thread to complete");
-        }
     }
 
     @Override

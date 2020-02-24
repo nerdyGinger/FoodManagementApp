@@ -16,12 +16,12 @@ import java.util.List;
 
 import apps.nerdyginger.pocketpantry.R;
 import apps.nerdyginger.pocketpantry.RecyclerViewClickListener;
-import apps.nerdyginger.pocketpantry.models.UserRecipeBoxItem;
+import apps.nerdyginger.pocketpantry.models.BrowseRecipeItem;
 
 public class BrowseRecipesItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private int DATA_VIEWTYPE = 1;
     private int ENDCAP_VIEWTYPE = 2;
-    private List<UserRecipeBoxItem> dataSet = new ArrayList<>();
+    private List<BrowseRecipeItem> dataSet = new ArrayList<>();
     private RecyclerViewClickListener mListener;
     private String MODE; //either "browse" or "home"
 
@@ -68,23 +68,23 @@ public class BrowseRecipesItemAdapter extends RecyclerView.Adapter<RecyclerView.
         MODE = mode;
     }
 
-    public BrowseRecipesItemAdapter(List<UserRecipeBoxItem> data , String mode, RecyclerViewClickListener listener) {
+    public BrowseRecipesItemAdapter(List<BrowseRecipeItem> data , String mode, RecyclerViewClickListener listener) {
         mListener = listener;
         dataSet = data;
         MODE = mode;
     }
 
-    public void updateData(List<UserRecipeBoxItem> data) {
+    public void updateData(List<BrowseRecipeItem> data) {
         dataSet = data;
         notifyDataSetChanged();
     }
 
-    public UserRecipeBoxItem getItemAtPosition(int position) {
+    public BrowseRecipeItem getItemAtPosition(int position) {
         return dataSet.get(position);
     }
 
-    public UserRecipeBoxItem deleteItem(int position) {
-        UserRecipeBoxItem deletedItem = dataSet.get(position);
+    public BrowseRecipeItem deleteItem(int position) {
+        BrowseRecipeItem deletedItem = dataSet.get(position);
         int deletedPosition = position;
         dataSet.remove(position);
         notifyItemRemoved(position);
@@ -111,7 +111,7 @@ public class BrowseRecipesItemAdapter extends RecyclerView.Adapter<RecyclerView.
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         if (getItemViewType(position) == DATA_VIEWTYPE) {
-            UserRecipeBoxItem item = dataSet.get(position);
+            BrowseRecipeItem item = dataSet.get(position);
             RecipeCardViewHolder holder = (RecipeCardViewHolder) viewHolder;
             holder.name.setText(item.getRecipeName());
             holder.category.setText(item.getCategory());
