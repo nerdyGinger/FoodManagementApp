@@ -67,6 +67,20 @@ public class RecipesListAdapter extends EmptyRecyclerView.Adapter<RecyclerView.V
         mListener = listener;
     }
 
+    public void filter(String text) {
+        if ( ! text.isEmpty()) {
+            List<UserRecipeBoxItem> dataCopy = dataSet;
+            dataSet.clear();
+            text = text.toLowerCase();
+            for (UserRecipeBoxItem item : dataCopy) {
+                if (item.getRecipeName().toLowerCase().contains(text)) {
+                    dataSet.add(item);
+                }
+            }
+        }
+        notifyDataSetChanged();
+    }
+
     public void updateData(List<UserRecipeBoxItem> data) {
         if (data == null) {
             Log.e("-PRO TIPS!(and errors)-", "InventoryListAdapter data set was null");

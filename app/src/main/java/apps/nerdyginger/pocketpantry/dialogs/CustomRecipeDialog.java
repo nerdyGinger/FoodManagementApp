@@ -17,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -75,7 +76,7 @@ import apps.nerdyginger.pocketpantry.view_models.RecipeInstructionsViewModel;
  * ... Okay, so the _dialog_ has to be beautiful, elegant, and absolutely dreamy. Apparently I'm willing
  * to sacrifice the beauty of this class for that cause, because no 900+ LoC class can be called dreamy.
  *
- * Last Edited: 2/20/2020
+ * Last Edited: 2/25/2020
  */
 public class CustomRecipeDialog extends DialogFragment {
     private ItemQuantityHelper quantityHelper;
@@ -498,6 +499,7 @@ public class CustomRecipeDialog extends DialogFragment {
             final EditText timeBox = view.findViewById(R.id.customRecipeTotalTime);
             final EditText yieldBox = view.findViewById(R.id.customRecipeYield);
             List<EditText> entryBoxes = new ArrayList<>(Arrays.asList(nameBox, authorBox, descriptionBox, timeBox, yieldBox));
+            RelativeLayout recipeBookContainer = view.findViewById(R.id.customRecipeBookContainer);
 
             //select dialog mode
             switch (MODE) {
@@ -522,6 +524,15 @@ public class CustomRecipeDialog extends DialogFragment {
                     setEntryBoxValues(entryBoxes);
                     for (int i = 0; i < entryBoxes.size(); i++) {
                         entryBoxes.get(i).setEnabled(false);
+                    }
+                    //show/hide recipe book info
+                    if (existingBoxItem.isUserAdded()) {
+                        recipeBookContainer.setVisibility(View.GONE);
+                    } else {
+                        recipeBookContainer.setVisibility(View.VISIBLE);
+                        TextView recipeBook = view.findViewById(R.id.bookContainerName);
+                        //recipeBook.setText(); set text to book name TODO: finish custom dialog recipe book header implementation
+                        //add button implementation
                     }
                     break;
                 case "edit":
@@ -728,7 +739,6 @@ public class CustomRecipeDialog extends DialogFragment {
 
         //pulls keywords from existing item and adds them to the chip group
         private void getExistingKeywords(ChipGroup entryChipGroup) {
-            if (MODE.equals("create"))
             if (existingBoxItem.isUserAdded()) {
                 if (existingCustomRecipeItem.getKeywords() != null) {
                     for (int i=0; i<existingCustomRecipeItem.getKeywords().size(); i++) {

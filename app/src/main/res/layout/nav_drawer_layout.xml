@@ -35,6 +35,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:layout_alignParentBottom="true"
+                android:background="@color/cardview_light_background"
                 app:elevation="20dp"
                 app:menu="@menu/bottom_navigation" />
         </androidx.coordinatorlayout.widget.CoordinatorLayout>

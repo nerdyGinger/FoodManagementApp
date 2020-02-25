@@ -14,11 +14,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+        <activity android:name=".RecipeBookActivity"></activity>
         <activity
             android:name=".ContactActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".AboutActivity"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".AboutActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".SettingsActivity"
             android:label="Settings"

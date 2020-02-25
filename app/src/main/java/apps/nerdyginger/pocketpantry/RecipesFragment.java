@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -31,8 +32,13 @@ import apps.nerdyginger.pocketpantry.dialogs.CustomRecipeDialog;
 import apps.nerdyginger.pocketpantry.models.UserRecipeBoxItem;
 import apps.nerdyginger.pocketpantry.view_models.RecipeViewModel;
 
-
-public class RecipesFragment extends Fragment {
+/*
+ * The page for viewing the recipes in the user's recipe box
+ * Some SearchView help from: https://stackoverflow.com/questions/30398247/how-to-filter-a-recyclerview-with-a-searchview
+ * NOTE: change implementation to super long & complicated first answer for some smooth filtering animation
+ * Last edited: 2/25/2020
+ */
+public class RecipesFragment extends Fragment implements SearchView.OnQueryTextListener {
     private UserCustomDatabase userDatabase;
     private Context context;
     private TextView customLabel, browseLabel;
@@ -55,6 +61,10 @@ public class RecipesFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_recipes, container, false);
+
+        // Set up search bar
+        SearchView search = view.findViewById(R.id.recipesSearchBar);
+        search.setOnQueryTextListener(this);
 
         // Set up floating action button
         setupFabMenu(view);
@@ -177,5 +187,16 @@ public class RecipesFragment extends Fragment {
         customBtn.setClickable(false);
         browseBtn.setClickable(false);
         fabMenuIsOpen = false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String query) {
+        //adapter.filter(query); TODO: fix filtering, it broken :(
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
     }
 }

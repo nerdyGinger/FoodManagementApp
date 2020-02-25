@@ -39,7 +39,7 @@ import apps.nerdyginger.pocketpantry.view_models.ScheduleViewModel;
 // The schedule dialog opened with the '+' or the 'Add to Schedule' button on the
 // Home screen. Has two modes, 'present' and 'future' work scheduling current
 // week or future weeks
-// Last edited: 2/17/2020
+// Last edited: 2/25/2020
 public class SchedulerDialog extends DialogFragment {
     private ScheduleHelper scheduleHelper;
     private AutoCompleteTextView recipeNameBox;
@@ -126,13 +126,13 @@ public class SchedulerDialog extends DialogFragment {
                 }
             });
             rv.setEmptyView(view.findViewById(R.id.schedulerRecyclerEmptyMessage));
+            title.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    toggleCalendar();
+                }
+            });
         }
-        title.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                toggleCalendar();
-            }
-        });
 
         // Add adapter to recipeName field
         ArrayAdapter<String> recipeNamesAdapter = new ArrayAdapter<>(Objects.requireNonNull(getContext()),

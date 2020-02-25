@@ -38,6 +38,7 @@ import apps.nerdyginger.pocketpantry.dialogs.ScheduleHistoryDialog;
 import apps.nerdyginger.pocketpantry.dialogs.SchedulerDialog;
 import apps.nerdyginger.pocketpantry.helpers.ItemQuantityHelper;
 import apps.nerdyginger.pocketpantry.helpers.ScheduleHelper;
+import apps.nerdyginger.pocketpantry.models.BrowseRecipeItem;
 import apps.nerdyginger.pocketpantry.models.RecipeItemJoin;
 import apps.nerdyginger.pocketpantry.models.UserInventoryItem;
 import apps.nerdyginger.pocketpantry.models.UserRecipeBoxItem;
@@ -47,13 +48,13 @@ import apps.nerdyginger.pocketpantry.view_models.ScheduleViewModel;
 
 /*
  * The fragment controlling the home page, complete with schedule and history dashboard.
- * Last edited: 2/20/2020
+ * Last edited: 2/25/2020
  */
 public class HomeFragment extends Fragment {
     private BrowseRecipesItemAdapter adapter;
     private ScheduleViewModel viewModel;
     private List<UserSchedule> currentList = new ArrayList<>();
-    private List<UserRecipeBoxItem> currentRecipeBoxList;
+    private List<BrowseRecipeItem> currentRecipeBoxList;
     private ScheduleHelper scheduleHelper;
 
     public HomeFragment() {
@@ -114,7 +115,7 @@ public class HomeFragment extends Fragment {
                         currentList.add(userSchedules.get(i));
                     }
                 }
-                currentRecipeBoxList = getRecipes(currentList);
+                currentRecipeBoxList = getBrowseRecipes(currentList);
                 adapter.updateData(currentRecipeBoxList);
             }
         });
@@ -290,13 +291,13 @@ public class HomeFragment extends Fragment {
         dialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                UserRecipeBoxItem selected = adapter.getItemAtPosition(position);
+                BrowseRecipeItem selected = adapter.getItemAtPosition(position);
                 if (selected.isUserAdded()) {
                     subtractUserRecipeInventory(selected.getRecipeId());
                 } else {
                     subtractInventory(selected.getRecipeId());
                 }
-                markAsComplete(selected.get_ID());
+                markAsComplete(selected.getRecipeBoxId());
             }
         });
         dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -377,6 +378,35 @@ public class HomeFragment extends Fragment {
                 UserRecipeBoxDao boxDao = db.getUserRecipeBoxDao();
                 for (int i=0; i<scheduleItems.size(); i++) {
                     boxItems.add(boxDao.getRecipeById(Integer.parseInt(scheduleItems.get(i).getRecipeBoxItemId())));
+                }
+            }
+        });
+        t.start();
+        try {
+            t.join();
+        } catch (Exception e) {
+            Log.e("Database Error", "Problem waiting for db thread to complete");
+        }
+        return boxItems;
+    }
+
+    private List<BrowseRecipeItem> getBrowseRecipes(final List<UserSchedule> scheduleItems) {
+        final List<BrowseRecipeItem> boxItems = new ArrayList<>();
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                UserCustomDatabase db = UserCustomDatabase.getDatabase(getContext());
+                UserRecipeBoxDao boxDao = db.getUserRecipeBoxDao();
+                for (int i=0; i<scheduleItems.size(); i++) {
+                    UserRecipeBoxItem boxItem = boxDao.getRecipeById(Integer.parseInt(scheduleItems.get(i).getRecipeBoxItemId()));
+                    BrowseRecipeItem temp = new BrowseRecipeItem();
+                    temp.setCategory(boxItem.getCategory());
+                    temp.setRecipeId(boxItem.getRecipeId());
+                    temp.setRecipeName(boxItem.getRecipeName());
+                    temp.setServings(boxItem.getServings());
+                    temp.setUserAdded(boxItem.isUserAdded());
+                    temp.setRecipeBoxId(boxItem.get_ID());
+                    boxItems.add(temp);
                 }
             }
         });

@@ -13,6 +13,7 @@ public class BrowseRecipeItem implements Comparable<BrowseRecipeItem>{
     private String category;
     private String servings;
     private int ingredientsMissing;
+    private int recipeBoxId; // for the home screen usage
 
     public boolean isUserAdded() {
         return userAdded;
@@ -60,6 +61,14 @@ public class BrowseRecipeItem implements Comparable<BrowseRecipeItem>{
 
     public void setIngredientsMissing(int ingredientsMissing) {
         this.ingredientsMissing = ingredientsMissing;
+    }
+
+    public int getRecipeBoxId() {
+        return recipeBoxId;
+    }
+
+    public void setRecipeBoxId(int recipeBoxId) {
+        this.recipeBoxId = recipeBoxId;
     }
 
     public int compareTo(BrowseRecipeItem compareItem) {
