@@ -206,6 +206,8 @@ public class CustomRecipeDialog extends DialogFragment {
         } else if (MODE.equals("edit")) {
             title.setText(getString(R.string.recipe_dialog_edit_title));
             editBtn.setVisibility(View.GONE);
+        } else { // "create"
+            editBtn.setVisibility(View.GONE);
         }
 
         //set up pages and pager dots

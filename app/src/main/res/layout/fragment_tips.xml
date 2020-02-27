@@ -1,14 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".TipsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Tip #1: You should write this page" />
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/tipsConstructionMessage"
+        android:src="@drawable/baseline_build_black_48dp"
+        />
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/tipsConstructionMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_margin="15dp"
+        android:textAlignment="center"
+        android:textSize="16sp"
+        android:text="This page is currently under construction.\n\nUse the contact page to send a message to the developer about what you would like to see here. I look forward to hearing from you!" />
+
+</RelativeLayout>

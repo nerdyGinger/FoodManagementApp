@@ -28,8 +28,14 @@ import apps.nerdyginger.pocketpantry.models.UserListItem;
 import apps.nerdyginger.pocketpantry.dialogs.AddListItemDialog;
 import apps.nerdyginger.pocketpantry.view_models.ListItemViewModel;
 
-// Fragment for grocery list(s); currently only 1 list is available, potential plans to allow more than one list, maybe?
-// Last edited: 2/18/2020
+/*
+ * Fragment for grocery list(s); currently only 1 list is available, potential plans to allow more than one list, maybe?
+ * NOTE: if I want to attempt some bottom nav animation to show that I'm effecting inventory from lists, it's going to
+ * take some extra leg-work. Check out this blog: https://blog.stylingandroid.com/bottomnavigationview-animating-icons/
+ * TODO-VER1.0: allow multiple lists
+ * TODO-VER1.0: animate bottom nav on inventory background edit
+ * Last edited: 2/27/2020
+ */
 public class ListsFragment extends Fragment {
     private Context context;
     private ListsAdapter adapter;
@@ -83,7 +89,7 @@ public class ListsFragment extends Fragment {
                 UserListItem clicked = adapter.getItemAtPosition(position);
                 clicked.setChecked( ! clicked.isChecked());
                 adapter.notifyDataSetChanged();
-                //saveCheckStatus(clicked);
+                saveCheckStatus(clicked);
             }
 
             @Override
@@ -101,7 +107,7 @@ public class ListsFragment extends Fragment {
             @Override
             public void onChanged(List<UserListItem> userListItems) {
                 adapter.updateData(userListItems);
-                adapter.sortData();
+                adapter.orderItemsByPosition();
                 adapter.notifyDataSetChanged();
             }
         });
@@ -109,6 +115,16 @@ public class ListsFragment extends Fragment {
         itemTouchHelper.attachToRecyclerView(rv);
 
         return view;
+    }
+
+    // When an item is unchecked, remove that amount from inventory
+    private void subtractInventory() {
+
+    }
+
+    // When an item is checked, add that amount to inventory
+    private void addInventory() {
+
     }
 
     private void saveCheckStatus(final UserListItem item) {

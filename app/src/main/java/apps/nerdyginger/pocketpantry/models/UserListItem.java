@@ -4,7 +4,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "listItems")
-public class UserListItem {
+public class UserListItem implements Comparable<UserListItem> {
     @PrimaryKey(autoGenerate = true)
     private int _ID;
 
@@ -101,5 +101,10 @@ public class UserListItem {
 
     public void setPosition(int position) {
         this.position = position;
+    }
+
+    public int compareTo(UserListItem compareItem) {
+        int compareQuantity = compareItem.getPosition();
+        return position - compareQuantity;
     }
 }

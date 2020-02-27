@@ -29,6 +29,10 @@ public class ItemQuantityHelper {
 
     // Get difference of two fraction with the same unit type
     private Fraction getDifference(Fraction a, Unit aUnit, Fraction b, Unit bUnit) {
+        if (aUnit.getType() == null && bUnit.getType() == null) {
+            //both null, but can't check equality of nulls
+            return a.subtract(b);
+        }
         if ( ! aUnit.getFullName().equals(bUnit.getFullName())) {
             //different units, but same type: convert and subtract
             conversionDao.convertUnitQuantity(
@@ -63,7 +67,11 @@ public class ItemQuantityHelper {
         Unit ingredientUnit = unitDao.getUnitByAbbrev(joinItem.unit);
         Unit inventoryUnit = unitDao.getUnitByAbbrev(inventoryItem.getUnit());
 
-        if ( ! ingredientUnit.getType().equals(inventoryUnit.getType())) {
+        if (ingredientUnit.getType() == null && inventoryUnit.getType() == null) {
+            //both null, but can't check for equality on nulls
+            inventoryItem.setQuantity(getDifference(inventory, inventoryUnit, ingredient, ingredientUnit).toString());
+            return inventoryItem;
+        } else if ( ! ingredientUnit.getType().equals(inventoryUnit.getType())) {
             //can't subtract different types, so return original value
             return inventoryItem;
         } else {

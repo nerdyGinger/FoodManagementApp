@@ -22,6 +22,7 @@ import android.widget.TabHost;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -229,8 +230,8 @@ public class HomeFragment extends Fragment {
                         }
                     }
                 } catch (Exception e) {
-                    Log.e("USER_SUBTRACT_ERROR", e.toString());
-                    Toast.makeText(getContext(), "Unable to perform inventory subtraction", Toast.LENGTH_SHORT).show();
+                    Log.e("USER_SUBTRACT_ERROR", e.toString() + "\n" + Arrays.toString(e.getStackTrace()));
+                    //Toast.makeText(getContext(), "Unable to perform inventory subtraction", Toast.LENGTH_SHORT).show();
                 }
             }
         });

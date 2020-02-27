@@ -98,8 +98,10 @@ public class RecipeInstructionsAdapter extends RecyclerView.Adapter<RecyclerView
 
     public RecipeInstructionsViewModel deleteItem(int position) {
         RecipeInstructionsViewModel deletedItem = dataSet.get(position);
-        dataSet.remove(position);
-        notifyItemRemoved(position);
+        if (dataSet.size() > 1) {
+            dataSet.remove(position);
+            notifyItemRemoved(position);
+        }
         return deletedItem;
     }
 

@@ -126,8 +126,10 @@ public class RecipeIngredientsAdapter extends RecyclerView.Adapter<RecyclerView.
 
     public RecipeIngredientsViewModel deleteItem(int position) {
         RecipeIngredientsViewModel deletedItem = dataSet.get(position);
-        dataSet.remove(position);
-        notifyItemRemoved(position);
+        if (dataSet.size() > 1) {
+            dataSet.remove(position);
+            notifyItemRemoved(position);
+        }
         return deletedItem;
     }
 

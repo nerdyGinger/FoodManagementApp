@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import apps.nerdyginger.pocketpantry.EmptyRecyclerView;
@@ -76,9 +77,10 @@ public class ListsAdapter extends  EmptyRecyclerView.Adapter<RecyclerView.ViewHo
         notifyDataSetChanged();
     }
 
-    // `> updating the data set works, but the change isn't persisted in db,
-    //    so it doesn't survive another update, like with checking, unchecking,
-    //    or adding another item
+    public void orderItemsByPosition() {
+        Collections.sort(dataSet);
+    }
+
     public void sortData() {
         List<UserListItem> unchecked = new ArrayList<>();
         List<UserListItem> checked = new ArrayList<>();
