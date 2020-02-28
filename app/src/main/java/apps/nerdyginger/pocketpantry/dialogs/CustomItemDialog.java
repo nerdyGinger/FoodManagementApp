@@ -189,7 +189,7 @@ public class CustomItemDialog extends DialogFragment {
         }
         item.setQuantity(quantity);
         // only set the stock level if it was click at least once
-        if (stockClicked || !existingItem.getMaxQuantity().equals("")) {
+        if (stockClicked || !existingItem.getMaxQuantity().equals("")) { //TODO: fix null pointer exception when changing quantity to empty
             if (stockLevel == 0) {
                 Toast.makeText(getContext(), getString(R.string.inventory_stock_level_error), Toast.LENGTH_SHORT).show();
                 return;

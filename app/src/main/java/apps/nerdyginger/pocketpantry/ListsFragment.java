@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -23,7 +24,10 @@ import java.util.Objects;
 
 import apps.nerdyginger.pocketpantry.adapters.ListsAdapter;
 import apps.nerdyginger.pocketpantry.callbacks.ListsSwipeDeleteCallback;
+import apps.nerdyginger.pocketpantry.dao.UserInventoryItemDao;
 import apps.nerdyginger.pocketpantry.dao.UserListItemDao;
+import apps.nerdyginger.pocketpantry.helpers.ItemQuantityHelper;
+import apps.nerdyginger.pocketpantry.models.UserInventoryItem;
 import apps.nerdyginger.pocketpantry.models.UserListItem;
 import apps.nerdyginger.pocketpantry.dialogs.AddListItemDialog;
 import apps.nerdyginger.pocketpantry.view_models.ListItemViewModel;
@@ -34,7 +38,7 @@ import apps.nerdyginger.pocketpantry.view_models.ListItemViewModel;
  * take some extra leg-work. Check out this blog: https://blog.stylingandroid.com/bottomnavigationview-animating-icons/
  * TODO-VER1.0: allow multiple lists
  * TODO-VER1.0: animate bottom nav on inventory background edit
- * Last edited: 2/27/2020
+ * Last edited: 2/28/2020
  */
 public class ListsFragment extends Fragment {
     private Context context;
@@ -87,6 +91,13 @@ public class ListsFragment extends Fragment {
             @Override
             public void onClick(View view, int position) {
                 UserListItem clicked = adapter.getItemAtPosition(position);
+                if (clicked.isChecked()) {
+                    subtractInventory(clicked);
+                    Toast.makeText(context, "Removing amount from inventory", Toast.LENGTH_SHORT).show();
+                } else {
+                    addInventory(clicked);
+                    Toast.makeText(context, "Adding amount to inventory", Toast.LENGTH_SHORT).show();
+                }
                 clicked.setChecked( ! clicked.isChecked());
                 adapter.notifyDataSetChanged();
                 saveCheckStatus(clicked);
@@ -118,13 +129,41 @@ public class ListsFragment extends Fragment {
     }
 
     // When an item is unchecked, remove that amount from inventory
-    private void subtractInventory() {
-
+    private void subtractInventory(final UserListItem item) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                UserInventoryItemDao inventoryDao = UserCustomDatabase.getDatabase(context).getUserInventoryDao();
+                UserInventoryItem inventoryItem = inventoryDao.getInventoryItemIdByItemId(item.getItemID(), item.isUserAdded());
+                ItemQuantityHelper quantityHelper = new ItemQuantityHelper(context);
+                // if both list and inventory item are quantified and have same unit type, subtract list quantity from inventory quantity
+                if (! item.getQuantity().equals("") || ! inventoryItem.isQuantify()) { //if both items are quantified...
+                    inventoryItem = quantityHelper.subtractListFromInventory(item, inventoryItem);
+                }
+                inventoryDao.update(inventoryItem);
+            }
+        }).start();
     }
 
-    // When an item is checked, add that amount to inventory
-    private void addInventory() {
-
+    // When an item is checked, add that amount to inventory; add new inventory item if there
+    // is none for the item
+    private void addInventory(final UserListItem item) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                UserInventoryItemDao inventoryDao = UserCustomDatabase.getDatabase(context).getUserInventoryDao();
+                UserInventoryItem inventoryItem = inventoryDao.getInventoryItemIdByItemId(item.getItemID(), item.isUserAdded());
+                ItemQuantityHelper quantityHelper = new ItemQuantityHelper(context);
+                //if inventory item doesn't exist, add it in
+                if (inventoryItem == null) {
+                    inventoryDao.insert(quantityHelper.addNewInventoryFromList(item));
+                }
+                else if (! item.getQuantity().equals("") || ! inventoryItem.isQuantify()) { //if both items are quantified...
+                    inventoryItem = quantityHelper.addListToInventory(item, inventoryItem);
+                    inventoryDao.update(inventoryItem);
+                }
+            }
+        }).start();
     }
 
     private void saveCheckStatus(final UserListItem item) {

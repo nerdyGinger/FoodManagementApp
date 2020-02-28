@@ -42,4 +42,7 @@ public interface UserInventoryItemDao {
 
     @Query("SELECT quantity FROM inventory WHERE _ID = :id")
     int getInventoryItemQuantity(int id);
+
+    @Query("SELECT * FROM inventory WHERE itemId = :id AND userAdded = :userAdded")
+    UserInventoryItem getInventoryItemIdByItemId(int id, boolean userAdded);
 }

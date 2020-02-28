@@ -8,9 +8,12 @@ import apps.nerdyginger.pocketpantry.UserCustomDatabase;
 import apps.nerdyginger.pocketpantry.dao.UnitConversionDao;
 import apps.nerdyginger.pocketpantry.dao.UnitDao;
 import apps.nerdyginger.pocketpantry.dao.UserInventoryItemDao;
+import apps.nerdyginger.pocketpantry.dao.UserItemDao;
 import apps.nerdyginger.pocketpantry.models.RecipeItemJoin;
 import apps.nerdyginger.pocketpantry.models.Unit;
 import apps.nerdyginger.pocketpantry.models.UserInventoryItem;
+import apps.nerdyginger.pocketpantry.models.UserItem;
+import apps.nerdyginger.pocketpantry.models.UserListItem;
 import apps.nerdyginger.pocketpantry.models.UserRecipeItemJoin;
 
 // Helper class with methods for comparing and doing math on item quantities, which
@@ -29,7 +32,8 @@ public class ItemQuantityHelper {
 
     // Get difference of two fraction with the same unit type
     private Fraction getDifference(Fraction a, Unit aUnit, Fraction b, Unit bUnit) {
-        if (aUnit.getType() == null && bUnit.getType() == null) {
+        if (aUnit == null && bUnit == null ||
+                aUnit.getType() == null && bUnit.getType() == null) {
             //both null, but can't check equality of nulls
             return a.subtract(b);
         }
@@ -48,6 +52,11 @@ public class ItemQuantityHelper {
 
     // Get sum of two fractions with the same unit type
     private Fraction getSum(Fraction a, Unit aUnit, Fraction b, Unit bUnit) {
+        if (aUnit == null && bUnit == null ||
+                aUnit.getType() == null && bUnit.getType() == null) {
+            //both null, but can't check equality of nulls
+            return a.add(b);
+        }
         if ( ! aUnit.getFullName().equals(bUnit.getFullName())) {
             //different units, but same type: convert and add
             conversionDao.convertUnitQuantity(
@@ -59,6 +68,41 @@ public class ItemQuantityHelper {
             //assuming that the passed in amounts don't have different types
             return a.add(b);
         }
+    }
+
+    // List dialog sets the list userAdded to appropriate value, and adds new UserItem
+    // if item does not exist in either db; this method adds to inventory
+    public UserInventoryItem addNewInventoryFromList(UserListItem listItem) {
+        UserInventoryItem inventoryItem = new UserInventoryItem();
+        inventoryItem.setItemId(listItem.getItemID());
+        inventoryItem.setUserAdded(listItem.isUserAdded());
+        inventoryItem.setItemName(listItem.getItemName());
+        inventoryItem.setQuantity(listItem.getQuantity());
+        return inventoryItem;
+    }
+
+    public UserInventoryItem addListToInventory(UserListItem listItem, UserInventoryItem inventoryItem) {
+        Fraction list = new Fraction().fromString(listItem.getQuantity());
+        Fraction inventory = new Fraction().fromString(inventoryItem.getQuantity());
+        //TODO: list item doesn't have unit! Keep that way???
+
+        if (inventoryItem.getUnit().equals("")) {
+            //no unit, only way we can math with it
+            inventoryItem.setQuantity(getSum(inventory, null, list, null).toString());
+        }
+        return inventoryItem;
+    }
+
+    public UserInventoryItem subtractListFromInventory(UserListItem listItem, UserInventoryItem inventoryItem) {
+        Fraction list = new Fraction().fromString(listItem.getQuantity());
+        Fraction inventory = new Fraction().fromString(inventoryItem.getQuantity());
+        //TODO: list item doesn't have unit! Keep that way???
+
+        if (inventoryItem.getUnit().equals("")) {
+            //no unit, only way we can math with it
+            inventoryItem.setQuantity(getDifference(inventory, null, list, null).toString());
+        }
+        return inventoryItem;
     }
 
     public UserInventoryItem subtractUserRecipeIngredient(UserRecipeItemJoin joinItem, UserInventoryItem inventoryItem) {
