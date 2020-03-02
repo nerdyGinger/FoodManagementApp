@@ -137,10 +137,10 @@ public class ListsFragment extends Fragment {
                 UserInventoryItem inventoryItem = inventoryDao.getInventoryItemIdByItemId(item.getItemID(), item.isUserAdded());
                 ItemQuantityHelper quantityHelper = new ItemQuantityHelper(context);
                 // if both list and inventory item are quantified and have same unit type, subtract list quantity from inventory quantity
-                if (! item.getQuantity().equals("") || ! inventoryItem.isQuantify()) { //if both items are quantified...
+                if (! item.getQuantity().equals("") && inventoryItem != null && inventoryItem.isQuantify()) { //if both items are quantified... //TODO: if inventory isn't, quantify it?
                     inventoryItem = quantityHelper.subtractListFromInventory(item, inventoryItem);
+                    inventoryDao.update(inventoryItem);
                 }
-                inventoryDao.update(inventoryItem);
             }
         }).start();
     }
@@ -158,7 +158,7 @@ public class ListsFragment extends Fragment {
                 if (inventoryItem == null) {
                     inventoryDao.insert(quantityHelper.addNewInventoryFromList(item));
                 }
-                else if (! item.getQuantity().equals("") || ! inventoryItem.isQuantify()) { //if both items are quantified...
+                else if (! item.getQuantity().equals("") && inventoryItem.isQuantify()) { //if both items are quantified...
                     inventoryItem = quantityHelper.addListToInventory(item, inventoryItem);
                     inventoryDao.update(inventoryItem);
                 }
