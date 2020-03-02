@@ -3,7 +3,7 @@
     <!--<color name="colorPrimary">#008577</color>-->
     <color name="colorPrimary">@color/chef_launcher_background</color>
     <color name="colorPrimaryDark">#2196F3</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorAccent">#FFA227</color>
     <color name="editTextColor">@android:color/primary_text_light</color>
 
     <color name="backgroundTintColor">#15646464</color>

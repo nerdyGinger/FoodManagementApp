@@ -3,6 +3,8 @@ package apps.nerdyginger.pocketpantry.dialogs;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,11 +34,8 @@ import apps.nerdyginger.pocketpantry.dao.ItemDao;
 import apps.nerdyginger.pocketpantry.dao.UnitDao;
 import apps.nerdyginger.pocketpantry.dao.UnitSystemDao;
 import apps.nerdyginger.pocketpantry.dao.UserInventoryItemDao;
-import apps.nerdyginger.pocketpantry.dao.UserItemDao;
-import apps.nerdyginger.pocketpantry.models.Item;
 import apps.nerdyginger.pocketpantry.models.Unit;
 import apps.nerdyginger.pocketpantry.models.UserInventoryItem;
-import apps.nerdyginger.pocketpantry.models.UserItem;
 
 public class CustomItemDialog extends DialogFragment {
     private AutoCompleteTextView itemName;
@@ -85,6 +84,7 @@ public class CustomItemDialog extends DialogFragment {
         ArrayAdapter<String> namesAdapter = new ArrayAdapter<>(Objects.requireNonNull(getContext()),
                 android.R.layout.simple_dropdown_item_1line, getItems());
         itemName.setAdapter(namesAdapter);
+
         ArrayAdapter<String> unitsAdapter = new ArrayAdapter<>(Objects.requireNonNull(getContext()), android.R.layout.simple_dropdown_item_1line, getUnits());
         unit.setAdapter(unitsAdapter);
 
@@ -165,8 +165,8 @@ public class CustomItemDialog extends DialogFragment {
     }
 
     private boolean editExistingItem() {
-        String newName = itemName.getText().toString();
-        String newQuantity = amount.getText().toString();
+        String newName = itemName.getText().toString().trim();
+        String newQuantity = amount.getText().toString().trim();
         String unitName = unit.getSelectedItem().toString();
         int stockLevel =  stockMeter.getProgress();
         if (!newName.equals("")) {
@@ -186,43 +186,31 @@ public class CustomItemDialog extends DialogFragment {
         final UserInventoryItem item = new UserInventoryItem();
         item.setItemName(name);
         if (names.contains(name)) {
-            item.setUserAdded(false);
-        } else {
             item.setUserAdded(true);
+        } else {
+            item.setUserAdded(false);
         }
         item.setQuantity(quantity);
-        // only set the stock level if it was clicked at least once
-        if (stockClicked) {
-            if ( existingItem != null) {
-                if (  !existingItem.getMaxQuantity().equals("")) {
-                    if (stockLevel == 0) {
-                        Toast.makeText(getContext(), getString(R.string.inventory_stock_level_error), Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    Fraction quantityFraction = new Fraction().fromString(quantity);
-                    item.setMaxQuantity(String.valueOf(quantityFraction.getWholeNum() * 100 / stockLevel));
-                }
+        // only set the stock level if it was click at least once
+        if (stockClicked || !existingItem.getMaxQuantity().equals("")) {
+            if (stockLevel == 0) {
+                Toast.makeText(getContext(), getString(R.string.inventory_stock_level_error), Toast.LENGTH_SHORT).show();
+                return;
             }
+            Fraction quantityFraction = new Fraction().fromString(quantity);
+            item.setMaxQuantity(String.valueOf(quantityFraction.getWholeNum() * 100 / stockLevel));
         }
         Thread t = new Thread(new Runnable() {                                                                        // (or if existing item had a max quantity)
             @Override
             public void run() {
                 try {
-                    UserCustomDatabase db = UserCustomDatabase.getDatabase(getContext());
-                    UserInventoryItemDao dao = db.getUserInventoryDao();
-                    UserItemDao userItemDao = db.getUserItemDao();
+                    UserInventoryItemDao dao = UserCustomDatabase.getDatabase(getContext()).getUserInventoryDao();
                     UnitDao unitDao = new UnitDao(getContext());
-                    ItemDao itemDao = new ItemDao(getContext());
-                    if (item.isUserAdded()) {
-                        item.setItemId(userItemDao.getItemIdFromName(item.getItemName()));
-                    } else {
-                        item.setItemId(Integer.parseInt(itemDao.getItemId(item.getItemName())));
-                    }
                     item.setUnit(unitName.equals("(No Unit)") ? "" : unitDao.getUnitAbbrevByName(unitName));
                     item.set_ID(existingItem.get_ID());
                     dao.update(item);
                 } catch (Exception e) {
-                    //Toast.makeText(getContext(), getString(R.string.database_unknown_error), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), getString(R.string.database_unknown_error), Toast.LENGTH_SHORT).show();
                     Log.e("Database Error", e.toString());
                 }
             }
@@ -237,12 +225,8 @@ public class CustomItemDialog extends DialogFragment {
     }
 
     private boolean saveNewItem() {
-        String name = itemName.getText().toString();
-        String quantity = amount.getText().toString();
-        if ( ! new Fraction().isValidString(quantity)) {
-            // tell user that quantity is not entered correctly //TODO-VER1.0: allow fractions and decimals
-            Toast.makeText(getContext(), "Invalid quantity, must be a fraction", Toast.LENGTH_SHORT).show();
-        }
+        String name = itemName.getText().toString().trim();
+        String quantity = amount.getText().toString(); //TODO: fraction input validation
         String unitName = unit.getSelectedItem().toString();
         int stockLevel = stockMeter.getProgress();
         if (!name.equals("")) {
@@ -260,13 +244,13 @@ public class CustomItemDialog extends DialogFragment {
         }
     }
 
-    private void addItem(final String name, String quantity, final String unitName, int stockLevel) { //TODO: add item id
+    private void addItem(final String name, String quantity, final String unitName, int stockLevel) {
         final UserInventoryItem item = new UserInventoryItem();
         item.setItemName(name);
         if (names.contains(name)) {
-            item.setUserAdded(false);
-        } else {
             item.setUserAdded(true);
+        } else {
+            item.setUserAdded(false);
         }
         item.setQuantity(quantity);
         // only set the stock level if it was clicked at least once and there is a quantity set

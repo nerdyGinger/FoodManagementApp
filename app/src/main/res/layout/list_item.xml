@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_width="match_parent"
@@ -17,10 +17,10 @@
 
     <TextView
         android:id="@+id/listItemName"
-        android:layout_width="225dp"
+        android:layout_width="0dp"
+        android:layout_weight=".50"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
-        android:layout_toEndOf="@id/listCheck"
         android:textColor="@color/custom_text_color"
         android:textSize="16sp"
         android:textStyle="bold"
@@ -31,23 +31,22 @@
 
     <TextView
         android:id="@+id/listNoteIndicator"
-        android:layout_width="15dp"
+        android:layout_width="0dp"
+        android:layout_weight=".05"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
-        android:layout_toEndOf="@id/listItemName"
         android:text="..."
         />
 
     <TextView
         android:id="@+id/listItemQuantity"
-        android:layout_width="50dp"
+        android:layout_width="0dp"
+        android:layout_weight=".1"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
-        android:layout_toEndOf="@id/listNoteIndicator"
         android:textColor="@color/custom_text_color"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:ellipsize="end"
         android:maxLines="1"
         android:text="50"
         />
@@ -57,8 +56,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
-        android:layout_below="@id/listCheck"
         android:visibility="gone"
         />
 
-</RelativeLayout>
+</LinearLayout>

@@ -7,6 +7,8 @@ public class Recipe {
     private int _ID;
     private String name;
     private String author;
+    private String url;
+    private String recipeBookId;
     private String datePublished;
     private String description;
     private String totalTime;
@@ -14,6 +16,7 @@ public class Recipe {
     private String recipeYield;
     private String recipeCategory;
     private String recipeCuisine;
+    private String imageUrl;
     private int nutritionId;
     private ArrayList<String> recipeInstructions;
 
@@ -27,6 +30,22 @@ public class Recipe {
 
     public String getAuthor() {
         return author;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getRecipeBookId() {
+        return recipeBookId;
+    }
+
+    public void setRecipeBookId(String recipeBookId) {
+        this.recipeBookId = recipeBookId;
     }
 
     public String getDatePublished() {
@@ -97,6 +116,14 @@ public class Recipe {
         this.recipeCuisine = recipeCuisine;
     }
 
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
     public void setNutritionId(int nutritionId) {
         this.nutritionId = nutritionId;
     }
@@ -109,12 +136,15 @@ public class Recipe {
         this._ID = _ID;
     }
 
-    public Recipe(int _ID, String name, String author, String datePublished, String description,
-                  String totalTime, ArrayList<String> keywords, String recipeYield, String recipeCategory,
-                  String recipeCuisine, int nutritionId, ArrayList<String> recipeInstructions) {
+    public Recipe(int _ID, String name, String author, String url, String recipeBookId, String datePublished,
+                  String description, String totalTime, ArrayList<String> keywords, String recipeYield,
+                  String recipeCategory, String recipeCuisine, String imageUrl, int nutritionId,
+                  ArrayList<String> recipeInstructions) {
         this._ID = _ID;
         this.name = name;
         this.author = author;
+        this.url = url;
+        this.recipeBookId = recipeBookId;
         this.datePublished = datePublished;
         this.description = description;
         this.totalTime = totalTime;
@@ -122,6 +152,7 @@ public class Recipe {
         this.recipeYield = recipeYield;
         this.recipeCategory = recipeCategory;
         this.recipeCuisine = recipeCuisine;
+        this.imageUrl = imageUrl;
         this.nutritionId = nutritionId;
         this.recipeInstructions = recipeInstructions;
     }

@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -46,6 +47,7 @@ public class RecipesFragment extends Fragment implements SearchView.OnQueryTextL
     private Animation fab_open, fab_close, fab_clock, fab_anticlock;
     private boolean fabMenuIsOpen = false;
     private RecipesListAdapter adapter;
+    private List<UserRecipeBoxItem> currentDataSet = new ArrayList<>();
 
     public RecipesFragment() {
         // Required empty public constructor
@@ -105,6 +107,7 @@ public class RecipesFragment extends Fragment implements SearchView.OnQueryTextL
         recipeViewModel.getRecipeList().observe(getViewLifecycleOwner(), new Observer<List<UserRecipeBoxItem>>() {
             @Override
             public void onChanged(List<UserRecipeBoxItem> userRecipeBoxItems) {
+                currentDataSet = userRecipeBoxItems;
                 adapter.updateData(userRecipeBoxItems);
             }
         });
@@ -191,12 +194,23 @@ public class RecipesFragment extends Fragment implements SearchView.OnQueryTextL
 
     @Override
     public boolean onQueryTextChange(String query) {
-        //adapter.filter(query); TODO: fix filtering, it broken :(
+        adapter.updateData(filter(currentDataSet, query));
         return false;
     }
 
     @Override
     public boolean onQueryTextSubmit(String query) {
         return false;
+    }
+
+    private List<UserRecipeBoxItem> filter(List<UserRecipeBoxItem> list, String query) {
+        List<UserRecipeBoxItem> filtered = new ArrayList<>();
+        String lowerQuery = query.toLowerCase();
+        for (UserRecipeBoxItem item : currentDataSet) {
+            if (item.getRecipeName().toLowerCase().contains(lowerQuery)) {
+                filtered.add(item);
+            }
+        }
+        return filtered;
     }
 }

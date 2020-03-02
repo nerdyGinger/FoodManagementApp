@@ -1,29 +1,29 @@
 package apps.nerdyginger.pocketpantry;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.os.Message;
+import android.security.keystore.KeyProperties;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.MenuItem;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.creativityapps.gmailbackgroundlibrary.BackgroundMail;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 
-import java.util.Objects;
+import java.io.ByteArrayOutputStream;
+import java.security.Key;
+import java.security.KeyPairGenerator;
+import java.security.KeyStore;
+
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
 
 
 public class ContactActivity extends AppCompatActivity {
@@ -35,7 +35,6 @@ public class ContactActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact);
 
-        // Set up submission button and message box
         final Button submitBtn = findViewById(R.id.contactSubmitBtn);
         submitBtn.setEnabled(false);
         messageBox = findViewById(R.id.contactMessage);
@@ -47,7 +46,7 @@ public class ContactActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (Objects.requireNonNull(messageBox.getText()).toString().equals("")) {
+                if (messageBox.getText().toString().equals("")) {
                     submitBtn.setEnabled(false);
                 } else {
                     submitBtn.setEnabled(true);
@@ -62,7 +61,7 @@ public class ContactActivity extends AppCompatActivity {
         submitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendEmail(Objects.requireNonNull(messageBox.getText()).toString());
+                sendEmail(messageBox.getText().toString());
                 if (messageSuccess) {
                     submitBtn.setEnabled(false);
                 }
@@ -70,7 +69,22 @@ public class ContactActivity extends AppCompatActivity {
         });
     }
 
-    public void sendEmail(String message) {
+    protected void sendEmail(String message) {
+        try {
+            KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
+            KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA", "AndroidKeyStore");
+            if (keyStore != null) {
+                //do some stuff
+                Log.e("DEBUG_DEBUG", "This is an important message!");
+                generator.generateKeyPair();
+            }
+
+        } catch (Exception e) {
+            Log.e("MAIL_ERROR", e.toString());
+            messageSuccess = false;
+            return;
+        }
+
         BackgroundMail.newBuilder(this)
                 .withUsername("gingerthenerd@gmail.com")
                 .withPassword("Ju5tSh1n3*")
@@ -90,7 +104,7 @@ public class ContactActivity extends AppCompatActivity {
                     @Override
                     public void onFail(Exception e) {
                         Toast.makeText(getApplicationContext(), "Unable to send email", Toast.LENGTH_SHORT).show();
-                        Log.e("MAIL_DEBUG", e.toString());
+                        Log.e("MAIL_ERROR", e.toString());
                         messageSuccess = false;
                     }
                 })
