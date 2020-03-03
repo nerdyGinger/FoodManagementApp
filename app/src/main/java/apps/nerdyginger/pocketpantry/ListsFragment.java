@@ -38,7 +38,7 @@ import apps.nerdyginger.pocketpantry.view_models.ListItemViewModel;
  * take some extra leg-work. Check out this blog: https://blog.stylingandroid.com/bottomnavigationview-animating-icons/
  * TODO-VER1.0: allow multiple lists
  * TODO-VER1.0: animate bottom nav on inventory background edit
- * Last edited: 2/28/2020
+ * Last edited: 3/3/2020
  */
 public class ListsFragment extends Fragment {
     private Context context;
@@ -92,11 +92,13 @@ public class ListsFragment extends Fragment {
             public void onClick(View view, int position) {
                 UserListItem clicked = adapter.getItemAtPosition(position);
                 if (clicked.isChecked()) {
-                    subtractInventory(clicked);
-                    Toast.makeText(context, "Removing amount from inventory", Toast.LENGTH_SHORT).show();
+                    if (subtractInventory(clicked)) {
+                        Toast.makeText(context, "Removing amount from inventory", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
-                    addInventory(clicked);
-                    Toast.makeText(context, "Adding amount to inventory", Toast.LENGTH_SHORT).show();
+                    if (addInventory(clicked)) {
+                        Toast.makeText(context, "Adding amount to inventory", Toast.LENGTH_SHORT).show();
+                    }
                 }
                 clicked.setChecked( ! clicked.isChecked());
                 adapter.notifyDataSetChanged();
@@ -116,8 +118,8 @@ public class ListsFragment extends Fragment {
         ListItemViewModel viewModel = ViewModelProviders.of(this).get(ListItemViewModel.class);
         viewModel.getListItemList().observe(getViewLifecycleOwner(), new Observer<List<UserListItem>>() {
             @Override
-            public void onChanged(List<UserListItem> userListItems) {
-                adapter.updateData(userListItems);
+            public void onChanged(List<UserListItem> userListItems) { //TODO: BUG - list is reordered with every update operation, undoing sorting because positions aren't saved
+                adapter.updateData(userListItems);                      // however, how to save positions when that would trigger this method, too?
                 adapter.orderItemsByPosition();
                 adapter.notifyDataSetChanged();
             }
@@ -129,26 +131,36 @@ public class ListsFragment extends Fragment {
     }
 
     // When an item is unchecked, remove that amount from inventory
-    private void subtractInventory(final UserListItem item) {
-        new Thread(new Runnable() {
+    private boolean subtractInventory(final UserListItem item) {
+        final boolean[] subtracted = {false};
+        Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
                 UserInventoryItemDao inventoryDao = UserCustomDatabase.getDatabase(context).getUserInventoryDao();
                 UserInventoryItem inventoryItem = inventoryDao.getInventoryItemIdByItemId(item.getItemID(), item.isUserAdded());
                 ItemQuantityHelper quantityHelper = new ItemQuantityHelper(context);
                 // if both list and inventory item are quantified and have same unit type, subtract list quantity from inventory quantity
-                if (! item.getQuantity().equals("") && inventoryItem != null && inventoryItem.isQuantify()) { //if both items are quantified... //TODO: if inventory isn't, quantify it?
+                if (! item.getQuantity().equals("") && inventoryItem != null && inventoryItem.isQuantify()) { //if both items are quantified...
                     inventoryItem = quantityHelper.subtractListFromInventory(item, inventoryItem);
                     inventoryDao.update(inventoryItem);
+                    subtracted[0] = true;
                 }
             }
-        }).start();
+        });
+        t.start();
+        try {
+            t.join();
+        } catch (Exception e) {
+            Log.e("LIST_FRAG_ERROR", e.toString());
+        }
+        return subtracted[0];
     }
 
     // When an item is checked, add that amount to inventory; add new inventory item if there
     // is none for the item
-    private void addInventory(final UserListItem item) {
-        new Thread(new Runnable() {
+    private boolean addInventory(final UserListItem item) {
+        final boolean[] added = {false};
+        Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
                 UserInventoryItemDao inventoryDao = UserCustomDatabase.getDatabase(context).getUserInventoryDao();
@@ -157,13 +169,26 @@ public class ListsFragment extends Fragment {
                 //if inventory item doesn't exist, add it in
                 if (inventoryItem == null) {
                     inventoryDao.insert(quantityHelper.addNewInventoryFromList(item));
+                    added[0] = true;
                 }
                 else if (! item.getQuantity().equals("") && inventoryItem.isQuantify()) { //if both items are quantified...
                     inventoryItem = quantityHelper.addListToInventory(item, inventoryItem);
                     inventoryDao.update(inventoryItem);
+                    added[0] = true;
+                } else if (! item.getQuantity().equals("")) {
+                    inventoryItem.setQuantity(item.getQuantity());
+                    inventoryDao.update(inventoryItem);
+                    added[0] = true;
                 }
             }
-        }).start();
+        });
+        t.start();
+        try {
+            t.join();
+        } catch (Exception e) {
+            Log.e("LIST_FRAG_ERROR", e.toString());
+        }
+        return added[0];
     }
 
     private void saveCheckStatus(final UserListItem item) {
@@ -192,7 +217,7 @@ public class ListsFragment extends Fragment {
                 }
             }).start();
         } catch (Exception e) {
-            Log.e("MY_CODE_ISSUES", "Error in List onPause: " + e);
+            Log.e("LIST_FRAG_ERROR", "Error in List onPause: " + e);
         }
     }
 
