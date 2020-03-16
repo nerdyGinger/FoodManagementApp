@@ -6,21 +6,26 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import apps.nerdyginger.pocketpantry.BrowseRecipeClickListener;
 import apps.nerdyginger.pocketpantry.R;
-import apps.nerdyginger.pocketpantry.RecyclerViewClickListener;
 import apps.nerdyginger.pocketpantry.models.BrowseRecipeCategory;
 
+/*
+ * Parent adapter for the nested RecyclerViews on the browser recipe page
+ * Last edited: 3/13/20
+ */
 public class BrowseRecipesCategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<BrowseRecipeCategory> dataSet = new ArrayList<>();
-    private RecyclerView.RecycledViewPool viewPool = new RecyclerView.RecycledViewPool();
+    private BrowseRecipeClickListener childListener;
 
-    public class CategoryViewHolder extends RecyclerView.ViewHolder {
+    public static class CategoryViewHolder extends RecyclerView.ViewHolder {
         TextView categoryName;
         RecyclerView childRv;
         CategoryViewHolder(View view) {
@@ -30,11 +35,11 @@ public class BrowseRecipesCategoryAdapter extends RecyclerView.Adapter<RecyclerV
         }
     }
 
-    public BrowseRecipesCategoryAdapter() { }
-
-    public  BrowseRecipesCategoryAdapter(List<BrowseRecipeCategory> data) {
-        dataSet = data;
+    public void setChildListener(BrowseRecipeClickListener childListener) {
+        this.childListener = childListener;
     }
+
+    public BrowseRecipesCategoryAdapter() { }
 
     public void updateData(List<BrowseRecipeCategory> data) {
         dataSet = data;
@@ -44,6 +49,7 @@ public class BrowseRecipesCategoryAdapter extends RecyclerView.Adapter<RecyclerV
         return dataSet.get(position);
     }
 
+    @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
@@ -53,27 +59,18 @@ public class BrowseRecipesCategoryAdapter extends RecyclerView.Adapter<RecyclerV
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
         BrowseRecipeCategory item = dataSet.get(position);
-        CategoryViewHolder holder = (CategoryViewHolder) viewHolder;
+        final CategoryViewHolder holder = (CategoryViewHolder) viewHolder;
         holder.categoryName.setText(item.getCategoryName());
 
         //set up child RecyclerViews
         LinearLayoutManager childLlm = new LinearLayoutManager(holder.childRv.getContext(), LinearLayoutManager.HORIZONTAL, false);
         childLlm.setInitialPrefetchItemCount(4);
         holder.childRv.setLayoutManager(childLlm);
-        holder.childRv.setAdapter(new BrowseRecipesItemAdapter(item.getRecipeCards(), "browse", new RecyclerViewClickListener() {
-            @Override
-            public void onClick(View view, int position) {
-                //do something
-            }
-
-            @Override
-            public boolean onLongClick(View view, int position) {
-                return false;
-            }
-        }));
-        holder.childRv.setRecycledViewPool(viewPool);
+        final BrowseRecipesItemAdapter childAdapter = new BrowseRecipesItemAdapter(childListener);
+        childAdapter.updateData(item.getRecipeCards());
+        holder.childRv.setAdapter(childAdapter);
     }
 
     @Override

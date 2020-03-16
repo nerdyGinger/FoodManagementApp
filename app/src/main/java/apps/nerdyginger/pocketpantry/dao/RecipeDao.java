@@ -22,7 +22,8 @@ public class RecipeDao {
 
     public List<Recipe> getAllRecipesByCuisine(String cuisineId) {
         SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
-        String sql = "Select * from Recipes where recipeCuisine = ?";
+        String sql = "Select rowid," +
+                "* from Recipes where recipeCuisine = ?";
         Cursor cursor = db.rawQuery(sql, new String[] {cuisineId});
         String name, author, datePublished, description, totalTime, recipeYield, recipeCategory;
         String url, recipeBookId, imageUrl;
@@ -64,7 +65,7 @@ public class RecipeDao {
 
     public List<Recipe> getAllRecipesByCategory(String categoryId) {
         SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
-        String sql = "Select * from Recipes where recipeCategory = ?";
+        String sql = "Select rowid,* from Recipes where recipeCategory = ?";
         Cursor cursor = db.rawQuery(sql, new String[] {categoryId});
         String name, author, datePublished, description, totalTime, recipeYield, recipeCuisine;
         String url, recipeBookId, imageUrl;
@@ -143,7 +144,7 @@ public class RecipeDao {
 
     public List<Recipe> getAllRecipes() {
         SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM Recipes", new String[] {});
+        Cursor cursor = db.rawQuery("SELECT rowid,* FROM Recipes", new String[] {});
         List<Recipe> recipes = new ArrayList<>();
         String name, author, datePublished, description, totalTime, recipeYield, recipeCategory, recipeCuisine;
         String url, recipeBookId, imageUrl;

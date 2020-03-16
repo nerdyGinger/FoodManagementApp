@@ -37,12 +37,33 @@ public class RecipeBookDao {
                 cursor.moveToNext();
             }
         } catch (Exception e) {
-            Log.e("Database Error", e.toString());
+            Log.e("RecipeBook DB Error", e.toString());
         } finally {
             cursor.close();
             db.close();
         }
         return recipeBooks;
+    }
+
+    public RecipeBook getRecipeBookById(String id) {
+        SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM RecipeBook WHERE rowid = ?", new String[] {id});
+        RecipeBook book = new RecipeBook();
+        try {
+            cursor.moveToFirst();
+            book.set_ID(Integer.parseInt(id));
+            book.setName(cursor.getString(cursor.getColumnIndex("name")));
+            book.setAuthor(cursor.getString(cursor.getColumnIndex("author")));
+            book.setDescription(cursor.getString(cursor.getColumnIndex("description")));
+            book.setImageUrl(cursor.getString(cursor.getColumnIndex("image")));
+            book.setLink(cursor.getString(cursor.getColumnIndex("link")));
+        }catch (Exception e) {
+            Log.e("RecipeBook DB Error", e.toString());
+        } finally {
+            cursor.close();
+            db.close();
+        }
+        return book;
     }
 
     private String runQuerySingle(String sql, String[] params, String column) {

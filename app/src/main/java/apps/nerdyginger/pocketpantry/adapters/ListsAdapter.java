@@ -23,10 +23,11 @@ import apps.nerdyginger.pocketpantry.models.UserListItem;
 import static android.view.View.GONE;
 
 // A checkable, sortable, expandable grocery list adapter
-// Last edited: 2/18/2020
+// Last edited: 3/3/2020
 public class ListsAdapter extends  EmptyRecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<UserListItem> dataSet = new ArrayList<>();
     private RecyclerViewClickListener mListener;
+    private boolean locked;
 
     public class ListItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         CheckBox checkBox;
@@ -107,6 +108,18 @@ public class ListsAdapter extends  EmptyRecyclerView.Adapter<RecyclerView.ViewHo
     private void toggleExpansion(UserListItem item, ListItemViewHolder holder) {
         holder.notes.setVisibility(item.isExpanded() ? View.GONE : View.VISIBLE);
         item.setExpanded( ! item.isExpanded());
+    }
+
+    public void lock() {
+        locked = true;
+    }
+
+    public void unlock() {
+        locked = false;
+    }
+
+    public boolean isLocked() {
+        return locked;
     }
 
     public UserListItem getItemAtPosition(int position) {

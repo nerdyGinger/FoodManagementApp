@@ -14,15 +14,21 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
+import apps.nerdyginger.pocketpantry.BrowseRecipeClickListener;
 import apps.nerdyginger.pocketpantry.R;
 import apps.nerdyginger.pocketpantry.RecyclerViewClickListener;
 import apps.nerdyginger.pocketpantry.models.BrowseRecipeItem;
 
+/*
+ * Child adapter for the nested RecyclerViews on the browse recipe page
+ * Last edited: 3/13/20
+ */
 public class BrowseRecipesItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private int DATA_VIEWTYPE = 1;
     private int ENDCAP_VIEWTYPE = 2;
     private List<BrowseRecipeItem> dataSet = new ArrayList<>();
-    private RecyclerViewClickListener mListener;
+    private RecyclerViewClickListener homeListener;
+    private BrowseRecipeClickListener browseListener;
     private String MODE; //either "browse" or "home"
 
     public class RecipeCardViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
@@ -40,12 +46,20 @@ public class BrowseRecipesItemAdapter extends RecyclerView.Adapter<RecyclerView.
         }
         @Override
         public void onClick(View view) {
-            mListener.onClick(view, getAdapterPosition());
+            if (MODE.equals("home")) {
+                homeListener.onClick(view, getAdapterPosition());
+            } else {
+                browseListener.onClick(getItemAtPosition(getAdapterPosition()));
+            }
         }
 
         @Override
         public boolean onLongClick(View view) {
-            mListener.onLongClick(view, getAdapterPosition());
+            if (MODE.equals("home")) {
+                homeListener.onLongClick(view, getAdapterPosition());
+            } else {
+                browseListener.onLongClick(getItemAtPosition(getAdapterPosition()));
+            }
             return false;
         }
     }
@@ -59,19 +73,32 @@ public class BrowseRecipesItemAdapter extends RecyclerView.Adapter<RecyclerView.
         }
         @Override
         public void onClick(View view) {
-            mListener.onClick(view, getAdapterPosition());
+            homeListener.onClick(view, getAdapterPosition());
         }
     }
 
-    public BrowseRecipesItemAdapter(String mode, RecyclerViewClickListener listener) {
-        mListener = listener;
+    public BrowseRecipesItemAdapter(String mode) {
         MODE = mode;
     }
 
+    public BrowseRecipesItemAdapter(String mode, RecyclerViewClickListener listener) {
+        homeListener = listener;
+        MODE = "home";
+    }
+
+    public BrowseRecipesItemAdapter(BrowseRecipeClickListener listener) {
+        browseListener = listener;
+        MODE = "browse";
+    }
+
     public BrowseRecipesItemAdapter(List<BrowseRecipeItem> data , String mode, RecyclerViewClickListener listener) {
-        mListener = listener;
+        homeListener = listener;
         dataSet = data;
-        MODE = mode;
+        MODE = "home";
+    }
+
+    public void setListener(RecyclerViewClickListener listener) {
+        homeListener = listener;
     }
 
     public void updateData(List<BrowseRecipeItem> data) {

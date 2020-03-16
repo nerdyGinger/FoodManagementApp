@@ -56,6 +56,10 @@ public class RecipeBook {
         this.imageUrl = imageUrl;
     }
 
+    public RecipeBook() {
+        //empty constructor
+    }
+
     public RecipeBook(int _ID, String name, String author, String link, String description, String imageUrl) {
         this._ID = _ID;
         this.name = name;

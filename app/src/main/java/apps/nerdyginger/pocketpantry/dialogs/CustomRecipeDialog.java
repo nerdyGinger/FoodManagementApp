@@ -1,6 +1,7 @@
 package apps.nerdyginger.pocketpantry.dialogs;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -49,12 +50,14 @@ import java.util.Objects;
 
 import apps.nerdyginger.pocketpantry.Fraction;
 import apps.nerdyginger.pocketpantry.R;
+import apps.nerdyginger.pocketpantry.RecipeBookActivity;
 import apps.nerdyginger.pocketpantry.UserCustomDatabase;
 import apps.nerdyginger.pocketpantry.adapters.RecipeIngredientsAdapter;
 import apps.nerdyginger.pocketpantry.adapters.RecipeInstructionsAdapter;
 import apps.nerdyginger.pocketpantry.dao.CategoryDao;
 import apps.nerdyginger.pocketpantry.dao.CuisineDao;
 import apps.nerdyginger.pocketpantry.dao.ItemDao;
+import apps.nerdyginger.pocketpantry.dao.RecipeBookDao;
 import apps.nerdyginger.pocketpantry.dao.RecipeDao;
 import apps.nerdyginger.pocketpantry.dao.RecipeItemJoinDao;
 import apps.nerdyginger.pocketpantry.dao.UserInventoryItemDao;
@@ -63,6 +66,7 @@ import apps.nerdyginger.pocketpantry.dao.UserRecipeDao;
 import apps.nerdyginger.pocketpantry.dao.UserRecipeItemJoinDao;
 import apps.nerdyginger.pocketpantry.helpers.ItemQuantityHelper;
 import apps.nerdyginger.pocketpantry.models.Recipe;
+import apps.nerdyginger.pocketpantry.models.RecipeBook;
 import apps.nerdyginger.pocketpantry.models.RecipeItemJoin;
 import apps.nerdyginger.pocketpantry.models.UserRecipe;
 import apps.nerdyginger.pocketpantry.models.UserRecipeBoxItem;
@@ -79,6 +83,7 @@ import apps.nerdyginger.pocketpantry.view_models.RecipeInstructionsViewModel;
  * Last Edited: 2/25/2020
  */
 public class CustomRecipeDialog extends DialogFragment {
+    private Context context;
     private ItemQuantityHelper quantityHelper;
     private static final int pages = 3; // Slide-able pages for basic info, ingredients, and instructions
     private ViewPager pager;
@@ -96,8 +101,9 @@ public class CustomRecipeDialog extends DialogFragment {
     private String MODE;
     private static UserRecipeBoxItem existingBoxItem;
 
-    //for edit mode on read-only recipe
+    //for view mode on read-only recipe
     private static Recipe readOnlyItem;
+    private static RecipeBook recipeBook;
 
     //for edit mode on custom recipe
     private static UserRecipe existingCustomRecipeItem;
@@ -107,8 +113,18 @@ public class CustomRecipeDialog extends DialogFragment {
         MODE = "create";
     }
 
+    public CustomRecipeDialog(String mode, UserRecipeBoxItem item, Context context) {
+        this.context = context;
+        constructorGuts(mode, item);
+    }
+
     //constructor to set mode, pass in existing item
     public CustomRecipeDialog(String mode, UserRecipeBoxItem item) {
+        this.context = getContext();
+        constructorGuts(mode, item);
+    }
+
+    private void constructorGuts(String mode, UserRecipeBoxItem item) {
         MODE = mode;
         existingBoxItem = item;
         newRecipe = new UserRecipe();
@@ -130,18 +146,21 @@ public class CustomRecipeDialog extends DialogFragment {
         }
     }
 
+    public void setContext(Context context) {
+        this.context = context;
+    }
+
     private void getCustomItem() {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    UserCustomDatabase db = UserCustomDatabase.getDatabase(getContext());
-                    UserRecipeDao dao = db.getUserRecipeDao();
-                    Log.e("DEBUG", "Trying to get recipe _ID: " + existingBoxItem.getRecipeId());
-                    existingCustomRecipeItem = dao.getUserRecipeById(existingBoxItem.getRecipeId());
-                } catch (Exception e) {
-                    Log.e("Database Error", "Error accessing read-only recipe item: " + e.toString());
-                }
+            try {
+                UserCustomDatabase db = UserCustomDatabase.getDatabase(context);
+                UserRecipeDao dao = db.getUserRecipeDao();
+                existingCustomRecipeItem = dao.getUserRecipeById(existingBoxItem.getRecipeId());
+            } catch (Exception e) {
+                Log.e("Database Error", "Error accessing custom recipe item: " + e.toString());
+            }
             }
         });
         t.start();
@@ -156,12 +175,14 @@ public class CustomRecipeDialog extends DialogFragment {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    RecipeDao dao = new RecipeDao(getContext());
-                    readOnlyItem = dao.buildRecipeFromId(String.valueOf(existingBoxItem.getRecipeId()));
-                } catch (Exception e) {
-                    Log.e("Database Error", "Error accessing read-only recipe item: " + e.toString());
-                }
+            try {
+                RecipeDao dao = new RecipeDao(context);
+                RecipeBookDao bookDao = new RecipeBookDao(context);
+                readOnlyItem = dao.buildRecipeFromId(String.valueOf(existingBoxItem.getRecipeId()));
+                recipeBook = bookDao.getRecipeBookById(readOnlyItem.getRecipeBookId());
+            } catch (Exception e) {
+                Log.e("Database Error", "Error accessing read-only recipe item: " + e.toString() + Arrays.toString(e.getStackTrace()));
+            }
             }
         });
         t.start();
@@ -532,9 +553,17 @@ public class CustomRecipeDialog extends DialogFragment {
                         recipeBookContainer.setVisibility(View.GONE);
                     } else {
                         recipeBookContainer.setVisibility(View.VISIBLE);
-                        TextView recipeBook = view.findViewById(R.id.bookContainerName);
-                        //recipeBook.setText(); set text to book name TODO: finish custom dialog recipe book header implementation
-                        //add button implementation
+                        TextView recipeBookName = view.findViewById(R.id.bookContainerName);
+                        recipeBookName.setText(recipeBook.getName());
+                        Button recipeBookBtn = view.findViewById(R.id.bookContainerBtn);
+                        recipeBookBtn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(getContext(), RecipeBookActivity.class);
+                                intent.putExtra("RecipeBookId", recipeBook.get_ID());
+                                startActivity(intent);
+                            }
+                        });
                     }
                     break;
                 case "edit":

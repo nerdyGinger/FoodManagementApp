@@ -1,6 +1,7 @@
 package apps.nerdyginger.pocketpantry.helpers;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,15 +45,15 @@ public class SortRecipesHelper {
     public List<BrowseRecipeCategory> getRecipesByCuisine() {
         List<BrowseRecipeCategory> recipeCuisines = new ArrayList<>();
         CuisineDao cuisineDao = new CuisineDao(context);
-        List<Cuisine> cuisines = cuisineDao.buildCategoryListFromDb();
+        List<Cuisine> cuisines = cuisineDao.buildCategoryListFromDb(); //TODO: <- investigate name mix-up...
 
         for (int i=0; i<cuisines.size(); i++) {
             List<BrowseRecipeItem> browseItems = new ArrayList<>();
             BrowseRecipeCategory cuisineItem = new BrowseRecipeCategory();
             cuisineItem.setCategoryName(cuisines.get(i).getName());
-            BrowseRecipeItem item = new BrowseRecipeItem();
             List<Recipe> recipes = recipeDao.getAllRecipesByCuisine(String.valueOf(cuisines.get(i).get_ID()));
             for (int j=0; j<recipes.size(); j++) {
+                BrowseRecipeItem item = new BrowseRecipeItem();
                 Recipe recipe = recipes.get(j);
                 item.setCategory(cuisines.get(i).getName());
                 item.setRecipeId(recipe.get_ID());
@@ -80,9 +81,9 @@ public class SortRecipesHelper {
             List<BrowseRecipeItem> browseItems = new ArrayList<>();
             BrowseRecipeCategory categoryItem = new BrowseRecipeCategory();
             categoryItem.setCategoryName(categories.get(i).getName());
-            BrowseRecipeItem item = new BrowseRecipeItem();
             List<Recipe> recipes = recipeDao.getAllRecipesByCategory(String.valueOf(categories.get(i).get_ID()));
             for (int j=0; j<recipes.size(); j++) {
+                BrowseRecipeItem item = new BrowseRecipeItem();
                 Recipe recipe = recipes.get(j);
                 item.setCategory(categories.get(i).getName());
                 item.setRecipeId(recipe.get_ID());
@@ -145,6 +146,7 @@ public class SortRecipesHelper {
             }
             maxMissing++;
         }
+        //Collections.shuffle(recommended);
         return recommended;
     }
 }

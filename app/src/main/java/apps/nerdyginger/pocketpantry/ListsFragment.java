@@ -78,6 +78,7 @@ public class ListsFragment extends Fragment {
             public void onClick(View v) {
                 //sort the list
                 adapter.sortData();
+                updateItems();
             }
         });
 
@@ -119,9 +120,11 @@ public class ListsFragment extends Fragment {
         viewModel.getListItemList().observe(getViewLifecycleOwner(), new Observer<List<UserListItem>>() {
             @Override
             public void onChanged(List<UserListItem> userListItems) { //TODO: BUG - list is reordered with every update operation, undoing sorting because positions aren't saved
-                adapter.updateData(userListItems);                      // however, how to save positions when that would trigger this method, too?
-                adapter.orderItemsByPosition();
-                adapter.notifyDataSetChanged();
+                if ( ! adapter.isLocked()) {
+                    adapter.updateData(userListItems);                      // however, how to save positions when that would trigger this method, too?
+                    adapter.orderItemsByPosition();
+                    adapter.notifyDataSetChanged();
+                }
             }
         });
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ListsSwipeDeleteCallback(adapter, context, viewModel));
@@ -201,21 +204,27 @@ public class ListsFragment extends Fragment {
         }).start();
     }
 
+    private void updateItems() {
+        adapter.lock();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+            UserListItemDao dao = UserCustomDatabase.getDatabase(getContext()).getUserListItemDao();
+            for (int i=0; i<adapter.getItemCount(); i++) {
+                UserListItem item = adapter.getItemAtPosition(i);
+                dao.update(item);
+            }
+            adapter.unlock();
+            }
+        }).start();
+    }
+
     @Override
     public void onPause() {
         super.onPause();
         // save the states of the current list of items, including checked status and position
         try {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    UserListItemDao dao = UserCustomDatabase.getDatabase(getContext()).getUserListItemDao();
-                    for (int i=0; i<adapter.getItemCount(); i++) {
-                        UserListItem item = adapter.getItemAtPosition(i);
-                        dao.update(item);
-                    }
-                }
-            }).start();
+            updateItems();
         } catch (Exception e) {
             Log.e("LIST_FRAG_ERROR", "Error in List onPause: " + e);
         }

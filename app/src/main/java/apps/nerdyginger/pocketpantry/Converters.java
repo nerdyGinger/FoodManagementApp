@@ -11,6 +11,14 @@ import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
 
 public class Converters {
+    /*
+       @TypeConverter
+    public static ArrayList<String> fromString(String value) {
+        List<String> split = Arrays.asList(value.split("\\s*,\\s*"));
+        return (ArrayList<String>) split;
+    }
+     */
+
     @TypeConverter
     public static ArrayList<String> fromString(String value) {
         Type listType = new TypeToken<ArrayList<String>>(){}.getType();

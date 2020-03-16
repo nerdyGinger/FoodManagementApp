@@ -20,8 +20,6 @@
             android:id="@+id/customRecipeBookContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:visibility="gone"
             >
 
             <TextView
@@ -39,13 +37,16 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/custom_text_color"
                 android:layout_margin="5dp"
-                android:layout_toEndOf="@+id/bookContainerLabel"
+                android:layout_below="@+id/bookContainerLabel"
+                android:text="PREVIEW"
                 />
 
             <Button
+                android:id="@+id/bookContainerBtn"
                 android:layout_width="45dp"
                 android:layout_height="20dp"
                 android:layout_toEndOf="@+id/bookContainerName"
+                android:layout_below="@+id/bookContainerLabel"
                 android:padding="2dp"
                 android:textSize="12sp"
                 android:layout_margin="5dp"

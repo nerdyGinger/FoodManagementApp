@@ -31,15 +31,15 @@ public class RecipeItemJoinDao {
                 cursor.moveToFirst();
                 while (!cursor.isAfterLast()) {
                     int recipeId = cursor.getInt(cursor.getColumnIndex("recipeId"));
-                    String quantity = cursor.getString(cursor.getColumnIndex("itemQuantity"));
-                    String unit = cursor.getString(cursor.getColumnIndex("itemUnit"));
-                    String detail = cursor.getString(cursor.getColumnIndex("itemDetail"));
+                    String quantity = cursor.getString(cursor.getColumnIndex("quantity"));
+                    String unit = cursor.getString(cursor.getColumnIndex("unit"));
+                    String detail = cursor.getString(cursor.getColumnIndex("detail"));
                     joinItems.add(new RecipeItemJoin(recipeId, Integer.parseInt(itemId), quantity, unit, detail));
                     cursor.moveToNext();
                 }
             }
         } catch (Exception e) {
-            Log.e("Database Error", e.toString());
+            Log.e("JoinItem DB Error", e.toString());
         } finally {
             cursor.close();
             db.close();
@@ -64,7 +64,7 @@ public class RecipeItemJoinDao {
                 }
             }
         } catch (Exception e) {
-            Log.e("Database Error", e.toString());
+            Log.e("JoinItem DB Error", e.toString());
         } finally {
             cursor.close();
             db.close();
@@ -89,7 +89,7 @@ public class RecipeItemJoinDao {
                 }
             }
         } catch (Exception e) {
-            Log.e("Database Error", e.toString());
+            Log.e("JoinItem DB Error", e.toString());
         } finally {
             cursor.close();
             db.close();
@@ -110,15 +110,15 @@ public class RecipeItemJoinDao {
                 while (!cursor.isAfterLast()) {
                     Integer itemId = cursor.getInt(cursor.getColumnIndex("itemId"));
                     //String name = cursor.getString(cursor.getColumnIndex("itemName"));                    //TODO: add itemName to db
-                    String quantity = cursor.getString(cursor.getColumnIndex("itemQuantity"));
-                    String unit = cursor.getString(cursor.getColumnIndex("itemUnit"));
-                    String detail = cursor.getString(cursor.getColumnIndex("itemDetail"));
+                    String quantity = cursor.getString(cursor.getColumnIndex("quantity"));
+                    String unit = cursor.getString(cursor.getColumnIndex("unit"));
+                    String detail = cursor.getString(cursor.getColumnIndex("detail"));
                     items.add(new RecipeItemJoin(Integer.parseInt(recipeId), itemId, quantity, unit, detail));
                     cursor.moveToNext();
                 }
             }
         } catch (Exception e) {
-            Log.e("Database Error", e.toString());
+            Log.e("JoinItem DB Error", e.toString());
         } finally {
             cursor.close();
             db.close();

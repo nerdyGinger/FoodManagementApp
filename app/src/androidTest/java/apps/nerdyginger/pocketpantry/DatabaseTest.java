@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import apps.nerdyginger.pocketpantry.dao.CategoryDao;
@@ -29,6 +30,7 @@ import apps.nerdyginger.pocketpantry.dao.UserNutritionDao;
 import apps.nerdyginger.pocketpantry.dao.UserRecipeDao;
 import apps.nerdyginger.pocketpantry.helpers.DatabaseHelper;
 import apps.nerdyginger.pocketpantry.models.Item;
+import apps.nerdyginger.pocketpantry.models.Recipe;
 import apps.nerdyginger.pocketpantry.models.UserInventoryItem;
 import apps.nerdyginger.pocketpantry.models.UserItem;
 import apps.nerdyginger.pocketpantry.models.UserNutrition;
@@ -76,7 +78,42 @@ public class DatabaseTest {
 
     @Test
     public void rawSQLiteTest() throws Exception {
+        new ItemDao(context).getAllItems();
         SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
+
+        String sql = "Select rowid,* from Recipes where recipeCategory = ?";
+        Cursor cursor = db.rawQuery(sql, new String[] {"18"}); //category=Desserts
+        String name, author, datePublished, description, totalTime, recipeYield, recipeCuisine;
+        String url, recipeBookId, imageUrl;
+        ArrayList<String> keywords = new ArrayList<>();
+        ArrayList<String> recipeInstructions = new ArrayList<>();
+        int nutritionId, id;
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+        }
+        while ( ! cursor.isAfterLast()) {
+            id = cursor.getInt(cursor.getColumnIndex("rowid"));
+            name = cursor.getString(cursor.getColumnIndex("name"));
+            author = cursor.getString(cursor.getColumnIndex("author"));
+            url = cursor.getString(cursor.getColumnIndex("url"));
+            recipeBookId = cursor.getString(cursor.getColumnIndex("recipeBookId"));
+            datePublished = cursor.getString(cursor.getColumnIndex("datePublished"));
+            description = cursor.getString(cursor.getColumnIndex("description"));
+            totalTime = cursor.getString(cursor.getColumnIndex("totalTime"));
+            //Log.e("DEBUG", "[" + '"' + cursor.getString(cursor.getColumnIndex("keywords")) + '"' + "]");
+            keywords = Converters.fromString("[" + '"' + cursor.getString(cursor.getColumnIndex("keywords")) + '"' + "]");
+            recipeYield = cursor.getString(cursor.getColumnIndex("recipeYield"));
+            recipeCuisine = cursor.getString(cursor.getColumnIndex("recipeCuisine"));
+            nutritionId = cursor.getInt(cursor.getColumnIndex("nutrition"));
+            imageUrl = cursor.getString(cursor.getColumnIndex("imageUrl"));
+            Log.e("DEBEG", cursor.getString(cursor.getColumnIndex("recipeInstructions")));
+            recipeInstructions = Converters.fromString(cursor.getString(cursor.getColumnIndex("recipeInstructions")));
+            //recipes.add(new Recipe(id, name, author, url, recipeBookId, datePublished, description, totalTime, keywords, recipeYield, categoryId,
+            //        recipeCuisine, imageUrl, nutritionId, recipeInstructions));
+            cursor.moveToNext();
+        }
+
+        /*
         Cursor cursor = db.rawQuery("SELECT * FROM Item WHERE rowid = ?", new String[] {"1"});
         if (cursor.getCount() > 0) {
             cursor.moveToFirst();
@@ -84,6 +121,8 @@ public class DatabaseTest {
         String output = cursor.getString(cursor.getColumnIndex("name"));
         cursor.close();
         Assert.assertEquals("Pillsbury Golden Layer Buttermilk Biscuits", output);
+
+         */
     }
 
     @Test
