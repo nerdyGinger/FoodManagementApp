@@ -24,7 +24,7 @@ import apps.nerdyginger.pocketpantry.view_models.RecipeInstructionsViewModel;
 // Some help on RecyclerView expansion from this article, thanks!
 // https://medium.com/@nikola.jakshic/how-to-expand-collapse-items-in-recyclerview-49a648a403a6
 //
-// Last edited: 11/7/19
+// Last edited: 3/16/20
 public class RecipeInstructionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<RecipeInstructionsViewModel> dataSet = new ArrayList<>();
     private RecyclerViewClickListener mListener;
@@ -115,6 +115,7 @@ public class RecipeInstructionsAdapter extends RecyclerView.Adapter<RecyclerView
         if (isClickable) {
             holder.addBtn.setVisibility(expanded ? View.VISIBLE : View.GONE);
             holder.deleteBtn.setVisibility(expanded ? View.VISIBLE : View.GONE);
+            holder.editStep.setLines(3);
         } else {
             holder.addBtn.setVisibility(View.GONE);
             holder.deleteBtn.setVisibility(View.GONE);

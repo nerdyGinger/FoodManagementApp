@@ -1,5 +1,7 @@
 package apps.nerdyginger.pocketpantry.models;
 
+import android.graphics.Bitmap;
+
 // Class to hold recipe items for sorting on the browse recipes page
 // Very similar to UserRecipeBoxItem, but with the addition of ingredientsMissing
 // and the exclusion of an ID field, plus, this makes the use of UserRecipeBoxItem
@@ -14,6 +16,7 @@ public class BrowseRecipeItem implements Comparable<BrowseRecipeItem>{
     private String servings;
     private int ingredientsMissing;
     private int recipeBoxId; // for the home screen usage
+    private Bitmap image;
 
     public boolean isUserAdded() {
         return userAdded;
@@ -69,6 +72,14 @@ public class BrowseRecipeItem implements Comparable<BrowseRecipeItem>{
 
     public void setRecipeBoxId(int recipeBoxId) {
         this.recipeBoxId = recipeBoxId;
+    }
+
+    public Bitmap getImage() {
+        return image;
+    }
+
+    public void setImage(Bitmap image) {
+        this.image = image;
     }
 
     public int compareTo(BrowseRecipeItem compareItem) {

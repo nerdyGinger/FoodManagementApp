@@ -64,6 +64,7 @@ import apps.nerdyginger.pocketpantry.dao.UserInventoryItemDao;
 import apps.nerdyginger.pocketpantry.dao.UserRecipeBoxDao;
 import apps.nerdyginger.pocketpantry.dao.UserRecipeDao;
 import apps.nerdyginger.pocketpantry.dao.UserRecipeItemJoinDao;
+import apps.nerdyginger.pocketpantry.helpers.ImageHelper;
 import apps.nerdyginger.pocketpantry.helpers.ItemQuantityHelper;
 import apps.nerdyginger.pocketpantry.models.Recipe;
 import apps.nerdyginger.pocketpantry.models.RecipeBook;
@@ -509,6 +510,7 @@ public class CustomRecipeDialog extends DialogFragment {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View view = inflater.inflate(R.layout.custom_recipe_page_1, container, false);
+            ImageHelper imageHelper = new ImageHelper(getContext());
 
             //find all views in page
             Spinner categorySpinner = view.findViewById(R.id.customRecipeCategory);
@@ -552,6 +554,8 @@ public class CustomRecipeDialog extends DialogFragment {
                     if (existingBoxItem.isUserAdded()) {
                         recipeBookContainer.setVisibility(View.GONE);
                     } else {
+                        // is read-only, set image
+                        imageBtn.setImageBitmap(imageHelper.retrieveImage(imageHelper.getFilename(recipeBook, readOnlyItem)));
                         recipeBookContainer.setVisibility(View.VISIBLE);
                         TextView recipeBookName = view.findViewById(R.id.bookContainerName);
                         recipeBookName.setText(recipeBook.getName());

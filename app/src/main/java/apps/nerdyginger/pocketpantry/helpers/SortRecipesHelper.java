@@ -11,6 +11,7 @@ import apps.nerdyginger.pocketpantry.UserCustomDatabase;
 import apps.nerdyginger.pocketpantry.dao.CategoryDao;
 import apps.nerdyginger.pocketpantry.dao.CuisineDao;
 import apps.nerdyginger.pocketpantry.dao.ItemDao;
+import apps.nerdyginger.pocketpantry.dao.RecipeBookDao;
 import apps.nerdyginger.pocketpantry.dao.RecipeDao;
 import apps.nerdyginger.pocketpantry.dao.RecipeItemJoinDao;
 import apps.nerdyginger.pocketpantry.dao.UserInventoryItemDao;
@@ -19,6 +20,7 @@ import apps.nerdyginger.pocketpantry.models.BrowseRecipeItem;
 import apps.nerdyginger.pocketpantry.models.Category;
 import apps.nerdyginger.pocketpantry.models.Cuisine;
 import apps.nerdyginger.pocketpantry.models.Recipe;
+import apps.nerdyginger.pocketpantry.models.RecipeBook;
 import apps.nerdyginger.pocketpantry.models.RecipeItemJoin;
 import apps.nerdyginger.pocketpantry.models.UserInventoryItem;
 import apps.nerdyginger.pocketpantry.models.UserRecipeBoxItem;
@@ -28,6 +30,7 @@ import apps.nerdyginger.pocketpantry.models.UserRecipeBoxItem;
 public class SortRecipesHelper {
     private Context context;
     private ItemQuantityHelper quantityHelper;
+    private ImageHelper imageHelper;
     private ItemDao itemDao;
     private RecipeDao recipeDao;
     private RecipeItemJoinDao recipeItemJoinDao;
@@ -36,6 +39,7 @@ public class SortRecipesHelper {
     public SortRecipesHelper(Context context) {
         this.context = context;
         quantityHelper = new ItemQuantityHelper(context);
+        imageHelper = new ImageHelper(context);
         itemDao = new ItemDao(context);
         recipeDao = new RecipeDao(context);
         recipeItemJoinDao = new RecipeItemJoinDao(context);
@@ -45,6 +49,7 @@ public class SortRecipesHelper {
     public List<BrowseRecipeCategory> getRecipesByCuisine() {
         List<BrowseRecipeCategory> recipeCuisines = new ArrayList<>();
         CuisineDao cuisineDao = new CuisineDao(context);
+        RecipeBookDao bookDao = new RecipeBookDao(context);
         List<Cuisine> cuisines = cuisineDao.buildCategoryListFromDb(); //TODO: <- investigate name mix-up...
 
         for (int i=0; i<cuisines.size(); i++) {
@@ -55,10 +60,13 @@ public class SortRecipesHelper {
             for (int j=0; j<recipes.size(); j++) {
                 BrowseRecipeItem item = new BrowseRecipeItem();
                 Recipe recipe = recipes.get(j);
+                RecipeBook book = bookDao.getRecipeBookById(recipe.getRecipeBookId());
                 item.setCategory(cuisines.get(i).getName());
                 item.setRecipeId(recipe.get_ID());
                 item.setRecipeName(recipe.getName());
                 item.setServings(recipe.getRecipeYield());
+                item.setImage(imageHelper.retrieveImage(
+                        imageHelper.getFilename(book, recipe)));
                 item.setUserAdded(false);
                 browseItems.add(item);
             }
@@ -75,6 +83,7 @@ public class SortRecipesHelper {
     public List<BrowseRecipeCategory> getRecipesByCategory() {
         List<BrowseRecipeCategory> recipeCategories = new ArrayList<>();
         CategoryDao categoryDao = new CategoryDao(context);
+        RecipeBookDao bookDao = new RecipeBookDao(context);
         List<Category> categories = categoryDao.buildCategoryListFromDb();
 
         for (int i=0; i<categories.size(); i++) {
@@ -85,11 +94,14 @@ public class SortRecipesHelper {
             for (int j=0; j<recipes.size(); j++) {
                 BrowseRecipeItem item = new BrowseRecipeItem();
                 Recipe recipe = recipes.get(j);
+                RecipeBook book = bookDao.getRecipeBookById(recipe.getRecipeBookId());
                 item.setCategory(categories.get(i).getName());
                 item.setRecipeId(recipe.get_ID());
                 item.setRecipeName(recipe.getName());
                 item.setServings(recipe.getRecipeYield());
                 item.setIngredientsMissing(getIngredientsMissing(item));
+                item.setImage(imageHelper.retrieveImage(
+                        imageHelper.getFilename(book, recipe)));
                 item.setUserAdded(false);
                 browseItems.add(item);
             }

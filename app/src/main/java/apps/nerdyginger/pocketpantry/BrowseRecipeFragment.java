@@ -1,6 +1,7 @@
 package apps.nerdyginger.pocketpantry;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -25,6 +26,7 @@ import apps.nerdyginger.pocketpantry.dao.RecipeDao;
 import apps.nerdyginger.pocketpantry.dao.UserInventoryItemDao;
 import apps.nerdyginger.pocketpantry.dao.UserRecipeDao;
 import apps.nerdyginger.pocketpantry.dialogs.CustomRecipeDialog;
+import apps.nerdyginger.pocketpantry.helpers.ImageHelper;
 import apps.nerdyginger.pocketpantry.helpers.SortRecipesHelper;
 import apps.nerdyginger.pocketpantry.models.BrowseRecipeCategory;
 import apps.nerdyginger.pocketpantry.models.BrowseRecipeItem;
@@ -41,6 +43,7 @@ public class BrowseRecipeFragment extends Fragment {
     private Context context;
     private BrowseRecipesCategoryAdapter parentAdapter;
     private SortRecipesHelper recipesHelper;
+    private ImageHelper imageHelper;
 
     public BrowseRecipeFragment() {
         // Required empty public constructor
@@ -60,6 +63,7 @@ public class BrowseRecipeFragment extends Fragment {
         // initialize global variables
         context = getContext();
         recipesHelper = new SortRecipesHelper(context);
+        imageHelper = new ImageHelper(context);
         parentAdapter = new BrowseRecipesCategoryAdapter();
 
         // set up parent RecyclerView

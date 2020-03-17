@@ -62,6 +62,7 @@
             android:layout_margin="5dp"
             android:contentDescription="@string/recipe_pic_description"
             android:layout_below="@+id/customRecipeBookContainer"
+            android:scaleType="fitCenter"
             />
 
         <EditText

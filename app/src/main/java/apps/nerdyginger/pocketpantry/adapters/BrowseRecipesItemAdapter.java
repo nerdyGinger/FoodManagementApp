@@ -1,6 +1,7 @@
 package apps.nerdyginger.pocketpantry.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -142,7 +143,7 @@ public class BrowseRecipesItemAdapter extends RecyclerView.Adapter<RecyclerView.
             RecipeCardViewHolder holder = (RecipeCardViewHolder) viewHolder;
             holder.name.setText(item.getRecipeName());
             holder.category.setText(item.getCategory());
-            //holder.image.<setSrc>(item.getRecipeImage()); // figure out logistics of images later
+            holder.image.setImageBitmap(item.getImage());
         } else {
             RecipeCardButtonViewHolder holder = (RecipeCardButtonViewHolder) viewHolder;
             if (MODE.equals("browse")) {

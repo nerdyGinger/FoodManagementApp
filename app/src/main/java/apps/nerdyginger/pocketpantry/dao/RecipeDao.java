@@ -170,6 +170,7 @@ public class RecipeDao {
                 recipeInstructions = Converters.fromString(cursor.getString(cursor.getColumnIndex("recipeInstructions")));
                 recipes.add(new Recipe(id, name, author, url, recipeBookId, datePublished, description, totalTime, keywords, recipeYield, recipeCategory,
                         recipeCuisine, imageUrl, nutritionId, recipeInstructions));
+                cursor.moveToNext();
             }
         } catch (Exception e) {
             Log.e("Database Error", e.toString());
