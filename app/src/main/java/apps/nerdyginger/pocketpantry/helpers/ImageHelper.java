@@ -16,6 +16,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import apps.nerdyginger.pocketpantry.R;
 import apps.nerdyginger.pocketpantry.dao.RecipeBookDao;
 import apps.nerdyginger.pocketpantry.dao.RecipeDao;
 import apps.nerdyginger.pocketpantry.models.Recipe;
@@ -83,7 +84,7 @@ public class ImageHelper {
 
     // downloads image from url and returns as a bitmap object
     // adapted from: https://stackoverflow.com/questions/8992964/android-load-from-url-to-bitmap
-    public Bitmap downloadImage(final String urlString) {
+    private Bitmap downloadImage(final String urlString) {
         final Bitmap[] bitmap = new Bitmap[1];
         Thread t = new Thread(new Runnable() {
             @Override
@@ -113,13 +114,14 @@ public class ImageHelper {
     // retrieves bitmap image from internal storage
     // adapted from: https://stackoverflow.com/questions/17674634/saving-and-reading-bitmaps-images-from-internal-memory-in-android
     public Bitmap retrieveImage(String filename) {
-        Bitmap bitmap = null;
+        Bitmap bitmap;
         try {
             ContextWrapper cw = new ContextWrapper(context);
             File directory = cw.getDir(PATH, Context.MODE_PRIVATE);
             File file = new File(directory, filename + ".jpg");
             bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
         } catch(Exception e) {
+            bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_chef);
             Log.e("IMAGE_ERROR", e.toString());
         }
         return bitmap;
@@ -127,7 +129,7 @@ public class ImageHelper {
 
     // stores bitmap image to internal storage directory
     // adapted from: https://www.tutorialspoint.com/how-to-write-an-image-file-in-internal-storage-in-android
-    public void storeImage(Bitmap bitmap, String filename) {
+    private void storeImage(Bitmap bitmap, String filename) {
         ContextWrapper cw = new ContextWrapper(context);
         File directory = cw.getDir(PATH, Context.MODE_PRIVATE);
         File file = new File(directory, filename + ".jpg");

@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,6 +21,13 @@ import com.google.android.material.navigation.NavigationView;
 
 import java.util.Objects;
 
+import apps.nerdyginger.pocketpantry.helpers.ImageHelper;
+
+/*
+ * Main hub for the action, handling the fragments for all of the other main pages and
+ * controlling access to/from nav drawer activities.
+ * Last edited: 3/18/20
+ */
 public class MainActivity extends AppCompatActivity {
     private String fragmentTag;
     private Fragment currentFragment;
@@ -32,6 +40,22 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //check if first run setup is needed
+        SharedPreferences prefs = getApplicationContext().getSharedPreferences(
+                getBaseContext().getPackageName() + ".database_versions", MODE_PRIVATE);
+        int version = prefs.getInt("imageStoreStatus", 0);
+        if (version == 0) {
+            // images have not yet been downloaded
+            // NOTE: Other values can be set to "imageStoreStatus", so it can function as a version
+            // number, but for now it works like a boolean
+            // TODO-VER1.0: show a splashscreen/loading screen for loading time
+            ImageHelper imageHelper = new ImageHelper(getApplicationContext());
+            imageHelper.loadAllDbImages(); //this will also load the db, which is useful if it hasn't been loaded yet
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putInt("imageStoreStatus", 1);
+            editor.apply();
+        }
 
         //Set up toolbar
         androidx.appcompat.widget.Toolbar toolBar = findViewById(R.id.toolbar);
