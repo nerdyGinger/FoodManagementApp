@@ -27,7 +27,7 @@ import apps.nerdyginger.pocketpantry.models.UserRecipe;
 // and from internal storage using filename schema <recipeBookName>-<recipeName>.jpg
 // PLAN: Download & serialize images on first run, deserialize from internal storage
 // as needed.
-// Last edited: 3/17/2020
+// Last edited: 3/18/2020
 public class ImageHelper {
     private String PATH = "recipeImages";
     private Context context;
@@ -89,16 +89,25 @@ public class ImageHelper {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
+                InputStream input = null;
                 try {
                     URL url = new URL(urlString);
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                     connection.setDoInput(true);
                     connection.connect();
-                    InputStream input = connection.getInputStream();
+                    input = connection.getInputStream();
                     Bitmap myBitmap = BitmapFactory.decodeStream(input);
                     bitmap[0] =  myBitmap;
                 } catch (IOException e) {
                     Log.e("IMAGE_DOWNLOAD_ERROR", e.toString());
+                } finally {
+                    try {
+                        if (input != null) {
+                            input.close();
+                        }
+                    } catch (Exception e) {
+                        Log.e("DOWNLOAD_IO_ERROR", e.toString());
+                    }
                 }
             }
         });
@@ -115,14 +124,27 @@ public class ImageHelper {
     // adapted from: https://stackoverflow.com/questions/17674634/saving-and-reading-bitmaps-images-from-internal-memory-in-android
     public Bitmap retrieveImage(String filename) {
         Bitmap bitmap;
+        FileInputStream fis = null;
         try {
             ContextWrapper cw = new ContextWrapper(context);
             File directory = cw.getDir(PATH, Context.MODE_PRIVATE);
             File file = new File(directory, filename + ".jpg");
-            bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
+            fis = new FileInputStream(file);
+            bitmap = BitmapFactory.decodeStream(fis);
         } catch(Exception e) {
+            //TODO: why isn't my default bitmap working?
             bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_chef);
             Log.e("IMAGE_ERROR", e.toString());
+        } finally {
+            // "A resource failed to call close" warning kept clogging my logcat, and I traced
+            // it to missing this finally clause. Seems really Java-clunky, but oh well.
+            try {
+                if (fis != null) {
+                    fis.close();
+                }
+            } catch (Exception e) {
+                Log.e("FILE_IO_ERROR", e.toString());
+            }
         }
         return bitmap;
     }
@@ -134,7 +156,7 @@ public class ImageHelper {
         File directory = cw.getDir(PATH, Context.MODE_PRIVATE);
         File file = new File(directory, filename + ".jpg");
         if (!file.exists()) {
-            FileOutputStream fos;
+            FileOutputStream fos = null;
             try {
                 fos = new FileOutputStream(file);
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
@@ -142,6 +164,14 @@ public class ImageHelper {
                 fos.close();
             } catch (Exception e) {
                 Log.e("IMAGE_STORE_ ERROR", e.toString());
+            } finally {
+                try {
+                    if (fos != null) {
+                        fos.close();
+                    }
+                } catch (Exception e) {
+                    Log.e("STORE_IO_ERROR", e.toString());
+                }
             }
         }
     }

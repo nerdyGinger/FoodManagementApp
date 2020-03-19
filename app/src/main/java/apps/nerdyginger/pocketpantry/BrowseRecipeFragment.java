@@ -2,6 +2,7 @@ package apps.nerdyginger.pocketpantry;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -14,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -38,12 +40,13 @@ import apps.nerdyginger.pocketpantry.models.UserRecipeBoxItem;
 // Fragment for the browse recipes page; displays recipes that
 // are in the read-only db by category
 // The heavy lifting for recipe sorting is handled by the SortRecipesHelper
-// Last edited: 2/20/2020
-public class BrowseRecipeFragment extends Fragment {
+// Last edited: 3/18/2020
+public class BrowseRecipeFragment extends Fragment implements SearchView.OnQueryTextListener {
     private Context context;
     private BrowseRecipesCategoryAdapter parentAdapter;
     private SortRecipesHelper recipesHelper;
     private ImageHelper imageHelper;
+    private List<BrowseRecipeCategory> masterList = new ArrayList<>();
 
     public BrowseRecipeFragment() {
         // Required empty public constructor
@@ -66,6 +69,10 @@ public class BrowseRecipeFragment extends Fragment {
         imageHelper = new ImageHelper(context);
         parentAdapter = new BrowseRecipesCategoryAdapter();
 
+        // set up search
+        SearchView search = view.findViewById(R.id.browseRecipesSearchBar);
+        search.setOnQueryTextListener(this);
+
         // set up parent RecyclerView
         RecyclerView categoriesRv = view.findViewById(R.id.browseRecipesRecycler);
         categoriesRv.addItemDecoration(new DividerItemDecoration(context, LinearLayoutManager.VERTICAL));
@@ -73,14 +80,7 @@ public class BrowseRecipeFragment extends Fragment {
         categoriesRv.setLayoutManager(llm);
         categoriesRv.setAdapter(parentAdapter);
 
-        // add data to adapter
-        List<BrowseRecipeCategory> masterList = recipesHelper.getRecipesByCategory(); //TODO-VER1.0: (?) instead grab random keywords?
-        masterList.addAll(recipesHelper.getRecipesByCuisine());
-        Collections.shuffle(masterList); //shuffle categories so they are in a different order every time
-        BrowseRecipeCategory recommended = new BrowseRecipeCategory();
-        recommended.setCategoryName("Recommended For You");
-        recommended.setRecipeCards(recipesHelper.getRecommendedRecipes(masterList));
-        masterList.add(0, recommended);
+        new LoadRecipeAsync(context).execute();
 
         // set up recycler clicks
         BrowseRecipeClickListener listener = new BrowseRecipeClickListener() {
@@ -99,9 +99,46 @@ public class BrowseRecipeFragment extends Fragment {
         };
         parentAdapter.setChildListener(listener);
 
-        parentAdapter.updateData(masterList);
-
         return view;
+    }
+
+    public void updateRecycler(List<BrowseRecipeCategory> updatedData) {
+        masterList = updatedData;
+        parentAdapter.updateData(masterList);
+    }
+
+    // This works, but I must admit that it is really hack-ish
+    // TODO-VER1.0: revisit and revise to be more smart and make the compiler happier:)
+    public class LoadRecipeAsync extends AsyncTask<Void, List<BrowseRecipeCategory>, Void> {
+        private Context context;
+
+        LoadRecipeAsync(Context context) {
+            this.context = context;
+        }
+
+        @SafeVarargs
+        @Override
+        protected final void onProgressUpdate(List<BrowseRecipeCategory>... values) {
+            updateRecycler(values[0]);
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected final Void doInBackground(Void... params) {
+            SortRecipesHelper recipesHelper = new SortRecipesHelper(context);
+            List<BrowseRecipeCategory> list = new ArrayList<>();
+            list = recipesHelper.getRecipesByCategory(); //TODO-VER1.0: (?) instead grab random keywords?
+            publishProgress(list);
+            list.addAll(recipesHelper.getRecipesByCuisine());
+            Collections.shuffle(list); //shuffle categories so they are in a different order every time
+            publishProgress(list);
+            BrowseRecipeCategory recommended = new BrowseRecipeCategory();
+            recommended.setCategoryName("Recommended For You");
+            recommended.setRecipeCards(recipesHelper.getRecommendedRecipes(list));
+            list.add(0, recommended);
+            publishProgress(list);
+            return null;
+        }
     }
 
     private UserRecipeBoxItem convertToRecipeBoxItem(BrowseRecipeItem browseItem) {
@@ -123,5 +160,43 @@ public class BrowseRecipeFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+    }
+
+    @Override
+    public boolean onQueryTextChange(String query) {
+        //TODO: implement an efficient filtering method for browse recipe nested rv
+        parentAdapter.updateData(filterCategories(masterList, query));
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    private List<BrowseRecipeCategory> filterCategories(List<BrowseRecipeCategory> categories, String query) {
+        List<BrowseRecipeCategory> filtered = new ArrayList<>();
+        String lowerQuery = query.toLowerCase();
+        for (BrowseRecipeCategory category : categories) {
+            List<BrowseRecipeItem> innerFiltered = filterItems(category.getRecipeCards(), lowerQuery);
+            if (innerFiltered.size() > 0) {
+                BrowseRecipeCategory temp = new BrowseRecipeCategory();
+                temp.setCategoryName(category.getCategoryName());
+                temp.setRecipeCards(innerFiltered);
+                filtered.add(temp);
+            }
+        }
+        return filtered;
+    }
+
+    //filter recipes by query text (expected in lower case)
+    private List<BrowseRecipeItem> filterItems(List<BrowseRecipeItem> items, String query) {
+        List<BrowseRecipeItem> filtered = new ArrayList<>();
+        for (BrowseRecipeItem item : items) {
+            if (item.getRecipeName().toLowerCase().contains(query)) {
+                filtered.add(item);
+            }
+        }
+        return filtered;
     }
 }

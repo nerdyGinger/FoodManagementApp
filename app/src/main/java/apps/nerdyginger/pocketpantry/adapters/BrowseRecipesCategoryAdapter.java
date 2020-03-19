@@ -43,6 +43,7 @@ public class BrowseRecipesCategoryAdapter extends RecyclerView.Adapter<RecyclerV
 
     public void updateData(List<BrowseRecipeCategory> data) {
         dataSet = data;
+        notifyDataSetChanged();
     }
 
     public BrowseRecipeCategory getItemAtPosition(int position) {

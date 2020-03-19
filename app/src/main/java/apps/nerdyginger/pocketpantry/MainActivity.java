@@ -34,8 +34,6 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout navLayout;
     private boolean drawerOpen = false;
 
-    //This is the main activity (fittingly named, ya?) that handles the interactions from the
-    //main tabbed screens
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

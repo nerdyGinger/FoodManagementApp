@@ -215,6 +215,7 @@ public class CustomRecipeDialog extends DialogFragment {
             title.setText(getString(R.string.recipe_dialog_view_title));
             editBtn.setVisibility(View.VISIBLE);
             if ( ! existingBoxItem.isUserAdded()) {
+                editBtn.setVisibility(View.GONE);
                 editBtn.setEnabled(false);
             }
             editBtn.setOnClickListener(new View.OnClickListener() {
@@ -369,41 +370,40 @@ public class CustomRecipeDialog extends DialogFragment {
         });
     }
 
-    private void performUpdateOperations() {
-
+    private void performUpdateOperations()  {
         try {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    UserCustomDatabase db = UserCustomDatabase.getDatabase(getContext());
-                    UserRecipeDao dao = db.getUserRecipeDao();
-                    UserRecipeItemJoinDao joinDao = db.getUserRecipeItemJoinDao();
-                    UserRecipeBoxDao recipeBoxDao = db.getUserRecipeBoxDao();
+                UserCustomDatabase db = UserCustomDatabase.getDatabase(getContext());
+                UserRecipeDao dao = db.getUserRecipeDao();
+                UserRecipeItemJoinDao joinDao = db.getUserRecipeItemJoinDao();
+                UserRecipeBoxDao recipeBoxDao = db.getUserRecipeBoxDao();
 
-                    if (existingBoxItem.isUserAdded()) {
-                        //double check that we're editing an existing custom recipe
-                        newRecipe.set_ID(existingBoxItem.getRecipeId());
-                        dao.update(newRecipe);
-                        existingBoxItem.setRecipeName(newRecipe.getName());
-                        existingBoxItem.setCategory(newRecipe.getRecipeCategory());
-                        existingBoxItem.setServings(newRecipe.getRecipeYield());
-                        recipeBoxDao.update(existingBoxItem);
+                if (existingBoxItem.isUserAdded()) {
+                    //double check that we're editing an existing custom recipe
+                    newRecipe.set_ID(existingBoxItem.getRecipeId());
+                    dao.update(newRecipe);
+                    existingBoxItem.setRecipeName(newRecipe.getName());
+                    existingBoxItem.setCategory(newRecipe.getRecipeCategory());
+                    existingBoxItem.setServings(newRecipe.getRecipeYield());
+                    recipeBoxDao.update(existingBoxItem);
 
-                        //delete old ingredient join items
-                        List<UserRecipeItemJoin> oldIngredients = joinDao.getJoinItemsInRecipe(existingBoxItem.getRecipeId());
-                        for (int i=0; i<oldIngredients.size(); i++) {
-                            joinDao.delete(oldIngredients.get(i));
-                        }
-
-                        //add new ingredient join items
-                        for (int i=0; i<ingredientsList.size(); i++) {
-                            if (ingredientsList.get(i).itemId == -1) {
-                                ingredientsList.get(i).itemId = 0;
-                            }
-                            ingredientsList.get(i).recipeId = existingBoxItem.getRecipeId();
-                            joinDao.insert(ingredientsList.get(i));
-                        }
+                    //delete old ingredient join items
+                    List<UserRecipeItemJoin> oldIngredients = joinDao.getJoinItemsInRecipe(existingBoxItem.getRecipeId());
+                    for (int i=0; i<oldIngredients.size(); i++) {
+                        joinDao.delete(oldIngredients.get(i));
                     }
+
+                    //add new ingredient join items
+                    for (int i=0; i<ingredientsList.size(); i++) {
+                        if (ingredientsList.get(i).itemId == -1) {
+                            ingredientsList.get(i).itemId = 0;
+                        }
+                        ingredientsList.get(i).recipeId = existingBoxItem.getRecipeId();
+                        joinDao.insert(ingredientsList.get(i));
+                    }
+                }
                 }
             }).start();
         } catch (Exception e) {
@@ -460,7 +460,7 @@ public class CustomRecipeDialog extends DialogFragment {
     /*
      * Inner instructionsAdapter class for our lovely pager in the custom recipe dialog
      */
-    private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
+    private static class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
         private String parentMode;
 
         ScreenSlidePagerAdapter (FragmentManager manager, String mode) {
