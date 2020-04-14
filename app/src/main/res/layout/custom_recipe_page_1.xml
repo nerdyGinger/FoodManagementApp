@@ -8,7 +8,6 @@
     android:fadingEdgeLength="15dp"
     android:background="@drawable/paper"
     >
-    <!-- TODO: attribute paper to subtlepatterns.com -->
 
     <RelativeLayout
         android:orientation="vertical"
@@ -16,61 +15,16 @@
         android:layout_height="wrap_content"
         >
 
-        <RelativeLayout
-            android:id="@+id/customRecipeBookContainer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            >
-
-            <TextView
-                android:id="@+id/bookContainerLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/custom_text_color"
-                android:layout_margin="5dp"
-                android:text="Recipe Book:"
-                />
-
-            <TextView
-                android:id="@+id/bookContainerName"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:textColor="@color/custom_text_color"
-                android:layout_margin="5dp"
-                android:layout_below="@+id/bookContainerLabel"
-                android:text="PREVIEW"
-                />
-
-            <Button
-                android:id="@+id/bookContainerBtn"
-                android:layout_width="45dp"
-                android:layout_height="20dp"
-                android:layout_toEndOf="@+id/bookContainerName"
-                android:layout_below="@+id/bookContainerLabel"
-                android:padding="2dp"
-                android:textSize="12sp"
-                android:layout_margin="5dp"
-                android:text="View"
-                />
-
-        </RelativeLayout>
-
-        <ImageButton
-            android:id="@+id/customRecipeImage"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_margin="5dp"
-            android:contentDescription="@string/recipe_pic_description"
-            android:layout_below="@+id/customRecipeBookContainer"
-            android:scaleType="fitCenter"
+        <include
+            layout="@layout/recipe_book_header"
             />
+
 
         <EditText
             android:id="@+id/customRecipeName"
-            android:layout_width="200dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            android:layout_toEndOf="@+id/customRecipeImage"
             android:maxLines="1"
             android:ellipsize="end"
             android:textColor="@color/custom_text_color"
@@ -81,15 +35,70 @@
 
         <EditText
             android:id="@+id/customRecipeAuthor"
-            android:layout_width="200dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:layout_below="@+id/customRecipeName"
-            android:layout_toEndOf="@+id/customRecipeImage"
             android:maxLines="1"
             android:ellipsize="end"
             android:textColor="@color/custom_text_color"
             android:hint="@string/recipe_dialog_author"
+            />
+
+        <ImageButton
+            android:id="@+id/customRecipeImage"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_margin="5dp"
+            android:contentDescription="@string/recipe_pic_description"
+            android:layout_below="@+id/customRecipeAuthor"
+            android:scaleType="fitCenter"
+            />
+
+        <EditText
+            android:id="@+id/customRecipeTotalTime"
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_below="@+id/customRecipeAuthor"
+            android:layout_toEndOf="@+id/customRecipeImage"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textColor="@color/custom_text_color"
+            android:hint="@string/recipe_dialog_time"
+            android:inputType="text"
+            />
+
+        <EditText
+            android:id="@+id/customRecipeYield"
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_below="@+id/customRecipeTotalTime"
+            android:layout_toEndOf="@+id/customRecipeImage"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textColor="@color/custom_text_color"
+            android:hint="@string/recipe_dialog_yield"
+            android:inputType="text"
+            />
+
+        <Spinner
+            android:id="@+id/customRecipeCategory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_below="@+id/customRecipeYield"
+            android:textColor="@color/custom_text_color"
+            />
+
+        <Spinner
+            android:id="@+id/customRecipeCuisine"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_below="@+id/customRecipeCategory"
+            android:textColor="@color/custom_text_color"
             />
 
         <!--Skipping date published-->
@@ -99,7 +108,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            android:layout_below="@+id/customRecipeImage"
+            android:layout_below="@+id/customRecipeCuisine"
             android:hint="@string/recipe_dialog_description"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             >
@@ -116,39 +125,12 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <EditText
-            android:id="@+id/customRecipeTotalTime"
-            android:layout_width="130dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:layout_below="@+id/customRecipeDescriptionLayout"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:textColor="@color/custom_text_color"
-            android:hint="@string/recipe_dialog_time"
-            android:inputType="text"
-            />
-
-        <EditText
-            android:id="@+id/customRecipeYield"
-            android:layout_width="130dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:layout_below="@+id/customRecipeDescriptionLayout"
-            android:layout_toEndOf="@+id/customRecipeTotalTime"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:textColor="@color/custom_text_color"
-            android:hint="@string/recipe_dialog_yield"
-            android:inputType="text"
-            />
-
         <SearchView
             android:id="@+id/customRecipeKeywordsSearch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            android:layout_below="@+id/customRecipeTotalTime"
+            android:layout_below="@+id/customRecipeDescriptionLayout"
             android:layout_centerHorizontal="true"
             android:queryHint="Keywords"
             android:iconifiedByDefault="false"
@@ -162,24 +144,6 @@
             android:layout_margin="5dp"
             android:layout_below="@+id/customRecipeKeywordsSearch"
             android:layout_centerHorizontal="true"
-            />
-
-        <Spinner
-            android:id="@+id/customRecipeCategory"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:layout_below="@+id/customRecipeKeywords"
-            android:textColor="@color/custom_text_color"
-            />
-
-        <Spinner
-            android:id="@+id/customRecipeCuisine"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:layout_below="@+id/customRecipeCategory"
-            android:textColor="@color/custom_text_color"
             />
 
         <!-- Skipping nutrition -->

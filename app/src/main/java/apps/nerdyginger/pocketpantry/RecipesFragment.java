@@ -98,6 +98,7 @@ public class RecipesFragment extends Fragment implements SearchView.OnQueryTextL
             }
         };
         adapter = new RecipesListAdapter(listener);
+        adapter.setDetailedView(context);
         //adapter.updateData(dataList[0]);
         rv.setAdapter(adapter);
         rv.setEmptyView(view.findViewById(R.id.recipesEmptyMessage));

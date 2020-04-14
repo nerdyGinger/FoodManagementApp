@@ -2,6 +2,8 @@ package apps.nerdyginger.pocketpantry.adapters;
 
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +24,7 @@ import apps.nerdyginger.pocketpantry.models.UserRecipeBoxItem;
 public class RecipesListAdapter extends EmptyRecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<UserRecipeBoxItem> dataSet = new ArrayList<>();
     private RecyclerViewClickListener mListener;
+    private boolean detailed = true;
 
     public class SimpleRecipeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView recipeName;
@@ -149,12 +152,16 @@ public class RecipesListAdapter extends EmptyRecyclerView.Adapter<RecyclerView.V
 
     @Override
     public int getItemViewType(int position) {
-        UserRecipeBoxItem recipe = dataSet.get(position);
-        if (true) { //TODO: change to check preferences
+        if (detailed) {
             // user has set preference to detailed recipe list
             return 2;
         } else {
             return 1;
         }
+    }
+
+    public void setDetailedView(Context context) {
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+        detailed = pref.getBoolean("recipeViewingMode", true);
     }
 }

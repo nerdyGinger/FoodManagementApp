@@ -66,6 +66,7 @@ import apps.nerdyginger.pocketpantry.dao.UserRecipeDao;
 import apps.nerdyginger.pocketpantry.dao.UserRecipeItemJoinDao;
 import apps.nerdyginger.pocketpantry.helpers.ImageHelper;
 import apps.nerdyginger.pocketpantry.helpers.ItemQuantityHelper;
+import apps.nerdyginger.pocketpantry.helpers.RecipeDialogHelper;
 import apps.nerdyginger.pocketpantry.models.Recipe;
 import apps.nerdyginger.pocketpantry.models.RecipeBook;
 import apps.nerdyginger.pocketpantry.models.RecipeItemJoin;
@@ -81,11 +82,12 @@ import apps.nerdyginger.pocketpantry.view_models.RecipeInstructionsViewModel;
  * ... Okay, so the _dialog_ has to be beautiful, elegant, and absolutely dreamy. Apparently I'm willing
  * to sacrifice the beauty of this class for that cause, because no 900+ LoC class can be called dreamy.
  *
- * Last Edited: 2/25/2020
+ * Last Edited: 3/19/2020
  */
 public class CustomRecipeDialog extends DialogFragment {
     private Context context;
     private ItemQuantityHelper quantityHelper;
+    private RecipeDialogHelper dialogHelper;
     private static final int pages = 3; // Slide-able pages for basic info, ingredients, and instructions
     private ViewPager pager;
     private Button nextBtn;
@@ -127,14 +129,16 @@ public class CustomRecipeDialog extends DialogFragment {
 
     private void constructorGuts(String mode, UserRecipeBoxItem item) {
         MODE = mode;
+        dialogHelper = new RecipeDialogHelper(context);
         existingBoxItem = item;
         newRecipe = new UserRecipe();
         if ( ! MODE.equals("create") && ! existingBoxItem.isUserAdded()) {
             //view/edit mode, read-only item; get from read-only db
-            getReadOnlyItem();
+            readOnlyItem =  dialogHelper.getReadOnlyItem(existingBoxItem);
+            recipeBook = dialogHelper.getRecipeBook(readOnlyItem);
         } else if ( ! MODE.equals("create")) {
             //view/edit mode, is custom; get from custom db, set newRecipe value to existing values
-            getCustomItem();
+            existingCustomRecipeItem = dialogHelper.getCustomItem(existingBoxItem);
             newRecipe.setName(existingCustomRecipeItem.getName());
             newRecipe.setAuthor(existingCustomRecipeItem.getAuthor());
             newRecipe.setDescription(existingCustomRecipeItem.getDescription());
@@ -149,49 +153,6 @@ public class CustomRecipeDialog extends DialogFragment {
 
     public void setContext(Context context) {
         this.context = context;
-    }
-
-    private void getCustomItem() {
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-            try {
-                UserCustomDatabase db = UserCustomDatabase.getDatabase(context);
-                UserRecipeDao dao = db.getUserRecipeDao();
-                existingCustomRecipeItem = dao.getUserRecipeById(existingBoxItem.getRecipeId());
-            } catch (Exception e) {
-                Log.e("Database Error", "Error accessing custom recipe item: " + e.toString());
-            }
-            }
-        });
-        t.start();
-        try {
-            t.join();
-        } catch (Exception e) {
-            Log.e("Thread Exception", "Problem waiting for db thread: " + e.toString());
-        }
-    }
-
-    private void getReadOnlyItem() {
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-            try {
-                RecipeDao dao = new RecipeDao(context);
-                RecipeBookDao bookDao = new RecipeBookDao(context);
-                readOnlyItem = dao.buildRecipeFromId(String.valueOf(existingBoxItem.getRecipeId()));
-                recipeBook = bookDao.getRecipeBookById(readOnlyItem.getRecipeBookId());
-            } catch (Exception e) {
-                Log.e("Database Error", "Error accessing read-only recipe item: " + e.toString() + Arrays.toString(e.getStackTrace()));
-            }
-            }
-        });
-        t.start();
-        try {
-            t.join();
-        } catch (Exception e) {
-            Log.e("Thread Exception", "Problem waiting for db thread: " + e.toString());
-        }
     }
 
     @Override
@@ -211,7 +172,7 @@ public class CustomRecipeDialog extends DialogFragment {
         TabLayout tabs = parentView.findViewById(R.id.customRecipePagerDots);
 
         //set parent views according to mode
-        if (MODE.equals("view")) {
+        if (MODE.contains("view")) {
             title.setText(getString(R.string.recipe_dialog_view_title));
             editBtn.setVisibility(View.VISIBLE);
             if ( ! existingBoxItem.isUserAdded()) {
@@ -247,7 +208,6 @@ public class CustomRecipeDialog extends DialogFragment {
                     nextBtn.setText(getString(R.string.app_next_btn));
                 }
             }
-
             @Override
             public void onPageSelected(int position) {
                 if (position == 2) {
@@ -256,52 +216,11 @@ public class CustomRecipeDialog extends DialogFragment {
                     nextBtn.setText(getString(R.string.app_next_btn));
                 }
             }
-
             @Override
             public void onPageScrollStateChanged(int state) {  }
         });
-
         addDialogBtnClicks(parentView);
-
         return parentView;
-    }
-
-    private int getItemId(final String name) {
-        final int[] id = new int[1];
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    UserCustomDatabase db = UserCustomDatabase.getDatabase(getContext());
-                    UserInventoryItemDao dao = db.getUserInventoryDao();
-                    id[0] = dao.getInventoryItemIdByName(name);
-                    if (id[0] == 0) {
-                        //not in inventory, check read-only db
-                        Log.e("INVENTORY", "'" + name + "' was not found in inventory, searching read-only db");
-                        try {
-                            ItemDao itemDao = new ItemDao(getContext());
-                            String stringId =  itemDao.getItemId(name);
-                            id[0] = Integer.parseInt(stringId);
-                        } catch (Exception e2) {
-                            //item doesn't exist in either db, set id to -1
-                            Log.e("INVENTORY", "'" + name + "' was not found in read-only db, setting item id to -1");
-                            id[0] = -1;
-                        }
-                    } else {
-                        Log.e("INVENTORY", "'" + name + "' was found in inventory! Item id = " + id[0]);
-                    }
-                } catch (Exception e) {
-                    Log.e("Database error", e.toString());
-                }
-            }
-        });
-        t.start();
-        try {
-            t.join();
-        } catch (Exception e) {
-            Log.e("Thread Exception", "Problem waiting for db thread: " + e.toString());
-        }
-        return id[0];
     }
 
     private void addDialogBtnClicks(View view) {
@@ -322,139 +241,72 @@ public class CustomRecipeDialog extends DialogFragment {
         });
 
         nextBtn = view.findViewById(R.id.customRecipeSaveBtn);
-        nextBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (pager.getCurrentItem() == 2) {
-                    //get instructions
-                    ArrayList<String> instructions = new ArrayList<>();
-                    for (int i = 0; i< instructionsAdapter.getItemCount(); i++) {
-                        if ( ! instructionsAdapter.getItemAtPosition(i).getInstructionText().equals("")) {
-                            instructions.add(instructionsAdapter.getItemAtPosition(i).getInstructionText());
-                        }
-                    }
-                    //get ingredients
-                    ingredientsList.clear(); //make sure this list is empty
-                    for (int i=0; i<ingredientsAdapter.getItemCount(); i++) {
-                        RecipeIngredientsViewModel viewModelItem = ingredientsAdapter.getItemAtPosition(i);
-                        if ( ! viewModelItem.getItemName().equals("")) {
-                            UserRecipeItemJoin tempItem = new UserRecipeItemJoin();
-                            tempItem.recipeId = ! MODE.equals("create") && existingBoxItem.isUserAdded() ? existingBoxItem.getRecipeId() : -1;
-                            tempItem.itemId = getItemId(viewModelItem.getItemName());
-                            tempItem.inInventory = quantityHelper.itemNameInInventory(viewModelItem.getItemName());
-                            tempItem.itemName = viewModelItem.getItemName();
-                            tempItem.detail = viewModelItem.getDetail();
-                            Fraction quantityFrac = new Fraction();
-                            if ( ! quantityFrac.isValidString(viewModelItem.getAmount())) {
-                                Toast.makeText(getContext(), "Invalid ingredient amount: " + viewModelItem.getAmount() +
-                                        tempItem.itemName, Toast.LENGTH_SHORT).show();
-                                return;
-                            }
-                            tempItem.quantity = quantityFrac.fromString(viewModelItem.getAmount()).toString();
-                            tempItem.unit = viewModelItem.getUnit().equals("Unit") ? "" : viewModelItem.getUnit();
-                            ingredientsList.add(tempItem);
-                        }
-                    }
-                    newRecipe.setRecipeInstructions(instructions);
-                    newRecipe.setKeywords(keywordsList);
-                    if (MODE.equals("edit") && existingBoxItem.isUserAdded()) {
-                        performUpdateOperations();
-                    } else if (MODE.equals("edit") | MODE.equals("create")) {
-                        performInsertOperations();
-                    }
-                    dismiss();
-                } else {
-                    pager.setCurrentItem(pager.getCurrentItem() + 1, true);
-                }
-            }
-        });
-    }
-
-    private void performUpdateOperations()  {
-        try {
-            new Thread(new Runnable() {
+        if (MODE.equals("browse-view")) {
+            nextBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void run() {
-                UserCustomDatabase db = UserCustomDatabase.getDatabase(getContext());
-                UserRecipeDao dao = db.getUserRecipeDao();
-                UserRecipeItemJoinDao joinDao = db.getUserRecipeItemJoinDao();
-                UserRecipeBoxDao recipeBoxDao = db.getUserRecipeBoxDao();
-
-                if (existingBoxItem.isUserAdded()) {
-                    //double check that we're editing an existing custom recipe
-                    newRecipe.set_ID(existingBoxItem.getRecipeId());
-                    dao.update(newRecipe);
-                    existingBoxItem.setRecipeName(newRecipe.getName());
-                    existingBoxItem.setCategory(newRecipe.getRecipeCategory());
-                    existingBoxItem.setServings(newRecipe.getRecipeYield());
-                    recipeBoxDao.update(existingBoxItem);
-
-                    //delete old ingredient join items
-                    List<UserRecipeItemJoin> oldIngredients = joinDao.getJoinItemsInRecipe(existingBoxItem.getRecipeId());
-                    for (int i=0; i<oldIngredients.size(); i++) {
-                        joinDao.delete(oldIngredients.get(i));
+                public void onClick(View v) {
+                    // this means we want to add the recipe to recipe box
+                    if (pager.getCurrentItem() == 2) {
+                        //last page, add to recipe box and dismiss
+                        dismiss();
+                    } else {
+                        pager.setCurrentItem(pager.getCurrentItem() + 1, true);
                     }
-
-                    //add new ingredient join items
-                    for (int i=0; i<ingredientsList.size(); i++) {
-                        if (ingredientsList.get(i).itemId == -1) {
-                            ingredientsList.get(i).itemId = 0;
+                }
+            });
+        } else {
+            nextBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (pager.getCurrentItem() == 2) {
+                        //get instructions
+                        ArrayList<String> instructions = new ArrayList<>();
+                        for (int i = 0; i< instructionsAdapter.getItemCount(); i++) {
+                            if ( ! instructionsAdapter.getItemAtPosition(i).getInstructionText().equals("")) {
+                                instructions.add(instructionsAdapter.getItemAtPosition(i).getInstructionText());
+                            }
                         }
-                        ingredientsList.get(i).recipeId = existingBoxItem.getRecipeId();
-                        joinDao.insert(ingredientsList.get(i));
+                        //get ingredients
+                        ingredientsList.clear(); //make sure this list is empty
+                        for (int i=0; i<ingredientsAdapter.getItemCount(); i++) {
+                            RecipeIngredientsViewModel viewModelItem = ingredientsAdapter.getItemAtPosition(i);
+                            if ( ! viewModelItem.getItemName().equals("")) {
+                                UserRecipeItemJoin tempItem = new UserRecipeItemJoin();
+                                tempItem.recipeId = ! MODE.equals("create") && existingBoxItem.isUserAdded() ? existingBoxItem.getRecipeId() : -1;
+                                tempItem.itemId = dialogHelper.getItemId(viewModelItem.getItemName());
+                                tempItem.itemName = viewModelItem.getItemName();
+                                tempItem.detail = viewModelItem.getDetail();
+                                Fraction quantityFrac = new Fraction();
+                                if ( ! quantityFrac.isValidString(viewModelItem.getAmount())) {
+                                    Toast.makeText(getContext(), "Invalid ingredient amount: " + viewModelItem.getAmount() +
+                                            tempItem.itemName, Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+                                tempItem.quantity = quantityFrac.fromString(viewModelItem.getAmount()).toString();
+                                tempItem.unit = viewModelItem.getUnit().equals("Unit") ? "" : viewModelItem.getUnit();
+                                ingredientsList.add(tempItem);
+                            }
+                        }
+                        newRecipe.setRecipeInstructions(instructions);
+                        newRecipe.setKeywords(keywordsList);
+                        if (MODE.equals("edit") && existingBoxItem.isUserAdded()) {
+                            performUpdateOperations();
+                        } else if (MODE.equals("edit") | MODE.equals("create")) {
+                            dialogHelper.performInsertOperations(newRecipe, ingredientsList);
+                        }
+                        dismiss();
+                    } else {
+                        pager.setCurrentItem(pager.getCurrentItem() + 1, true);
                     }
                 }
-                }
-            }).start();
-        } catch (Exception e) {
-            Toast.makeText(getContext(), "An error occurred - data may not have been saved", Toast.LENGTH_SHORT).show();
-            Log.e("Database Error", e.toString());
+            });
         }
     }
 
-    private void performInsertOperations(){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    //insert UserRecipe
-                    UserCustomDatabase db = UserCustomDatabase.getDatabase(getContext());
-                    UserRecipeDao dao = db.getUserRecipeDao();
-                    UserRecipeItemJoinDao itemsDao = db.getUserRecipeItemJoinDao();
-                    UserRecipeBoxDao recipeBoxDao = db.getUserRecipeBoxDao();
-                    long[] id = new long[1];
-                    try {
-                        newRecipe.set_ID(dao.getAllUserRecipes().size() + 1);
-                        id = dao.insert(newRecipe);
-                    } catch (Exception e){
-                        Log.e("Nope! Didn't work!", "Recipe _ID: " + newRecipe.get_ID() + " exists for Recipe: " + dao.getUserRecipeById(newRecipe.get_ID()).getName());
-                        newRecipe.set_ID(newRecipe.get_ID() + 1);
-                        id[0] = (long) newRecipe.get_ID();
-                    }
-
-                    //insert UserRecipeBoxItem
-                    UserRecipeBoxItem boxItem = new UserRecipeBoxItem();
-                    boxItem.setUserAdded(true);
-                    boxItem.setRecipeId((int) id[0]);
-                    boxItem.setRecipeName(newRecipe.getName());
-                    boxItem.setCategory(newRecipe.getRecipeCategory());
-                    boxItem.setServings(newRecipe.getRecipeYield());
-                    recipeBoxDao.insert(boxItem);
-
-                    //add ingredients to join table
-                    for (int i = 0; i < ingredientsList.size(); i++) {
-                        if (ingredientsList.get(i).itemId == -1) {
-                            ingredientsList.get(i).itemId = 0;
-                        }
-                        ingredientsList.get(i).recipeId = (int) id[0];
-                        itemsDao.insert(ingredientsList.get(i));
-                    }
-                } catch (Exception e) {
-                    Toast.makeText(getContext(), getString(R.string.database_unknown_error), Toast.LENGTH_SHORT).show();
-                    Log.e("Database Error", e.toString());
-                }
-            }
-        }).start();
+    private void performUpdateOperations()  {
+        if (dialogHelper.updateCustomRecipe(newRecipe, existingBoxItem)) {
+            dialogHelper.updateIngredients(ingredientsList, existingBoxItem.getRecipeId());
+        }
     }
 
     /*
@@ -539,7 +391,6 @@ public class CustomRecipeDialog extends DialogFragment {
                     break;
                 case "view":
                     // set up disabled page filled with data
-                    //set image
                     imageBtn.setEnabled(false);
                     categorySpinner.setEnabled(false);
                     cuisineSpinner.setEnabled(false);
@@ -553,6 +404,7 @@ public class CustomRecipeDialog extends DialogFragment {
                     //show/hide recipe book info
                     if (existingBoxItem.isUserAdded()) {
                         recipeBookContainer.setVisibility(View.GONE);
+                        //TODO: set user-added image
                     } else {
                         // is read-only, set image
                         imageBtn.setImageBitmap(imageHelper.retrieveImage(imageHelper.getFilename(recipeBook, readOnlyItem)));
@@ -569,6 +421,22 @@ public class CustomRecipeDialog extends DialogFragment {
                             }
                         });
                     }
+                    break;
+                case "browse-view":
+                    // set a different layout?
+                    imageBtn.setImageBitmap(imageHelper.retrieveImage(imageHelper.getFilename(recipeBook, readOnlyItem)));
+                    recipeBookContainer.setVisibility(View.VISIBLE);
+                    TextView recipeBookName = view.findViewById(R.id.bookContainerName);
+                    recipeBookName.setText(recipeBook.getName());
+                    Button recipeBookBtn = view.findViewById(R.id.bookContainerBtn);
+                    recipeBookBtn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(getContext(), RecipeBookActivity.class);
+                            intent.putExtra("RecipeBookId", recipeBook.get_ID());
+                            startActivity(intent);
+                        }
+                    });
                     break;
                 case "edit":
                     // set up page filled with data, prepare to overwrite existing values

@@ -119,9 +119,9 @@ public class ListsFragment extends Fragment {
         ListItemViewModel viewModel = ViewModelProviders.of(this).get(ListItemViewModel.class);
         viewModel.getListItemList().observe(getViewLifecycleOwner(), new Observer<List<UserListItem>>() {
             @Override
-            public void onChanged(List<UserListItem> userListItems) { //TODO: BUG - list is reordered with every update operation, undoing sorting because positions aren't saved
+            public void onChanged(List<UserListItem> userListItems) {
                 if ( ! adapter.isLocked()) {
-                    adapter.updateData(userListItems);                      // however, how to save positions when that would trigger this method, too?
+                    adapter.updateData(userListItems);
                     adapter.orderItemsByPosition();
                     adapter.notifyDataSetChanged();
                 }

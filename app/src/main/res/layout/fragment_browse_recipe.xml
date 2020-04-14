@@ -13,6 +13,14 @@
         android:iconifiedByDefault="false"
         />
 
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/browseRecipesLoader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/double_ring_loader"
+        android:layout_centerInParent="true"
+        />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/browseRecipesRecycler"
         android:layout_width="match_parent"

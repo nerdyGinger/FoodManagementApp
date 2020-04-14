@@ -11,7 +11,7 @@
 
     <string name="about_title">About</string>
     <string name="about_text">\t\tThanks for using Pocket Pantry! This app was developed by me during my senior year in the University of Sioux Falls Computer Science program. I hope that it has proven useful to you! Visit the contact page to send me a message if you have questions or comments. </string>
-    <string name="about_credits">Credits:\n\nTrash icon made by Kiranshastry on flaticon.com\n\nChef, Recipe book, Fridge, and House icon made by Freepik on flaticon.com\n\nLists icon made by Smashicons on flaticon.com\n\nThanks to all!</string>
+    <string name="about_credits">Credits:\n\nTrash icon made by Kiranshastry on flaticon.com\n\nChef, Recipe book, Fridge, and House icon made by Freepik on flaticon.com\n\nLists icon made by Smashicons on flaticon.com\n\nPatterns from subtlepatterns.com\n\nFancy loader from loading.io\n\nAll credits are licensed as free to use with attribution. Thanks to all!</string>
     <string name="about_signature">- NerdyGinger</string>
     <string name="about_pic_description">Self-portrait of developer</string>
 

@@ -49,7 +49,6 @@ public class RecipeBookActivity extends AppCompatActivity {
         authorBox.setText(recipeBook.getAuthor());
         descriptionBox.setText(recipeBook.getDescription());
 
-        //imageHelper.loadAllDbImages(); //TODO: make this a checkable status on startup (load on first run)
         image.setImageBitmap(imageHelper.retrieveImage(imageHelper.getFilename(recipeBook)));
         linkBox.setText(recipeBook.getLink());
         nameBox.setText(recipeBook.getName());

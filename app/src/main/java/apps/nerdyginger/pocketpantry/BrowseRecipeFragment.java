@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -36,6 +37,7 @@ import apps.nerdyginger.pocketpantry.models.Recipe;
 import apps.nerdyginger.pocketpantry.models.UserInventoryItem;
 import apps.nerdyginger.pocketpantry.models.UserRecipe;
 import apps.nerdyginger.pocketpantry.models.UserRecipeBoxItem;
+import pl.droidsonroids.gif.GifImageView;
 
 // Fragment for the browse recipes page; displays recipes that
 // are in the read-only db by category
@@ -47,6 +49,7 @@ public class BrowseRecipeFragment extends Fragment implements SearchView.OnQuery
     private SortRecipesHelper recipesHelper;
     private ImageHelper imageHelper;
     private List<BrowseRecipeCategory> masterList = new ArrayList<>();
+    private GifImageView loader;
 
     public BrowseRecipeFragment() {
         // Required empty public constructor
@@ -68,6 +71,7 @@ public class BrowseRecipeFragment extends Fragment implements SearchView.OnQuery
         recipesHelper = new SortRecipesHelper(context);
         imageHelper = new ImageHelper(context);
         parentAdapter = new BrowseRecipesCategoryAdapter();
+        loader = view.findViewById(R.id.browseRecipesLoader);
 
         // set up search
         SearchView search = view.findViewById(R.id.browseRecipesSearchBar);
@@ -103,6 +107,7 @@ public class BrowseRecipeFragment extends Fragment implements SearchView.OnQuery
     }
 
     public void updateRecycler(List<BrowseRecipeCategory> updatedData) {
+        loader.setVisibility(View.GONE);
         masterList = updatedData;
         parentAdapter.updateData(masterList);
     }
@@ -164,7 +169,6 @@ public class BrowseRecipeFragment extends Fragment implements SearchView.OnQuery
 
     @Override
     public boolean onQueryTextChange(String query) {
-        //TODO: implement an efficient filtering method for browse recipe nested rv
         parentAdapter.updateData(filterCategories(masterList, query));
         return false;
     }

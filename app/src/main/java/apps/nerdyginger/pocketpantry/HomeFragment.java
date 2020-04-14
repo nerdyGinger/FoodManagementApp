@@ -322,6 +322,7 @@ public class HomeFragment extends Fragment {
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         todayRv.setLayoutManager(llm);
         final RecipesListAdapter todayAdapter = new RecipesListAdapter();
+        todayAdapter.setDetailedView(getContext());
         todayRv.setAdapter(todayAdapter);
         ScheduleViewModel todayModel = ViewModelProviders.of(this).get(ScheduleViewModel.class);
         todayModel.getScheduleList().observe(getViewLifecycleOwner(), new Observer<List<UserSchedule>>() {
@@ -349,6 +350,7 @@ public class HomeFragment extends Fragment {
         LinearLayoutManager llm2 = new LinearLayoutManager(getContext());
         weekRv.setLayoutManager(llm2);
         final RecipesListAdapter weekAdapter = new RecipesListAdapter();
+        weekAdapter.setDetailedView(getContext());
         weekRv.setAdapter(weekAdapter); //properly set up adapter to pull from LiveData view model
         ScheduleViewModel weekModel = ViewModelProviders.of(this).get(ScheduleViewModel.class);
         weekModel.getScheduleList().observe(getViewLifecycleOwner(), new Observer<List<UserSchedule>>() {
