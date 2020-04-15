@@ -196,36 +196,6 @@ public class HomeFragment extends Fragment {
                                 //TODO: (check preferences?)(***multiply by servings***)
                                 tempItem = quantityHelper.subtractUserRecipeIngredient(joinItem, tempItem);
                                 inventoryDao.update(tempItem);
-
-                                /*
-                                Unit joinItemUnit = unitDao.getUnitByAbbrev(joinItem.unit);
-                                Unit inventoryItemUnit = unitDao.getUnitByAbbrev(tempItem.getUnit());
-                                Fraction joinItemQuantity = new Fraction().fromString(joinItem.quantity);
-                                Fraction inventoryItemQuantity = new Fraction().fromString(tempItem.getQuantity());
-                                if (joinItem.unit.equals("") && tempItem.getUnit().equals("") ||                  // if both units are empty
-                                        joinItem.unit == null && tempItem.getUnit() == null ||                // ...or null
-                                        joinItemUnit.getFullName().equals(inventoryItemUnit.getFullName()) ||
-                                        joinItemUnit.getType().equals(inventoryItemUnit.getType())) { // ...or they have the same unit
-                                    // ...then subtract as usual
-                                    tempItem.setQuantity(quantityHelper.);
-                                    tempItem.setQuantity(inventoryItemQuantity.subtract(joinItemQuantity).toString());
-                                    inventoryDao.update(tempItem);
-                                } else if (joinItemUnit.getType().equals(inventoryItemUnit.getType())) {
-                                    //different units, but same types: convert and subtract
-                                    UnitConversionDao conversionDao = new UnitConversionDao(getContext());
-                                    Fraction used = conversionDao.convertUnitQuantity(
-                                            /*convert recipe quantity... joinItemQuantity,
-                                            /*  ...from recipe unit...   String.valueOf(joinItemUnit.get_ID()),
-                                            /*  ...to inventory unit...  String.valueOf(inventoryItemUnit.get_ID()));
-                                    //and now we can subtract like normal
-                                    Fraction newAmount = inventoryItemQuantity.subtract(used);
-                                    tempItem.setQuantity(newAmount.toString());
-                                    inventoryDao.update(tempItem);
-                                } //else {
-                                //  different unit types, not possible: skip
-                                //}
-
-                                 */
                             }
                         }
                     }

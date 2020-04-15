@@ -6,15 +6,26 @@
     android:layout_height="match_parent">
 
     <TextView
+        android:id="@+id/schedulerTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/custom_text_color"
+        android:textSize="20sp"
+        android:layout_margin="5dp"
+        android:text="@string/scheduler_title"
+        />
+
+    <TextView
         android:id="@+id/schedulerWeekTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:textColor="@color/custom_text_color"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/schedulerTitle"
         android:layout_centerHorizontal="true"
-        android:textSize="18sp"
-        android:text="Selected Week: "
+        android:textSize="16sp"
+        android:text="@string/scheduler_week_title"
         />
 
     <TextView
@@ -28,7 +39,7 @@
         android:background="?android:attr/selectableItemBackground"
         android:clickable="true"
         android:focusable="true"
-        android:text="StartDate - EndDate"
+        android:text="@string/scheduler_default_week_range"
         />
 
     <LinearLayout
@@ -70,7 +81,7 @@
             android:layout_centerHorizontal="true"
             android:gravity="center"
             android:textSize="18sp"
-            android:text="No recipes scheduled"
+            android:text="@string/scheduler_empty_message"
             />
 
     </RelativeLayout>
@@ -82,7 +93,7 @@
         android:layout_margin="5dp"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/schedulerRecyclerContainer"
-        android:hint="Recipe Name"
+        android:hint="@string/scheduler_recipe_name"
         />
 
     <Button
@@ -92,7 +103,7 @@
         android:layout_margin="5dp"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/schedulerRecipeName"
-        android:text="Cancel"
+        android:text="@string/app_cancel_btn"
         />
 
     <Button
@@ -102,7 +113,7 @@
         android:layout_margin="5dp"
         android:layout_below="@+id/schedulerRecipeName"
         android:layout_alignParentEnd="true"
-        android:text="Add"
+        android:text="@string/app_add_btn"
         />
 
 

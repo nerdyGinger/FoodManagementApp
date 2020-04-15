@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">Pocket Pantry</string>
 
-
+    <string name="app_ok_btn">OK</string>
+    <string name="app_add_btn">Add</string>
     <string name="app_save_btn">Save</string>
     <string name="app_next_btn">Next</string>
     <string name="app_cancel_btn">Cancel</string>
@@ -26,6 +27,7 @@
     <string name="menu_five">Tips</string>
     <string name="menu_nav_btn_description">Navigation Button</string>
 
+    <string name="inventory_dialog_title">Add Item to Inventory</string>
     <string name="inventory_item_name">Item Name</string>
     <string name="inventory_quantity_hint">How much?</string>
     <string name="inventory_stock_level_hint">How much is this?</string>
@@ -48,6 +50,19 @@
     <string name="recipe_dialog_yield">Yield</string>
     <string name="recipe_dialog_ingredients_title">Ingredients</string>
     <string name="recipe_dialog_instructions_title">Instructions</string>
+
+    <string name="scheduler_title">Add Recipe to Schedule</string>
+    <string name="scheduler_empty_message">No recipes scheduled</string>
+    <string name="scheduler_week_title">Selected Week:</string>
+    <string name="scheduler_default_week_range">StartDate - EndDate</string>
+    <string name="scheduler_recipe_name">Recipe Name</string>
+
+    <string name="list_dialog_title">Add Item to List</string>
+    <string name="list_quantity_hint">#</string>
+    <string name="list_notes_hint">Notes</string>
+
+    <string name="history_title">Schedule History</string>
+    <string name="history_empty_message">No schedule history</string>
 
 
 </resources>

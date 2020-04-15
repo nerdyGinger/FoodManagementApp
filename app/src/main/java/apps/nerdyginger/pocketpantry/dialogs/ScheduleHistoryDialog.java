@@ -28,6 +28,10 @@ import apps.nerdyginger.pocketpantry.models.UserRecipeBoxItem;
 import apps.nerdyginger.pocketpantry.models.UserSchedule;
 import apps.nerdyginger.pocketpantry.view_models.ScheduleViewModel;
 
+/*
+ * Dialog for viewing past recipe schedule dates.
+ * TODO-VER1.0: make more tidy and history-friendly; i.e. options to filter by date range, selected calendar date, etc.
+ */
 public class ScheduleHistoryDialog extends DialogFragment {
     private ScheduleHelper scheduleHelper;
     private ScheduleViewModel viewModel;

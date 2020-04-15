@@ -23,7 +23,7 @@ import apps.nerdyginger.pocketpantry.models.UserRecipeItemJoin;
 import apps.nerdyginger.pocketpantry.models.UserSchedule;
 
 @Database(entities = {UserItem.class, UserRecipe.class, UserNutrition.class, UserInventoryItem.class, UserRecipeItemJoin.class,
-                        UserRecipeBoxItem.class, UserSchedule.class, UserListItem.class }, version = 17)
+                        UserRecipeBoxItem.class, UserSchedule.class, UserListItem.class }, version = 18)
 @TypeConverters({Converters.class})
 public abstract class UserCustomDatabase extends RoomDatabase {
     public abstract UserItemDao getUserItemDao();

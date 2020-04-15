@@ -9,11 +9,11 @@
         android:id="@+id/historyTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="24sp"
+        android:textSize="20sp"
         android:textColor="@color/custom_text_color"
         android:layout_centerHorizontal="true"
         android:layout_margin="5dp"
-        android:text="Schedule History"
+        android:text="@string/history_title"
         />
 
     <apps.nerdyginger.pocketpantry.EmptyRecyclerView
@@ -33,7 +33,7 @@
         android:layout_centerHorizontal="true"
         android:gravity="center"
         android:textSize="24sp"
-        android:text="No schedule history"
+        android:text="@string/history_empty_message"
         />
 
     <Button
@@ -44,7 +44,7 @@
         android:layout_marginTop="525dp"
         android:layout_marginBottom="5dp"
         android:layout_marginEnd="5dp"
-        android:text="OK"
+        android:text="@string/app_ok_btn"
         />
 
 

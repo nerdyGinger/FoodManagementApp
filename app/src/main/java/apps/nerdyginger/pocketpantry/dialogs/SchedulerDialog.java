@@ -76,7 +76,7 @@ public class SchedulerDialog extends DialogFragment {
         scheduleHelper = new ScheduleHelper(getContext());
 
         // Find views
-        final TextView title = view.findViewById(R.id.schedulerDateTitle);
+        final TextView title = view.findViewById(R.id.schedulerDateTitle); //TODO: change to a button (?) to de-clutter title space
         recipeNameBox = view.findViewById(R.id.schedulerRecipeName);
         Button cancelBtn = view.findViewById(R.id.schedulerCancelBtn);
         Button addBtn = view.findViewById(R.id.schedulerAddBtn);
