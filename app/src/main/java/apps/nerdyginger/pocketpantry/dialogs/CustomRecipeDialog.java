@@ -87,7 +87,7 @@ import apps.nerdyginger.pocketpantry.view_models.RecipeInstructionsViewModel;
 public class CustomRecipeDialog extends DialogFragment {
     private Context context;
     private ItemQuantityHelper quantityHelper;
-    private RecipeDialogHelper dialogHelper;
+    private static RecipeDialogHelper dialogHelper;
     private static final int pages = 3; // Slide-able pages for basic info, ingredients, and instructions
     private ViewPager pager;
     private Button nextBtn;
@@ -114,6 +114,8 @@ public class CustomRecipeDialog extends DialogFragment {
     //empty constructor, default "create" mode
     public CustomRecipeDialog() {
         MODE = "create";
+        this.context = getContext();
+        dialogHelper = new RecipeDialogHelper(context);
     }
 
     public CustomRecipeDialog(String mode, UserRecipeBoxItem item, Context context) {
@@ -388,6 +390,7 @@ public class CustomRecipeDialog extends DialogFragment {
                     newRecipe.setTotalTime("");
                     newRecipe.setRecipeYield("");
                     newRecipe.setKeywords(new ArrayList<String>());
+                    descriptionBox.setLines(3);
                     break;
                 case "view":
                     // set up disabled page filled with data
@@ -456,7 +459,7 @@ public class CustomRecipeDialog extends DialogFragment {
             //add categories to spinner
             final ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(Objects.requireNonNull(getContext()), android.R.layout.simple_list_item_1, getCategories());
             categorySpinner.setAdapter(categoryAdapter);
-            if (MODE.equals("edit")) { categorySpinner.setSelection(categoryAdapter.getPosition(existingBoxItem.getCategory())); }
+            if ( ! MODE.equals("create")) { categorySpinner.setSelection(categoryAdapter.getPosition(existingBoxItem.getCategory())); }
             categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -476,8 +479,9 @@ public class CustomRecipeDialog extends DialogFragment {
             //add cuisines to spinner
             final ArrayAdapter<String> cuisineAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, getCuisines());
             cuisineSpinner.setAdapter(cuisineAdapter);
-            if (MODE.equals("edit")) {
-                String cuisine = existingBoxItem.isUserAdded() ? existingCustomRecipeItem.getRecipeCuisine() : readOnlyItem.getRecipeCuisine();
+            if (! MODE.equals("create")) {
+                String cuisine = existingBoxItem.isUserAdded() ? existingCustomRecipeItem.getRecipeCuisine() :
+                        dialogHelper.getCuisine(readOnlyItem.getRecipeCuisine());
                 cuisineSpinner.setSelection(cuisineAdapter.getPosition(cuisine));
             }
             cuisineSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -660,36 +664,18 @@ public class CustomRecipeDialog extends DialogFragment {
         //gets db categories or existing item category
         private List<String> getCategories() {
             List<String> categories = new ArrayList<>();
-            if (MODE.equals("view")) {
-                if (existingBoxItem.getCategory() != null) {
-                    categories.add(existingBoxItem.getCategory());
-                }
-            } else {
-                categories.add("Category");
-                CategoryDao dao = new CategoryDao(getContext());
-                categories.addAll(dao.getAllCategoryNames());
-            }
+            categories.add("Category");
+            CategoryDao dao = new CategoryDao(getContext());
+            categories.addAll(dao.getAllCategoryNames());
             return categories;
         }
 
         //gets db cuisines or existing item cuisine
         private List<String> getCuisines() {
             List<String> cuisines = new ArrayList<>();
-            if (MODE.equals("view")) {
-                if (existingBoxItem.isUserAdded()) {
-                    if (existingCustomRecipeItem.getRecipeCuisine() != null) {
-                        cuisines.add(existingCustomRecipeItem.getRecipeCuisine());
-                    }
-                } else {
-                    if (readOnlyItem.getRecipeCuisine() != null) {
-                        cuisines.add(readOnlyItem.getRecipeCuisine());
-                    }
-                }
-            } else {
-                cuisines.add("Cuisine");
-                CuisineDao dao = new CuisineDao(getContext());
-                cuisines.addAll(dao.getAllCuisineNames());
-            }
+            cuisines.add("Cuisine");
+            CuisineDao dao = new CuisineDao(getContext());
+            cuisines.addAll(dao.getAllCuisineNames());
             return cuisines;
         }
     }

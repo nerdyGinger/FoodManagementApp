@@ -12,9 +12,10 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <include
+            android:id="@+id/viewRecipeHeader"
             layout="@layout/recipe_book_header"
             />
 
@@ -22,9 +23,11 @@
             android:id="@+id/viewRecipeName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/viewRecipeHeader"
             android:textColor="@color/custom_text_color"
+            android:textSize="14sp"
+            android:text="Peanut Butter and Jelly Sandwiches"
             />
-
 
 
     </RelativeLayout>

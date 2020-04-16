@@ -10,6 +10,7 @@ import java.util.List;
 
 import apps.nerdyginger.pocketpantry.R;
 import apps.nerdyginger.pocketpantry.UserCustomDatabase;
+import apps.nerdyginger.pocketpantry.dao.CuisineDao;
 import apps.nerdyginger.pocketpantry.dao.ItemDao;
 import apps.nerdyginger.pocketpantry.dao.RecipeBookDao;
 import apps.nerdyginger.pocketpantry.dao.RecipeDao;
@@ -33,6 +34,11 @@ public class RecipeDialogHelper {
 
     public RecipeDialogHelper(Context context) {
         this.context = context;
+    }
+
+    public String getCuisine(String cuisineId) {
+        CuisineDao dao = new CuisineDao(context);
+        return dao.getCuisineName(cuisineId);
     }
 
     public UserRecipe getCustomItem(final UserRecipeBoxItem existingBoxItem) {
