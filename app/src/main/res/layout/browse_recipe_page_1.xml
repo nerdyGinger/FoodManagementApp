@@ -7,7 +7,6 @@
     android:scrollbarAlwaysDrawVerticalTrack="true"
     android:requiresFadingEdge="vertical"
     android:fadingEdgeLength="15dp"
-    android:background="@drawable/paper"
     >
 
     <RelativeLayout
@@ -19,16 +18,132 @@
             layout="@layout/recipe_book_header"
             />
 
+        <ImageView
+            android:id="@+id/viewRecipeImage"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_margin="5dp"
+            android:layout_below="@+id/viewRecipeHeader"
+            android:src="@drawable/ic_chef"
+            />
+
         <TextView
             android:id="@+id/viewRecipeName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/viewRecipeHeader"
+            android:layout_below="@+id/viewRecipeTime"
+            android:layout_toEndOf="@id/viewRecipeImage"
+            android:layout_margin="5dp"
             android:textColor="@color/custom_text_color"
-            android:textSize="14sp"
+            android:textSize="16sp"
             android:text="Peanut Butter and Jelly Sandwiches"
             />
 
+        <TextView
+            android:id="@+id/viewRecipeServings"
+            android:layout_width="125dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_below="@+id/viewRecipeHeader"
+            android:layout_toEndOf="@+id/viewRecipeImage"
+            android:textColor="@color/custom_text_color"
+            android:textSize="12sp"
+            android:text="Servings: "
+            />
+
+        <TextView
+            android:id="@+id/viewRecipeTime"
+            android:layout_width="125dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_below="@+id/viewRecipeServings"
+            android:layout_toEndOf="@+id/viewRecipeImage"
+            android:textColor="@color/custom_text_color"
+            android:textSize="12sp"
+            android:text="Time: "
+            />
+
+        <!--
+        <Button
+            android:id="@+id/viewRecipeTestKeyword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_below="@+id/viewRecipeAuthor"
+            android:backgroundTint="@color/colorPrimary"
+            android:paddingBottom="0dp"
+            android:paddingTop="0dp"
+            android:enabled="false"
+            android:text="Sandwich"
+            />
+
+        <Button
+            android:id="@+id/viewRecipeTestKeyword2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_below="@+id/viewRecipeAuthor"
+            android:layout_toEndOf="@+id/viewRecipeTestKeyword"
+            android:backgroundTint="@color/colorPrimary"
+            android:paddingBottom="0dp"
+            android:paddingTop="0dp"
+            android:enabled="false"
+            android:text="Quick 'n Easy"
+            />
+
+            -->
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/viewRecipeDescriptionLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_below="@+id/viewRecipeCategory"
+            android:hint="@string/recipe_dialog_description"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            >
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/viewRecipeDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                android:gravity="top"
+                android:textColor="@color/custom_text_color"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/viewRecipeCategory"
+            android:layout_width="125dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_below="@+id/viewRecipeImage"
+            android:textColor="@color/custom_text_color"
+            android:textSize="14sp"
+            android:text="Sandwiches"
+            />
+
+        <TextView
+            android:id="@+id/viewRecipeCuisine"
+            android:layout_width="125dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_below="@id/viewRecipeImage"
+            android:layout_toEndOf="@+id/viewRecipeCategory"
+            android:textColor="@color/custom_text_color"
+            android:textSize="14sp"
+            android:text="American"
+            />
+
+        <TextView
+            android:id="@+id/viewRecipeUrl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_below="@+id/viewRecipeDescriptionLayout"
+            android:autoLink="web"
+            android:text="https://example.com"
+            />
 
     </RelativeLayout>
 

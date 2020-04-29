@@ -99,8 +99,12 @@ public class CustomItemDialog extends DialogFragment {
             unit.setSelection(unitsAdapter.getPosition(unitAbbrevPairs.get(existingItem.getUnit())));
             if (existingItem.isMultiUnit()) {
                 Fraction quantityFraction = new Fraction().fromString(existingItem.getQuantity());
+                Fraction maxFraction = new Fraction().fromString(existingItem.getMaxQuantity());
+                Fraction hundo = new Fraction(100, 0,0);
+                Fraction ratio = quantityFraction.multiply(hundo).divide(maxFraction);
+                    ratio.simplify();
                 stockMeter.setProgress(Integer.parseInt(existingItem.getQuantity().contains("-") ? "0" :
-                        String.valueOf(quantityFraction.getWholeNum())) * 100 / Integer.parseInt(existingItem.getMaxQuantity()));
+                        ratio.toString()));
             }
         }
 
@@ -255,7 +259,12 @@ public class CustomItemDialog extends DialogFragment {
         item.setQuantity(quantity);
         // only set the stock level if it was clicked at least once and there is a quantity set
         if (stockClicked && ! item.getQuantity().equals("")) {
-            item.setMaxQuantity(String.valueOf(Integer.parseInt(quantity) * 100 / stockLevel));
+            Fraction temp = new Fraction().fromString(quantity);
+            Fraction ratio = new Fraction();
+                ratio.setNumerator(100);
+                ratio.setDenominator(stockLevel);
+                ratio.simplify();
+            item.setMaxQuantity(temp.multiply(ratio).toString());
         } else {
             item.setMaxQuantity("");
         }

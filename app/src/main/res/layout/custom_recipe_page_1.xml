@@ -15,10 +15,6 @@
         android:layout_height="wrap_content"
         >
 
-        <include
-            layout="@layout/recipe_book_header"
-            />
-
 
         <EditText
             android:id="@+id/customRecipeName"
@@ -30,7 +26,6 @@
             android:textColor="@color/custom_text_color"
             android:hint="@string/recipe_dialog_name"
             android:inputType="text"
-            android:layout_below="@+id/customRecipeBookContainer"
             />
 
         <EditText

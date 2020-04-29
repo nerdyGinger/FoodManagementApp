@@ -120,9 +120,13 @@ public class InventoryListAdapter extends  EmptyRecyclerView.Adapter<RecyclerVie
             TextView quantity = detailHolder.itemQuantity;
             quantity.setText(item.getQuantity() + " " + item.getUnit());
             ProgressBar lifeBar = detailHolder.lifeBar;
-            lifeBar.setMax(Integer.parseInt(item.getMaxQuantity()));
+            Fraction maxFraction = new Fraction().fromString(item.getMaxQuantity());
+            lifeBar.setMax(100);
             Fraction quantityFraction = new Fraction().fromString(item.getQuantity());
-            lifeBar.setProgress(Integer.parseInt(item.getQuantity().contains("-") ? "0" : String.valueOf(quantityFraction.getWholeNum())));
+            Fraction hundo = new Fraction(100, 0, 0);
+            Fraction ratio = quantityFraction.multiply(hundo).divide(maxFraction);
+                ratio.simplify();
+            lifeBar.setProgress(Integer.parseInt(item.getQuantity().contains("-") ? "0" : ratio.toString()));
         }
     }
 

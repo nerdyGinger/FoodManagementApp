@@ -2,7 +2,12 @@ package apps.nerdyginger.pocketpantry.helpers;
 
 import android.content.Context;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,6 +15,7 @@ import java.util.List;
 
 import apps.nerdyginger.pocketpantry.R;
 import apps.nerdyginger.pocketpantry.UserCustomDatabase;
+import apps.nerdyginger.pocketpantry.dao.CategoryDao;
 import apps.nerdyginger.pocketpantry.dao.CuisineDao;
 import apps.nerdyginger.pocketpantry.dao.ItemDao;
 import apps.nerdyginger.pocketpantry.dao.RecipeBookDao;
@@ -36,9 +42,51 @@ public class RecipeDialogHelper {
         this.context = context;
     }
 
+    // Sets page 1 of recipe dialog with recipe data using the VIEW page layout
+    // For READ-ONLY recipes only
+    public void setPage1ViewMode(View view, Recipe recipe) {
+        //get all of the views
+        TextView recipeBookName = view.findViewById(R.id.bookContainerName);
+        TextView recipeBookAuthor = view.findViewById(R.id.bookContainerAuthor);
+        TextView recipeBookDate = view.findViewById(R.id.bookContainerDate);
+        TextView recipeName = view.findViewById(R.id.viewRecipeName);
+        TextView recipeServings = view.findViewById(R.id.viewRecipeServings);
+        TextView recipeTime = view.findViewById(R.id.viewRecipeTime);
+        TextView recipeCategory = view.findViewById(R.id.viewRecipeCategory);
+        TextView recipeCuisine = view.findViewById(R.id.viewRecipeCuisine);
+        TextView recipeUrl = view.findViewById(R.id.viewRecipeUrl);
+        ImageView recipeImage = view.findViewById(R.id.viewRecipeImage);
+        TextInputEditText recipeDescription = view.findViewById(R.id.viewRecipeDescription);
+
+        //set the easy ones
+        recipeName.setText(recipe.getName());
+        recipeServings.setText(recipe.getRecipeYield());
+        recipeTime.setText(recipe.getTotalTime());
+        recipeCategory.setText(getCategory(recipe.getRecipeCategory()));
+        recipeCuisine.setText(getCuisine(recipe.getRecipeCuisine()));
+        recipeUrl.setText(recipe.getUrl());
+        recipeDescription.setText(recipe.getDescription());
+        recipeDescription.setEnabled(false);
+
+        //set the ones in the book header
+        RecipeBook book = getRecipeBook(recipe);
+        recipeBookName.setText(book.getName());
+        recipeBookAuthor.setText(recipe.getAuthor());
+        recipeBookDate.setText(recipe.getDatePublished());
+
+        //set the image, with some help from the image helper
+        ImageHelper imageHelper = new ImageHelper(context);
+        recipeImage.setImageBitmap(imageHelper.retrieveImage(imageHelper.getFilename(book, recipe)));
+    }
+
     public String getCuisine(String cuisineId) {
         CuisineDao dao = new CuisineDao(context);
         return dao.getCuisineName(cuisineId);
+    }
+
+    public String getCategory(String categoryId) {
+        CategoryDao dao = new CategoryDao(context);
+        return dao.getCategoryName(categoryId);
     }
 
     public UserRecipe getCustomItem(final UserRecipeBoxItem existingBoxItem) {
@@ -86,14 +134,14 @@ public class RecipeDialogHelper {
         return recipe[0];
     }
 
-    public RecipeBook getRecipeBook(final Recipe userRecipe) {
+    public RecipeBook getRecipeBook(final Recipe recipe) {
         final RecipeBook[] recipeBook = {null};
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     RecipeBookDao bookDao = new RecipeBookDao(context);
-                    recipeBook[0] = bookDao.getRecipeBookById(userRecipe.getRecipeBookId());
+                    recipeBook[0] = bookDao.getRecipeBookById(recipe.getRecipeBookId());
                 } catch (Exception e) {
                     Log.e("Database Error", "Error accessing recipe book: " + e.toString());
                 }

@@ -362,9 +362,15 @@ public class CustomRecipeDialog extends DialogFragment {
         }
 
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View view = inflater.inflate(R.layout.custom_recipe_page_1, container, false);
+        public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             ImageHelper imageHelper = new ImageHelper(getContext());
+
+            if (MODE.equals("view") && ! existingBoxItem.isUserAdded()) {
+                View viewView = inflater.inflate(R.layout.browse_recipe_page_1, container, false);
+                dialogHelper.setPage1ViewMode(viewView, readOnlyItem);
+                return viewView;
+            }
+            View view = inflater.inflate(R.layout.custom_recipe_page_1, container, false);
 
             //find all views in page
             Spinner categorySpinner = view.findViewById(R.id.customRecipeCategory);
@@ -406,9 +412,10 @@ public class CustomRecipeDialog extends DialogFragment {
                     }
                     //show/hide recipe book info
                     if (existingBoxItem.isUserAdded()) {
-                        recipeBookContainer.setVisibility(View.GONE);
+                        //recipeBookContainer.setVisibility(View.GONE);
                         //TODO: set user-added image
                     } else {
+                        /*
                         // is read-only, set image
                         imageBtn.setImageBitmap(imageHelper.retrieveImage(imageHelper.getFilename(recipeBook, readOnlyItem)));
                         recipeBookContainer.setVisibility(View.VISIBLE);
@@ -422,10 +429,11 @@ public class CustomRecipeDialog extends DialogFragment {
                                 intent.putExtra("RecipeBookId", recipeBook.get_ID());
                                 startActivity(intent);
                             }
-                        });
+                        });*/
                     }
                     break;
                 case "browse-view":
+                    /*
                     // set a different layout?
                     imageBtn.setImageBitmap(imageHelper.retrieveImage(imageHelper.getFilename(recipeBook, readOnlyItem)));
                     recipeBookContainer.setVisibility(View.VISIBLE);
@@ -440,7 +448,7 @@ public class CustomRecipeDialog extends DialogFragment {
                             startActivity(intent);
                         }
                     });
-                    break;
+                    break;*/
                 case "edit":
                     // set up page filled with data, prepare to overwrite existing values
                     //set image
