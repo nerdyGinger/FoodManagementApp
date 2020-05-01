@@ -6,7 +6,6 @@
     android:scrollbarAlwaysDrawVerticalTrack="true"
     android:requiresFadingEdge="vertical"
     android:fadingEdgeLength="15dp"
-    android:background="@drawable/paper"
     >
 
     <RelativeLayout

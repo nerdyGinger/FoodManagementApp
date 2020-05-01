@@ -3,11 +3,13 @@ package apps.nerdyginger.pocketpantry.adapters;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,12 +21,14 @@ import java.util.List;
 import apps.nerdyginger.pocketpantry.EmptyRecyclerView;
 import apps.nerdyginger.pocketpantry.R;
 import apps.nerdyginger.pocketpantry.RecyclerViewClickListener;
+import apps.nerdyginger.pocketpantry.helpers.ImageHelper;
 import apps.nerdyginger.pocketpantry.models.UserRecipeBoxItem;
 
 public class RecipesListAdapter extends EmptyRecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<UserRecipeBoxItem> dataSet = new ArrayList<>();
     private RecyclerViewClickListener mListener;
     private boolean detailed = true;
+    private ImageHelper imageHelper;
 
     public class SimpleRecipeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView recipeName;
@@ -46,6 +50,7 @@ public class RecipesListAdapter extends EmptyRecyclerView.Adapter<RecyclerView.V
 
     public class DetailedRecipeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView recipeName, servings, category;
+        ImageView image;
         //ImageView statusBar;
 
         DetailedRecipeViewHolder(View itemView) {
@@ -53,6 +58,7 @@ public class RecipesListAdapter extends EmptyRecyclerView.Adapter<RecyclerView.V
             recipeName = itemView.findViewById(R.id.recipeNameDetailed);
             servings = itemView.findViewById(R.id.recipeServingsDetailed);
             category = itemView.findViewById(R.id.recipeCategoryDetailed);
+            image = itemView.findViewById(R.id.recipeImageDetailed);
             //statusBar = itemView.findViewById(R.id.recipeIndicatorBarDetailed);
             itemView.setOnClickListener(this);
         }
@@ -111,6 +117,7 @@ public class RecipesListAdapter extends EmptyRecyclerView.Adapter<RecyclerView.V
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
+        imageHelper = new ImageHelper(context);
         LayoutInflater inflater = LayoutInflater.from(context);
 
         if (viewType == 1) {
@@ -138,6 +145,10 @@ public class RecipesListAdapter extends EmptyRecyclerView.Adapter<RecyclerView.V
             servings.setText(item.getServings());
             TextView category = detailHolder.category;
             category.setText(item.getCategory());
+            if ( ! item.isUserAdded()) { // read-only, set image
+                Bitmap bmp = imageHelper.retrieveImage(imageHelper.getFilename(item));
+                detailHolder.image.setImageBitmap(bmp);
+            }
         }
     }
 

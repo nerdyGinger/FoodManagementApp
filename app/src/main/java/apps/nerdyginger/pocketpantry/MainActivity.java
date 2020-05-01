@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Set up toolbar
         androidx.appcompat.widget.Toolbar toolBar = findViewById(R.id.toolbar);
-        TextView title = findViewById(R.id.toolbarTitle);
+        final TextView title = findViewById(R.id.toolbarTitle);
         title.setText(R.string.app_name);
         ImageButton menuBtn = findViewById(R.id.toolbarNavButton);
         menuBtn.setOnClickListener(new View.OnClickListener() {
@@ -108,30 +108,35 @@ public class MainActivity extends AppCompatActivity {
                     currentFragment = new InventoryFragment();
                     loadFragment(currentFragment);
                     bottomNav.setSelectedItemId(R.id.inventory);
+                    title.setText(R.string.menu_items);
                     break;
                 case "Recipes":
                     fragmentTag = "Recipes";
                     currentFragment = new RecipesFragment();
                     loadFragment(currentFragment);
                     bottomNav.setSelectedItemId(R.id.recipes);
+                    title.setText("My Recipe Box");
                     break;
                 case "Lists":
                     fragmentTag = "Lists";
                     currentFragment = new ListsFragment();
                     loadFragment(currentFragment);
                     bottomNav.setSelectedItemId(R.id.lists);
+                    title.setText("Grocery List");
                     break;
                 case "Tips":
                     fragmentTag = "Tips";
                     currentFragment = new TipsFragment();
                     loadFragment(currentFragment);
                     bottomNav.setSelectedItemId(R.id.tips);
+                    title.setText("Pocket Pantry");
                     break;
                 case "Home":
                     fragmentTag = "Home";
                     currentFragment = new HomeFragment();
                     loadFragment(currentFragment);
                     bottomNav.setSelectedItemId(R.id.home);
+                    title.setText(R.string.app_name);
                     break;
             }
         } else {
@@ -149,26 +154,31 @@ public class MainActivity extends AppCompatActivity {
                         fragmentTag = "Home";
                         currentFragment = new HomeFragment();
                         loadFragment(currentFragment);
+                        title.setText(R.string.app_name);
                         return true;
                     case "Tips":
                         fragmentTag = "Tips";
                         currentFragment = new TipsFragment();
                         loadFragment(currentFragment);
+                        title.setText("Pocket Pantry");
                         return true;
                     case "Recipes":
                         fragmentTag = "Recipes";
                         currentFragment = new RecipesFragment();
                         loadFragment(currentFragment);
+                        title.setText("My Recipe Box");
                         return true;
                     case "Lists":
                         fragmentTag = "Lists";
                         currentFragment = new ListsFragment();
                         loadFragment(currentFragment);
+                        title.setText("Grocery List");
                         return true;
                     case "Inventory":
                         fragmentTag = "Inventory";
                         currentFragment = new InventoryFragment();
                         loadFragment(currentFragment);
+                        title.setText(R.string.menu_items);
                         return true;
                 }
                 return true;

@@ -20,6 +20,49 @@ public class RecipeDao {
         this.context = context;
     }
 
+    public List<Recipe> getAllRecipesByBook(String bookId) {
+        SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
+        String sql = "Select rowid, * from Recipes where recipeBookId = ?";
+        Cursor cursor = db.rawQuery(sql, new String[] {bookId});
+        String name, author, datePublished, description, totalTime, recipeYield, recipeCategory;
+        String url, recipeCuisine, imageUrl;
+        ArrayList<String> keywords = new ArrayList<>();
+        ArrayList<String> recipeInstructions = new ArrayList<>();
+        int nutritionId, id;
+        List<Recipe> recipes = new ArrayList<>();
+        try {
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+            }
+            while ( ! cursor.isAfterLast()) {
+                id = cursor.getInt(cursor.getColumnIndex("rowid"));
+                name = cursor.getString(cursor.getColumnIndex("name"));
+                author = cursor.getString(cursor.getColumnIndex("author"));
+                url = cursor.getString(cursor.getColumnIndex("url"));
+                datePublished = cursor.getString(cursor.getColumnIndex("datePublished"));
+                description = cursor.getString(cursor.getColumnIndex("description"));
+                totalTime = cursor.getString(cursor.getColumnIndex("totalTime"));
+                keywords = Converters.fromString(cursor.getString(cursor.getColumnIndex("keywords")));
+                recipeYield = cursor.getString(cursor.getColumnIndex("recipeYield"));
+                recipeCategory = cursor.getString(cursor.getColumnIndex("recipeCategory"));
+                recipeCuisine = cursor.getString(cursor.getColumnIndex("recipeCuisine"));
+                nutritionId = cursor.getInt(cursor.getColumnIndex("nutrition"));
+                imageUrl = cursor.getString(cursor.getColumnIndex("imageUrl"));
+                recipeInstructions = Converters.fromString(cursor.getString(cursor.getColumnIndex("recipeInstructions")));
+                description = description.replace("&#x27;", "'");
+                recipes.add(new Recipe(id, name, author, url, bookId, datePublished, description, totalTime, keywords, recipeYield, recipeCategory,
+                        recipeCuisine, imageUrl, nutritionId, recipeInstructions));
+                cursor.moveToNext();
+            }
+        } catch (Exception e) {
+            Log.e("Database Error", e.toString());
+        } finally {
+            cursor.close();
+            db.close();
+        }
+        return recipes;
+    }
+
     public List<Recipe> getAllRecipesByCuisine(String cuisineId) {
         SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
         String sql = "Select rowid," +
@@ -50,6 +93,7 @@ public class RecipeDao {
                 nutritionId = cursor.getInt(cursor.getColumnIndex("nutrition"));
                 imageUrl = cursor.getString(cursor.getColumnIndex("imageUrl"));
                 recipeInstructions = Converters.fromString(cursor.getString(cursor.getColumnIndex("recipeInstructions")));
+                description = description.replace("&#x27;", "'");
                 recipes.add(new Recipe(id, name, author, url, recipeBookId, datePublished, description, totalTime, keywords, recipeYield, recipeCategory,
                         cuisineId, imageUrl, nutritionId, recipeInstructions));
                 cursor.moveToNext();
@@ -92,6 +136,7 @@ public class RecipeDao {
                 nutritionId = cursor.getInt(cursor.getColumnIndex("nutrition"));
                 imageUrl = cursor.getString(cursor.getColumnIndex("imageUrl"));
                 recipeInstructions = Converters.fromString(cursor.getString(cursor.getColumnIndex("recipeInstructions")));
+                description = description.replace("&#x27;", "'");
                 recipes.add(new Recipe(id, name, author, url, recipeBookId, datePublished, description, totalTime, keywords, recipeYield, categoryId,
                         recipeCuisine, imageUrl, nutritionId, recipeInstructions));
                 cursor.moveToNext();
@@ -132,6 +177,7 @@ public class RecipeDao {
             nutritionId = cursor.getInt(cursor.getColumnIndex("nutrition"));
             imageUrl = cursor.getString(cursor.getColumnIndex("imageUrl"));
             recipeInstructions = Converters.fromString(cursor.getString(cursor.getColumnIndex("recipeInstructions")));
+            description = description.replace("&#x27;", "'");
         } catch (Exception e) {
             Log.e("Database Error", e.toString());
         } finally {
@@ -168,6 +214,7 @@ public class RecipeDao {
                 nutritionId = cursor.getInt(cursor.getColumnIndex("nutrition"));
                 imageUrl = cursor.getString(cursor.getColumnIndex("imageUrl"));
                 recipeInstructions = Converters.fromString(cursor.getString(cursor.getColumnIndex("recipeInstructions")));
+                description = description.replace("&#x27;", "'");
                 recipes.add(new Recipe(id, name, author, url, recipeBookId, datePublished, description, totalTime, keywords, recipeYield, recipeCategory,
                         recipeCuisine, imageUrl, nutritionId, recipeInstructions));
                 cursor.moveToNext();

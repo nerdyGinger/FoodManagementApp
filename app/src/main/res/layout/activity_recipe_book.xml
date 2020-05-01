@@ -44,7 +44,7 @@
             android:layout_margin="5dp"
             android:layout_toEndOf="@+id/recipeBookInfoImage"
             android:layout_below="@+id/recipeBookInfoAuthor"
-            android:textAlignment="center"
+            android:autoLink="web"
             android:text="Click here to visit site"
             />
 
@@ -64,6 +64,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/recipeBookInfoContainer"
+        android:layout_margin="5dp"
         />
 
 </RelativeLayout>

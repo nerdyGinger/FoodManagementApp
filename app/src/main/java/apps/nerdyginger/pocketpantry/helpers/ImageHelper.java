@@ -17,11 +17,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import apps.nerdyginger.pocketpantry.R;
+import apps.nerdyginger.pocketpantry.UserCustomDatabase;
 import apps.nerdyginger.pocketpantry.dao.RecipeBookDao;
 import apps.nerdyginger.pocketpantry.dao.RecipeDao;
+import apps.nerdyginger.pocketpantry.dao.UserRecipeDao;
 import apps.nerdyginger.pocketpantry.models.Recipe;
 import apps.nerdyginger.pocketpantry.models.RecipeBook;
 import apps.nerdyginger.pocketpantry.models.UserRecipe;
+import apps.nerdyginger.pocketpantry.models.UserRecipeBoxItem;
 
 // Helper class for handling the serialization and deserialization of images to
 // and from internal storage using filename schema <recipeBookName>-<recipeName>.jpg
@@ -75,6 +78,18 @@ public class ImageHelper {
     // returns filename for recipe image from given book
     public String getFilename(RecipeBook book, Recipe recipe) {
         return book.getName() + "-" + recipe.getName();
+    }
+
+    // returns filename for recipe from recipe box item
+    public String getFilename(UserRecipeBoxItem boxItem) {
+        if (boxItem.isUserAdded()) {
+            UserRecipe recipe = getUserRecipe(boxItem.get_ID());
+            return getFilename(recipe);
+        } else {
+            Recipe recipe = getRecipe(boxItem.getRecipeId());
+            RecipeBook book = getRecipeBook(recipe.getRecipeBookId());
+            return getFilename(book, recipe);
+        }
     }
 
     // returns filename for recipe image from user recipes
@@ -173,6 +188,63 @@ public class ImageHelper {
                     Log.e("STORE_IO_ERROR", e.toString());
                 }
             }
+        }
+    }
+
+    private UserRecipe getUserRecipe(final int id) {
+        final UserRecipe[] recipe = new UserRecipe[1];
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                UserRecipeDao dao = UserCustomDatabase.getDatabase(context).getUserRecipeDao();
+                recipe[0] = dao.getUserRecipeById(id);
+            }
+        });
+        t.start();
+        try {
+            t.join();
+            return recipe[0];
+        } catch (Exception e) {
+            Log.e("Thread Exception", "Problem waiting for db thread: " + e.toString());
+            return recipe[0];
+        }
+    }
+
+    private Recipe getRecipe(final int id) {
+        final Recipe[] recipe = new Recipe[1];
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                RecipeDao dao = new RecipeDao(context);
+                recipe[0] = dao.buildRecipeFromId(String.valueOf(id));
+            }
+        });
+        t.start();
+        try {
+            t.join();
+            return recipe[0];
+        } catch (Exception e) {
+            Log.e("Thread Exception", "Problem waiting for db thread: " + e.toString());
+            return recipe[0];
+        }
+    }
+
+    private RecipeBook getRecipeBook(final String id) {
+        final RecipeBook[] book = new RecipeBook[1];
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                RecipeBookDao dao = new RecipeBookDao(context);
+                book[0] = dao.getRecipeBookById(id);
+            }
+        });
+        t.start();
+        try {
+            t.join();
+            return book[0];
+        } catch (Exception e) {
+            Log.e("Thread Exception", "Problem waiting for db thread: " + e.toString());
+            return book[0];
         }
     }
 }

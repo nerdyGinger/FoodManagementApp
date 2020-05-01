@@ -384,7 +384,6 @@ public class CustomRecipeDialog extends DialogFragment {
             final EditText timeBox = view.findViewById(R.id.customRecipeTotalTime);
             final EditText yieldBox = view.findViewById(R.id.customRecipeYield);
             List<EditText> entryBoxes = new ArrayList<>(Arrays.asList(nameBox, authorBox, descriptionBox, timeBox, yieldBox));
-            RelativeLayout recipeBookContainer = view.findViewById(R.id.customRecipeBookContainer);
 
             //select dialog mode
             switch (MODE) {
@@ -410,45 +409,9 @@ public class CustomRecipeDialog extends DialogFragment {
                     for (int i = 0; i < entryBoxes.size(); i++) {
                         entryBoxes.get(i).setEnabled(false);
                     }
-                    //show/hide recipe book info
-                    if (existingBoxItem.isUserAdded()) {
-                        //recipeBookContainer.setVisibility(View.GONE);
-                        //TODO: set user-added image
-                    } else {
-                        /*
-                        // is read-only, set image
-                        imageBtn.setImageBitmap(imageHelper.retrieveImage(imageHelper.getFilename(recipeBook, readOnlyItem)));
-                        recipeBookContainer.setVisibility(View.VISIBLE);
-                        TextView recipeBookName = view.findViewById(R.id.bookContainerName);
-                        recipeBookName.setText(recipeBook.getName());
-                        Button recipeBookBtn = view.findViewById(R.id.bookContainerBtn);
-                        recipeBookBtn.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent intent = new Intent(getContext(), RecipeBookActivity.class);
-                                intent.putExtra("RecipeBookId", recipeBook.get_ID());
-                                startActivity(intent);
-                            }
-                        });*/
-                    }
+                    //recipeBookContainer.setVisibility(View.GONE);
+                    //TODO: set user-added image
                     break;
-                case "browse-view":
-                    /*
-                    // set a different layout?
-                    imageBtn.setImageBitmap(imageHelper.retrieveImage(imageHelper.getFilename(recipeBook, readOnlyItem)));
-                    recipeBookContainer.setVisibility(View.VISIBLE);
-                    TextView recipeBookName = view.findViewById(R.id.bookContainerName);
-                    recipeBookName.setText(recipeBook.getName());
-                    Button recipeBookBtn = view.findViewById(R.id.bookContainerBtn);
-                    recipeBookBtn.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent = new Intent(getContext(), RecipeBookActivity.class);
-                            intent.putExtra("RecipeBookId", recipeBook.get_ID());
-                            startActivity(intent);
-                        }
-                    });
-                    break;*/
                 case "edit":
                     // set up page filled with data, prepare to overwrite existing values
                     //set image

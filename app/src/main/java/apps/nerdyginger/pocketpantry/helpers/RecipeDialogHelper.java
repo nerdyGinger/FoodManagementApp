@@ -1,9 +1,11 @@
 package apps.nerdyginger.pocketpantry.helpers;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import apps.nerdyginger.pocketpantry.R;
+import apps.nerdyginger.pocketpantry.RecipeBookActivity;
 import apps.nerdyginger.pocketpantry.UserCustomDatabase;
 import apps.nerdyginger.pocketpantry.dao.CategoryDao;
 import apps.nerdyginger.pocketpantry.dao.CuisineDao;
@@ -69,7 +72,7 @@ public class RecipeDialogHelper {
         recipeDescription.setEnabled(false);
 
         //set the ones in the book header
-        RecipeBook book = getRecipeBook(recipe);
+        final RecipeBook book = getRecipeBook(recipe);
         recipeBookName.setText(book.getName());
         recipeBookAuthor.setText(recipe.getAuthor());
         recipeBookDate.setText(recipe.getDatePublished());
@@ -77,6 +80,17 @@ public class RecipeDialogHelper {
         //set the image, with some help from the image helper
         ImageHelper imageHelper = new ImageHelper(context);
         recipeImage.setImageBitmap(imageHelper.retrieveImage(imageHelper.getFilename(book, recipe)));
+
+        //set header click to open recipe book page
+        RelativeLayout header = view.findViewById(R.id.viewRecipeHeader);
+        header.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context.getApplicationContext(), RecipeBookActivity.class);
+                intent.putExtra("RecipeBookId", book.get_ID());
+                context.startActivity(intent);
+            }
+        });
     }
 
     public String getCuisine(String cuisineId) {
