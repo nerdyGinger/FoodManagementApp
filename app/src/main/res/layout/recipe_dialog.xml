@@ -44,6 +44,7 @@
         app:tabIndicatorHeight="0dp"
         />
 
+    <!--
     <Button
         style="@style/Widget.AppCompat.Button.ButtonBar.AlertDialog"
         android:id="@+id/customRecipeBackBtn"
@@ -53,6 +54,7 @@
         android:layout_below="@+id/customRecipePagerDots"
         android:text="Back"
         />
+        -->
 
     <Button
         style="@style/Widget.AppCompat.Button.ButtonBar.AlertDialog"
@@ -61,7 +63,6 @@
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:layout_below="@+id/customRecipePagerDots"
-        android:layout_centerHorizontal="true"
         android:text="@string/app_cancel_btn"
         />
 

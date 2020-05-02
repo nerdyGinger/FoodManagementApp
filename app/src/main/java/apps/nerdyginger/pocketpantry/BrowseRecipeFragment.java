@@ -137,11 +137,13 @@ public class BrowseRecipeFragment extends Fragment implements SearchView.OnQuery
             list.addAll(recipesHelper.getRecipesByCuisine());
             Collections.shuffle(list); //shuffle categories so they are in a different order every time
             publishProgress(list);
+            /*
             BrowseRecipeCategory recommended = new BrowseRecipeCategory();
             recommended.setCategoryName("Recommended For You");
             recommended.setRecipeCards(recipesHelper.getRecommendedRecipes(list));
             list.add(0, recommended);
             publishProgress(list);
+             */
             return null;
         }
     }

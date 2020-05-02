@@ -205,7 +205,15 @@ public class CustomRecipeDialog extends DialogFragment {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 if (position == 2) {
-                    nextBtn.setText(getString(R.string.app_save_btn));
+                    if (MODE.equals("view") && ! existingBoxItem.isUserAdded()) {
+                        if (dialogHelper.recipeInBox(existingBoxItem.getRecipeName())) {
+                            nextBtn.setText("Close");
+                        } else {
+                            nextBtn.setText("Add to recipe box");
+                        }
+                    } else {
+                        nextBtn.setText(getString(R.string.app_save_btn));
+                    }
                 } else {
                     nextBtn.setText(getString(R.string.app_next_btn));
                 }
@@ -213,7 +221,15 @@ public class CustomRecipeDialog extends DialogFragment {
             @Override
             public void onPageSelected(int position) {
                 if (position == 2) {
-                    nextBtn.setText(getString(R.string.app_save_btn));
+                    if (MODE.equals("view") && ! existingBoxItem.isUserAdded()) {
+                        if (dialogHelper.recipeInBox(existingBoxItem.getRecipeName())) {
+                            nextBtn.setText("Close");
+                        } else {
+                            nextBtn.setText("Add to recipe box");
+                        }
+                    } else {
+                        nextBtn.setText(getString(R.string.app_save_btn));
+                    }
                 } else {
                     nextBtn.setText(getString(R.string.app_next_btn));
                 }
@@ -226,6 +242,7 @@ public class CustomRecipeDialog extends DialogFragment {
     }
 
     private void addDialogBtnClicks(View view) {
+        /*
         final Button backBtn = view.findViewById(R.id.customRecipeBackBtn);
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -233,6 +250,8 @@ public class CustomRecipeDialog extends DialogFragment {
                 pager.setCurrentItem(pager.getCurrentItem() - 1, true);
             }
         });
+
+         */
 
         Button cancelBtn = view.findViewById(R.id.customRecipeCancelBtn);
         cancelBtn.setOnClickListener(new View.OnClickListener() {
@@ -261,6 +280,14 @@ public class CustomRecipeDialog extends DialogFragment {
                 @Override
                 public void onClick(View v) {
                     if (pager.getCurrentItem() == 2) {
+                        if (MODE.equals("view") && ! existingBoxItem.isUserAdded()) {
+                            //add recipe to recipe box (if not already there)
+                            if ( ! dialogHelper.recipeInBox(existingBoxItem.getRecipeName())) {
+                                dialogHelper.addToRecipeBox(existingBoxItem);
+                            }
+                            dismiss();
+                            return;
+                        }
                         //get instructions
                         ArrayList<String> instructions = new ArrayList<>();
                         for (int i = 0; i< instructionsAdapter.getItemCount(); i++) {

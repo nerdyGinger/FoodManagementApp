@@ -170,6 +170,41 @@ public class RecipeDialogHelper {
         return recipeBook[0];
     }
 
+    // Checks a recipe to see if it is a read-only that is already in the recipe box
+    public boolean recipeInBox(final String recipeName) {
+        final boolean[] present = {false};
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                UserRecipeBoxDao boxDao = UserCustomDatabase.getDatabase(context).getUserRecipeBoxDao();
+                int itemId = boxDao.getRecipeIdByName(recipeName);
+                if (itemId != 0) {
+                    present[0] = true;
+                }
+            }
+        });
+        t.start();
+        try {
+            t.join();
+            return present[0];
+        } catch (Exception e) {
+            Log.e("Thread Exception", "Problem waiting for db thread: " + e.toString());
+            return present[0];
+        }
+    }
+
+    public void addToRecipeBox(final UserRecipeBoxItem boxItem) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                UserRecipeBoxDao boxDao = UserCustomDatabase.getDatabase(context).getUserRecipeBoxDao();
+                if ( ! boxItem.isUserAdded() && ! recipeInBox(boxItem.getRecipeName())) { //just double-checking
+                    boxDao.insert(boxItem);
+                }
+            }
+        }).start();
+    }
+
     // Updates db for custom recipe, returns boolean indicating success of operation
     public boolean updateCustomRecipe(final UserRecipe newRecipe, final UserRecipeBoxItem boxItem) {
         final boolean[] successful = {false};

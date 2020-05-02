@@ -87,7 +87,7 @@ public class RecipesFragment extends Fragment implements SearchView.OnQueryTextL
         RecyclerViewClickListener listener = new RecyclerViewClickListener() {
             @Override
             public void onClick(View view, int position) {
-                CustomRecipeDialog dialog = new CustomRecipeDialog("view", adapter.getItemAtPosition(position));
+                CustomRecipeDialog dialog = new CustomRecipeDialog("view", adapter.getItemAtPosition(position), context);
                 dialog.show(Objects.requireNonNull(getFragmentManager()), "input a recipe!");
             }
 
